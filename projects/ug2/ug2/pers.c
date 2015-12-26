@@ -236,7 +236,7 @@ void UgxCopyToIntenalRAM8Internal(void *pDst, const void* pSrc, u8 sizeInBytes)
 	u8 i;
 	u8 slotRAM = s_ugxContext.u8Page1RamSlot;
 	u8 *pU8Dst = pDst;
-	u8 *pU8Src = pSrc;
+	const u8 *pU8Src = pSrc;
 	for (i = 0; i < sizeInBytes; i++, pU8Dst++, pU8Src++)
 	{
 		SLOTWriteDI(slotRAM, (u16)pU8Dst, *pU8Src);
@@ -265,7 +265,7 @@ void UgxCopy8Internal(void *pDst, const void* pSrc, u8 sizeInBytes)
 {
 	u8 i;
 	u8 *pU8Dst = pDst;
-	u8 *pU8Src = pSrc;
+	const u8 *pU8Src = pSrc;
 	for (i = 0; i < sizeInBytes; i++, pU8Dst++, pU8Src++)
 	{
 		*pU8Dst = *pU8Src;
@@ -815,6 +815,8 @@ void UgxEndFrame()
 
 	RAM_DISABLE();
 }
+
+
 #if 1
 void UgxOnCommandRenderObjectClip(SUgxCommandRenderObject *pCommand);
 #else
@@ -882,18 +884,34 @@ void UgxOnCommandRenderObjectNoClip(SUgxCommandRenderObject *pCommand)
 #endif
 void UgxOnCommandRenderPrimitivePoints(SUgxCommandPrimitive *pCommand)
 {
-}
-
-void UgxOnCommandRenderPrimitiveLines(SUgxCommandPrimitive *pCommand)
-{
-	u8 i;
-	u8 *pVertex = pCommand->pVertices;
-	u8 nbPrimitives = pCommand->nbVertices >> 1;
+	register u8 i;
+	register u8 *pVertex = pCommand->pVertices;
+	register u8 nbPrimitives = pCommand->nbVertices;
 	VDPSetForegroundColor(pCommand->color);
 
 	for (i = 0; i < nbPrimitives; i++)
 	{
-		u8 x0, y0, x1, y1;
+		static u8 x, y;
+		x = *pVertex;
+		pVertex++;
+		y = *pVertex;
+		pVertex++;
+
+		VDPWait();
+		//VDPPoint(x, y);
+	}
+}
+
+void UgxOnCommandRenderPrimitiveLines(SUgxCommandPrimitive *pCommand)
+{
+	register u8 i;
+	register u8 *pVertex = pCommand->pVertices;
+	register u8 nbPrimitives = pCommand->nbVertices >> 1;
+	VDPSetForegroundColor(pCommand->color);
+
+	for (i = 0; i < nbPrimitives; i++)
+	{
+		static u8 x0, y0, x1, y1;
 		x0 = *pVertex;
 		pVertex++;
 		y0 = *pVertex;
@@ -908,13 +926,40 @@ void UgxOnCommandRenderPrimitiveLines(SUgxCommandPrimitive *pCommand)
 
 void UgxOnCommandRenderPrimitiveRectangles(SUgxCommandPrimitive *pCommand)
 {
+	register u8 i;
+	register u8 *pVertex = pCommand->pVertices;
+	register u8 nbPrimitives = pCommand->nbVertices >> 1;
+	VDPSetForegroundColor(pCommand->color);
+
+	for (i = 0; i < nbPrimitives; i++)
+	{
+		static u8 x, y;
+		static u16 w, h;
+		x = *pVertex;
+		pVertex++;
+		y = *pVertex;
+		pVertex++;
+		w = *pVertex;
+		pVertex++;
+		h = *pVertex;
+		pVertex++;
+		VDPWait();
+		VDPFill(x, y, w, h);
+	}
 }
 
+#if 0
 void UgxOnCommandRenderPrimitiveLineStrip(SUgxCommandPrimitive *pCommand)
 {
-	u8 i;
-	u8 *pVertex = pCommand->pVertices;
-	u8 x0, y0;
+
+}
+#else
+void UgxOnCommandRenderPrimitiveLineStrip(SUgxCommandPrimitive *pCommand)
+{
+	register u8 i;
+	register u8 *pVertex = pCommand->pVertices;
+	register u8 nbLines = pCommand->nbVertices;
+	static u8 x0, y0;
 	VDPSetForegroundColor(pCommand->color);
 
 	x0 = *pVertex;
@@ -922,19 +967,23 @@ void UgxOnCommandRenderPrimitiveLineStrip(SUgxCommandPrimitive *pCommand)
 	y0 = *pVertex;
 	pVertex++;
 
-	for (i = 0; i < pCommand->nbVertices; i++)
+	nbLines -= 1;
+	
+	for (i = 0; i < nbLines; i++)
 	{
-		u8 x1, y1;
+		static u8 x1, y1;
 		x1 = *pVertex;
 		pVertex++;
 		y1 = *pVertex;
 		pVertex++;
+
 		VDPWaitLine(x0, y0, x1, y1);
+		
 		x0 = x1;
 		y0 = y1;
 	}
 }
-
+#endif
 void UgxOnCommandRenderPrimitive(SUgxCommandPrimitive *pCommand)
 {
 	/*
@@ -975,7 +1024,7 @@ void UgxFlushCommands()
 
 	RAM_ENABLE();
 
-	for (;;pCommand++)
+	for (;pCommand != NULL;pCommand++)
 	{
 		switch (pCommand->eType)
 		{
@@ -993,12 +1042,14 @@ void UgxFlushCommands()
 
 		case kUgxCommand_End:
 		default:
-			RAM_DISABLE();
-			return;
+			pCommand = NULL;
+			break;
+			//RAM_DISABLE();
+			//return;
 		}
 	}
-//	RAM_DISABLE();
-//	return;
-}
 
+	RAM_DISABLE();
+	return;
+}
 
