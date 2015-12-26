@@ -1042,10 +1042,10 @@ void UgxFlushCommands()
 
 		case kUgxCommand_End:
 		default:
-			pCommand = NULL;
-			break;
-			//RAM_DISABLE();
-			//return;
+			//pCommand = NULL;
+			//break;
+			RAM_DISABLE();
+			return;
 		}
 	}
 
