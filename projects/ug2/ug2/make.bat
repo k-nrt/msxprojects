@@ -17,7 +17,7 @@ set AS=%SdccPath%\sdasz80
 set CC=%SdccPath%\sdcc
 set LD=%SdccPath%\sdldz80
 
-set SdkLibs=msx-bios-wrapper msx-timer msx-sprite msx-rand divsigned mul
+set SdkLibs=msx-bios-wrapper msx-timer msx-sprite msx-rand divsigned divunsigned mul
 set SdkLibPath=..\..\..\lib
 for %%n in (%SdkLibs%) do set Libs=!Libs! "%SdkLibPath%\%%n.rel"
 

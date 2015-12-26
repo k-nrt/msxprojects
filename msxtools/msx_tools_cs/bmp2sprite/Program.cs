@@ -391,7 +391,7 @@ namespace bmp2sprite
             ColorSpace colorSpace = new ColorSpaceYCbCr();
             Dither dither = new Dither2x2();
 
-            ColorList[] colorLists = new 
+            //ColorList[] colorLists = new ColorList
 
 
             Color colorKey = bitmapSrc.GetPixel(0,0);
