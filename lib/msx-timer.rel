@@ -1,0 +1,41 @@
+XL2
+H 9 areas 4 global symbols
+M msx_timer
+O -mz80
+S .__.ABS. Def0000
+A _CODE size 40 flags 0 addr 0
+S _msxTimerSetCallBack Def0000
+S _msxTimerSetCallBack_start Def0000
+S _msxTimerSetCallBack_end Def0040
+A _DATA size 8 flags 0 addr 0
+A _INITIALIZED size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _INITIALIZER size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00
+R 00 00 01 00
+T 00 00
+R 00 00 01 00
+T 00 00
+R 00 00 00 00
+T 00 00
+R 00 00 00 00
+T 00 00 DD E5 DD 21 00 00 DD 39 11 03 00 06 00 FD
+R 00 00 00 00 00 0B 01 00
+T 0E 00 21 9F FD
+R 00 00 00 00
+T 11 00
+R 00 00 00 00
+T 11 00 FD 7E 00 12 04 FD 23 13 78 D6 05 38 F3 21
+R 00 00 00 00
+T 1F 00 00 00 36 CD 21 01 00 DD 56 04 DD 5E 05 72
+R 00 00 00 00 00 02 01 00 00 07 01 00
+T 2D 00 23 73 F3 21 9F FD 36 C3 11 00 00 ED 53
+R 00 00 00 00 00 0B 01 00
+T 3A 00 A0 FD FB DD E1 C9
+R 00 00 00 00
+T 40 00
+R 00 00 00 00
