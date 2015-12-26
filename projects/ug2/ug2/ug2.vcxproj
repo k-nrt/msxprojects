@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{10DB8AEB-77F4-4E52-9CEF-E4A8A5D0F5A0}</ProjectGuid>
+    <Keyword>MakeFileProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Makefile</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <NMakeBuildCommandLine>make.bat</NMakeBuildCommandLine>
+    <NMakeOutput>ug2.exe</NMakeOutput>
+    <NMakeReBuildCommandLine>make.bat</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;_DEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+    <IncludePath>..\..\..\include;$(IncludePath)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <NMakeBuildCommandLine>make.bat</NMakeBuildCommandLine>
+    <NMakeOutput>ug2.exe</NMakeOutput>
+    <NMakeReBuildCommandLine>make.bat</NMakeReBuildCommandLine>
+    <NMakePreprocessorDefinitions>WIN32;NDEBUG;$(NMakePreprocessorDefinitions)</NMakePreprocessorDefinitions>
+  </PropertyGroup>
+  <ItemDefinitionGroup>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="crt0.s" />
+    <None Include="make.bat" />
+    <None Include="make_model.bat" />
+    <None Include="math.s" />
+    <None Include="pers.s" />
+    <None Include="sincos.s" />
+    <None Include="slot.s" />
+    <None Include="ux_render_object_noclip.s" />
+    <None Include="vdp_command.s" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="bg.c" />
+    <ClCompile Include="enemy.c" />
+    <ClCompile Include="explosion.c" />
+    <ClCompile Include="input.c" />
+    <ClCompile Include="key_matrix.c" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="math.c" />
+    <ClCompile Include="model_data.c" />
+    <ClCompile Include="pers.c" />
+    <ClCompile Include="player.c" />
+    <ClCompile Include="player_beam.c" />
+    <ClCompile Include="sincos.c" />
+    <ClCompile Include="slot.c" />
+    <ClCompile Include="ux_render.c" />
+    <ClCompile Include="vdp_command.c" />
+    <ClCompile Include="vec_math.c" />
+    <ClCompile Include="view.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="bg.h" />
+    <ClInclude Include="enemy.h" />
+    <ClInclude Include="explosion.h" />
+    <ClInclude Include="input.h" />
+    <ClInclude Include="key_matrix.h" />
+    <ClInclude Include="macros.h" />
+    <ClInclude Include="math.h" />
+    <ClInclude Include="model_data.h" />
+    <ClInclude Include="pers.h" />
+    <ClInclude Include="player.h" />
+    <ClInclude Include="player_beam.h" />
+    <ClInclude Include="sincos.h" />
+    <ClInclude Include="slot.h" />
+    <ClInclude Include="ux_render.h" />
+    <ClInclude Include="vdp_command.h" />
+    <ClInclude Include="vec_math.h" />
+    <ClInclude Include="view.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

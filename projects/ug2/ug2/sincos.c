@@ -1,0 +1,135 @@
+#include "sincos.h"
+#include "macros.h"
+#include "math.h"
+//const s16 g_s16SinMul0[64][16];
+//const s16 g_s16SinMul1[64][16];
+//const s16 g_s16SinMul2[64][16];
+//const s16 g_s16SinMul3[64][16];
+
+
+
+SDCC_FIXED_ADDRESS(0x7f00) const s16 g_s16SinTablePlus[] =
+{
+	0x0000, 0x0007, 0x000D, 0x0013, 0x001A, 0x0020, 0x0026, 0x002C,
+	0x0032, 0x0039, 0x003F, 0x0045, 0x004B, 0x0051, 0x0057, 0x005D,
+	0x0062, 0x0068, 0x006E, 0x0074, 0x0079, 0x007F, 0x0084, 0x0089,
+	0x008F, 0x0094, 0x0099, 0x009E, 0x00A3, 0x00A8, 0x00AC, 0x00B1,
+	0x00B6, 0x00BA, 0x00BE, 0x00C2, 0x00C6, 0x00CA, 0x00CE, 0x00D2,
+	0x00D5, 0x00D9, 0x00DC, 0x00DF, 0x00E2, 0x00E5, 0x00E8, 0x00EB,
+	0x00ED, 0x00EF, 0x00F2, 0x00F4, 0x00F5, 0x00F7, 0x00F9, 0x00FA,
+	0x00FC, 0x00FD, 0x00FE, 0x00FF, 0x00FF, 0x0100, 0x0100, 0x0100, 
+};
+
+SDCC_FIXED_ADDRESS(0x7f80) const s16 g_s16SinTableMinus[] =
+{
+	0x0000, 0xFFF9, 0xFFF3, 0xFFED, 0xFFE6, 0xFFE0, 0xFFDA, 0xFFD4,
+	0xFFCE, 0xFFC7, 0xFFC1, 0xFFBB, 0xFFB5, 0xFFAF, 0xFFA9, 0xFFA3,
+	0xFF9E, 0xFF98, 0xFF92, 0xFF8C, 0xFF87, 0xFF81, 0xFF7C, 0xFF77,
+	0xFF71, 0xFF6C, 0xFF67, 0xFF62, 0xFF5D, 0xFF58, 0xFF54, 0xFF4F,
+	0xFF4A, 0xFF46, 0xFF42, 0xFF3E, 0xFF3A, 0xFF36, 0xFF32, 0xFF2E,
+	0xFF2B, 0xFF27, 0xFF24, 0xFF21, 0xFF1E, 0xFF1B, 0xFF18, 0xFF15,
+	0xFF13, 0xFF11, 0xFF0E, 0xFF0C, 0xFF0B, 0xFF09, 0xFF07, 0xFF06,
+	0xFF04, 0xFF03, 0xFF02, 0xFF01, 0xFF01, 0xFF00, 0xFF00, 0xFF00,
+};
+
+#if 0
+s16 SinCos_GetSin(u8 rot)
+{
+	if (rot < 128)
+	{
+		if (rot < 64)
+		{
+			return g_s16SinTablePlus[rot];
+		}
+		else
+		{
+			return g_s16SinTablePlus[127 - rot];
+		}
+	}
+	else
+	{
+		if (rot < 192)
+		{
+			return g_s16SinTableMinus[rot - 128];
+		}
+		else
+		{
+			return g_s16SinTableMinus[255 - rot];
+		}
+	}
+
+	return 0;
+}
+#endif
+
+s16 SinCos_GetCos(u8 u8Rot)
+{
+	register u8 rot = u8Rot;
+	if (rot < 128)
+	{
+		if (rot < 64)
+		{
+			return g_s16SinTablePlus[63 - rot];
+		}
+		else
+		{
+			return g_s16SinTableMinus[rot - 64];
+		}
+	}
+	else
+	{
+		if (rot < 192)
+		{
+			return g_s16SinTableMinus[191 - rot];
+		}
+		else
+		{
+			return g_s16SinTablePlus[rot - 192];
+		}
+	}
+}
+
+s16 SinCos_MulS8x256(s8 s8Value, s16 s16Sin)
+{
+	register s8 value = s8Value;
+	register s16 sin = s16Sin;
+
+	if (sin == 0x0000)
+	{
+		return 0;
+	}
+
+	if (sin & 0x8000)
+	{
+		sin = -sin;
+		if (sin == 0x0100)
+		{
+			return ((s16)-value) << 8;
+		}
+
+		if (value & 0x80)
+		{
+			return (s16)Math_MulU8xU8_U16((u8)-value, (u8)sin);
+		}
+		else
+		{
+			return -(s16)Math_MulU8xU8_U16((u8)value, (u8)sin);
+		}
+	}
+	else
+	{
+		if (sin == 0x0100)
+		{
+			return ((s16)value) << 8;
+		}
+
+		if (value & 0x80)
+		{
+			return -(s16)Math_MulU8xU8_U16((u8)-value, (u8)sin);
+		}
+		else
+		{
+			return (s16)Math_MulU8xU8_U16((u8)value, (u8)sin);
+		}
+	}
+}

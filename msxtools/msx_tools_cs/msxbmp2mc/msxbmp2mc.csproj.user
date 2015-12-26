@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <StartWorkingDirectory>C:\Documents and Settings\itarium\My Documents\Visual Studio 2008\Projects\msxbmp2mc\msxbmp2mc\</StartWorkingDirectory>
+    <StartArguments>game1.bmp -o game1.obj -obj</StartArguments>
+  </PropertyGroup>
+</Project>
