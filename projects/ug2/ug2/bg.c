@@ -17,7 +17,8 @@ SBGObject g_bgObjects[BGOBJECT_MAX];
 
 void BGInitialize()
 {
-	register u8 i, r;
+	register u8 i;
+	register s8 r;
 	g_bufferCubeIndices = UgxCreateIndexBuffer(g_modelCube.pIndices, g_modelCube.nbLines * 2);
 	for (i = 0, r = -VIEW_ZROT_MAX; i < (CUBE_ZROT_MAX*2 + 1); i++, r += VIEW_ZROT_MAX / CUBE_ZROT_MAX)
 	{
