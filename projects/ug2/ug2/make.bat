@@ -2,7 +2,7 @@ setlocal enabledelayedexpansion
 
 set OutputName=ug2
 set OutDir=.\Release
-set AsSrc=crt0 vdp_command pers slot math sincos
+set AsSrc=vdp_command pers slot math sincos
 set CcSrc=main vdp_command slot pers math sincos key_matrix vec_math model_data view player player_beam input explosion bg enemy
 
 set SdccPath=C:\Program Files\SDCC\bin
@@ -17,15 +17,16 @@ set AS=%SdccPath%\sdasz80
 set CC=%SdccPath%\sdcc
 set LD=%SdccPath%\sdldz80
 
-set SdkLibs=msx-bios-wrapper msx-timer msx-sprite msx-rand divsigned mul
+set SdkLibs=msx-bios-wrapper msx-timer msx-sprite msx-rand div mul
 set SdkLibPath=..\..\..\lib
 for %%n in (%SdkLibs%) do set Libs=!Libs! "%SdkLibPath%\%%n.rel"
 
+"%AS%" -g -l -o "%OutDir%\crt0.s.rel" crt0.s
 for %%i in (%AsSrc%) do "%AS%" -l -o "%OutDir%\%%i.s.rel" %%i.s
 rem for %%i in (%CcSrc%) do "%CC%" %%i.c %CCOptions% -I"%IncPath%" -I"%SdccIncPath%" -o "%OutDir%\%%i.rel"  --opt-code-speed --max-allocs-per-node 8
 for %%i in (%CcSrc%) do "%CC%" %%i.c %CCOptions% -I"%IncPath%" -I"%SdccIncPath%" -o "%OutDir%\%%i.rel"  --opt-code-speed
 
-set Objects=
+set Objects="%OutDir%\crt0.s.rel"
 for %%i in (%AsSrc%) do set Objects=!Objects! "%OutDir%\%%i.s.rel"
 for %%i in (%CcSrc%) do set Objects=!Objects! "%OutDir%\%%i.rel"
 

@@ -23,7 +23,7 @@ namespace makesincos
 				int nSin = ((int) Math.Ceiling(fSin)) & 0xffff;
 
 
-				writer.Write(String.Format("0x{0,2:X4}", nSin));
+				writer.Write(String.Format("(s16)0x{0,2:X4}", nSin));
 		
 				if( i%8 == 7 )
 				{
@@ -44,7 +44,7 @@ namespace makesincos
 				int nSin = ((int)Math.Floor(fSin)) & 0xffff;
 				
 
-				writer.Write(String.Format("0x{0,2:X4}", nSin));
+				writer.Write(String.Format("(s16)0x{0,2:X4}", nSin));
 
 				if (i % 8 == 7)
 				{
