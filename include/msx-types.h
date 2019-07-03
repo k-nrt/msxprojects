@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-//. ‚©‚½.
+//. ï¿½ï¿½ï¿½ï¿½.
 //-----------------------------------------------------------------------------
 #ifndef __MSX_TYPES_H__
 #define __MSX_TYPES_H__
@@ -7,9 +7,9 @@
 typedef unsigned char  u8;
 typedef unsigned short u16;
 typedef unsigned long   u32;
-typedef char  s8;
-typedef short s16;
-typedef long  s32;
+typedef signed char  s8;
+typedef signed short s16;
+typedef signed long  s32;
 
 typedef u8 bool;
 
