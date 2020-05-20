@@ -12,13 +12,13 @@ namespace makesincos
 		{
 			System.IO.StreamWriter writer = new System.IO.StreamWriter("sin_table.inc");
 
-            writer.WriteLine("// hp (16bit) sin pi/2 plus");
-            Write(writer, 0, 64, 256, 0xffff, 32768.0f,"(s16)0x{0,2:X4}");
-            writer.WriteLine("// hp (16bit) sin pi/2 minus");
-            Write(writer, 128, 64, 256, 0xffff, 32768.0f, "(s16)0x{0,2:X4}");
+            writer.WriteLine("// hp (2:14bit) sin pi/2 plus");
+            Write(writer, 0, 64, 252, 0xffff, 16384.0f,"(fp2_14)0x{0,2:X4}");
+            writer.WriteLine("// hp (2:14bit) sin pi/2 minus");
+            Write(writer, 126, 64, 252, 0xffff, 16384, "(fp2_14)0x{0,2:X4}");
 
-            writer.WriteLine("// lp (8bit) sin 2pi");
-            Write(writer, 0, 256, 256, 0xff, 128.0f, "(s8)0x{0,2:X2}");
+            writer.WriteLine("// lp (2:6bit) sin 2pi");
+            Write(writer, 0, 256, 256, 0xff, 64.0f, "(fp2_6)0x{0,2:X2}");
 
             writer.Close();
             System.Console.ReadLine();
