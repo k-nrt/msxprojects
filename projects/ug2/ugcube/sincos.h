@@ -3,24 +3,29 @@
 
 #include <msx-types.h>
 
-typedef s8 fp2_6;
-typedef s16 fp2_14;
-typedef u16 SinCosLp;
+typedef s8 fp2_6;       //. fixed point 1:1:6
+typedef s16 fp2_14;     //. fixed point 1:1:14
 
+//. fixed point sincos  1:1:6
+typedef u16 SinCosLp;
+#define SinCos_GetSin(v) ((s8)v>>8)
+#define SinCos_GetCos(v) ((s8)v)
+
+//. signed vec2 1:7:0
+typedef u16 s8XY;
+#define s8XY_GetX(xy) (s8)(xy>>8)
+#define s8XY_GetY(xy) (s8)(xy)
+
+//. get sin/cos low precision
 extern SinCosLp SinCos_GetSinCosLp(u8 rot);
 extern fp2_6 SinCos_GetSinLp(u8 rot);
 extern fp2_6 SinCos_GetCosLp(u8 rot);
 
+//. get sin/cos high precision
 extern fp2_14 SinCos_GetSinHp(u8 rot);
 extern fp2_14 SinCos_GetCosHp(u8 rot);
 
-
-extern s16 SinCos_MulS16Hp(s16 x, fp2_14 y);
-
-extern s8 SinCos_RotateXS8Lp(s8 x, s8 y, SinCosLp sincos);
-extern s8 SinCos_RotateYS8Lp(s8 x, s8 y, SinCosLp sincos);
-
-#define SinCos_RotateXS8x256(_x,_y,_sin,_cos) (SinCos_MulS8x256(_x,_cos)-SinCos_MulS8x256(_y,_sin))
-#define SinCos_RotateYS8x256(_x,_y,_sin,_cos) (SinCos_MulS8x256(_x,_sin)+SinCos_MulS8x256(_y,_cos))
+//. rotate xy low precision
+extern s8XY SinCos_RotateXYS8Lp(s8 x, s8 y, u8 rot);
 
 #endif //SINCOS_H

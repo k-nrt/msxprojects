@@ -11,6 +11,8 @@
 	.globl	_SinCos_GetSinHp
 	.globl	_SinCos_GetCosHp
 
+    .globl  MulCore_AxE_HL
+
 ;------------------------------------------------------------------------------
 ; LoadSinCosLp_A_DE
 ; load low precision(2:6) sin and cos to DE
@@ -64,7 +66,7 @@ LoadSinHp_0_63:
 	ret
 LoadSinHp_64_127:
 	neg
-	add	a,#127
+	add	a,#127  
 	sla	a
 	ld	l,a
 	ld	e,(hl)
@@ -150,3 +152,73 @@ _SinCos_GetCosHp:
 	ret
 
 ;------------------------------------------------------------------------------
+; SinCos_RotateXYLp_A_BC_HL
+; Rotate XY low precision
+; in A Rot
+; in B X
+; in C Y
+; out H X
+; out L Y
+; use DE
+;------------------------------------------------------------------------------
+SinCos_RotateXYLp_A_BC_HL:
+	call	LoadSinCosLp_A_DE	; de=sincos
+
+	push	bc
+	push	de
+
+SinCos_RotateXYLp_A_BC_HL_Y:
+								; Y=X*sin+Y*cos
+	ld		a,c					; a=Y
+	ld		c,d					; c=sin
+	call	MulCore_AxE_HL		; hl=Y*cos
+	push	hl
+	ld		a,b					; a=X
+	ld		e,c					; e=c=sin
+	call	MulCore_AxE_HL		; hl=X*sin
+	pop		de					; de=Y*cos
+	add		hl,de				; hl[10:6]=X*sin+Y*cos
+	sla		l					; hl <<= 2
+	rl		h
+	sla		l
+	rl		h					; h=Y
+
+	pop		de					; de=sincos
+	pop		bc					; bc=XY
+	push	hl
+
+SinCos_RotateXYLp_A_BC_HL_X:
+								; X=X*cos-Y*sin
+	ld		a,b					; a=X
+	ld		b,d					; b=sin
+	call	MulCore_AxE_HL		; hl=X*cos
+	push	hl
+	ld		a,c					; a=Y
+	ld		e,b					; e=b=sin
+	call	MulCore_AxE_HL		; hl=Y*sin
+	pop		de					; de=X*cos
+	ex		de,hl				; hl=X*cos de=Y*sin
+	or		a					; cy=0
+	sbc		hl,de				; hl[10:6]=X*cos-Y*sin
+	sla		l					; hl <<= 2
+	rl		h
+	sla		l
+	rl		h					; h=X
+	pop		de					; d=Y
+	ld		l,d					; hl=XY
+
+	ret
+
+;------------------------------------------------------------------------------
+; extern s8XY SinCos_RotateXYS8Lp(s8 x, s8 y, u8 rot);
+;------------------------------------------------------------------------------
+_SinCos_RotateXYS8Lp:
+	ld		hl,#2		;skip return addr.
+	add		hl,sp
+	ld		b,(hl)
+	inc		hl
+	ld		c,(hl)
+	inc		hl
+	ld		a,(hl)
+	call	SinCos_RotateXYLp_A_BC_HL
+	ret
