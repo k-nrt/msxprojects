@@ -3,7 +3,7 @@ setlocal enabledelayedexpansion
 
 set OutputName=ugcube
 set OutDir=.\Release
-set AsSrc=vdp_command sincos mul_core
+set AsSrc=vdp_command sincos mul_core scaler_math clip
 set CcSrc=main vdp_command sincos
 set SdccAsSrc=divunsigned mul __sdcc_call_hl
 

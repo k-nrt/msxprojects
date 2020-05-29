@@ -4,7 +4,7 @@
 
 #include "vdp_command.h"
 #include "sincos.h"
-
+#include "clip.h"
 #pragma codeseg CODE2
 
 u8 g_u8Timer = 0;
@@ -55,7 +55,8 @@ void Test_SinCosLp(const char *pszTitle)
 	VDPSetForegroundColor(0x11);
 	VDPFill(0,0,256,212);
 
-	VDPSetForegroundColor(7);
+	//. cos.
+	VDPSetForegroundColor(8);
 	for (i = 0; i < 255; i++)
 	{
 		SinCosLp sincos0 = SinCos_GetSinCosLp(i);
@@ -65,7 +66,8 @@ void Test_SinCosLp(const char *pszTitle)
 		VDPWaitLine(i,y0,i+1,y1);
 	}
 
-	VDPSetForegroundColor(8);
+	//. sin.
+	VDPSetForegroundColor(7);
 	for (i = 0; i < 255; i++)
 	{
 		SinCosLp sincos0 = SinCos_GetSinCosLp(i);
@@ -138,6 +140,68 @@ void Test_SinHp(const char *pszTitle)
 	Test_WaitForTrigger(pszTitle); 
 }
 
+void Test_Line(const char* pszTitle)
+{
+	u16 i;
+	VDPSetForegroundColor(0x11);
+	VDPFill(0,0,256,212);
+
+	VDPSetForegroundColor(0xee);
+	for (i=0; i<256; i += 16)
+	{
+		u8 x = i;
+		VDPWaitLine(x,0,x,211);
+	}
+	for (i=0; i<212; i += 16)
+	{
+		u8 y = i;
+		VDPWaitLine(0,y,255,y);
+	}
+
+	VDPSetForegroundColor(0x55);
+	for (i=0; i < 212; i += 8)
+	{
+		Clip_SetLine(16, i, 128, 104);
+		Clip_VDPWaitLine();
+		Clip_SetLine(128, 104, 239, i);
+		Clip_VDPWaitLine();
+	}
+
+	Clip_SetRect(32,223,32,159);
+	for (i=0; i < 212; i += 8)
+	{
+		if (i&8)
+		{
+			VDPSetForegroundColor(0x88);
+			Clip_SetLine(16, i, 128, 104);
+		}
+		else
+		{
+			VDPSetForegroundColor(0x22);
+			Clip_SetLine(128,104,16,i);
+		}
+		ClipLeft();
+		Clip_VDPWaitLine();
+
+		if (i&8)
+		{
+			VDPSetForegroundColor(0x88);
+			Clip_SetLine(128, 104, 239, i);
+		}
+		else
+		{
+			VDPSetForegroundColor(0x22);
+			Clip_SetLine(128, 104, 239, i);
+		}
+		ClipRight();
+		Clip_VDPWaitLine();
+	}
+
+	VDPSetForegroundColor(0xff);
+	//VDPWaitLine(0,0,64,64);
+	Test_WaitForTrigger(pszTitle);
+}
+
 void Test(const char *pszTitle)
 {
 	struct Item
@@ -148,9 +212,10 @@ void Test(const char *pszTitle)
 
 	static const struct Item items[] =
 	{
-		{"SinCosLp", Test_SinCosLp},
+		{"SinCosLp",    Test_SinCosLp},
 		{"SinLp CosLp", Test_SinLp_CosLp},
 		{"SinHp CosHp", Test_SinHp},
+		{"Line",        Test_Line},
 		{NULL, NULL}
 	};
 
