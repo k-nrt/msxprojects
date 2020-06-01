@@ -142,11 +142,14 @@ void Test_SinHp(const char *pszTitle)
 
 void Test_Line(const char* pszTitle)
 {
+	u8 c;
 	u16 i;
+	UNUSED(c);
+
 	VDPSetForegroundColor(0x11);
 	VDPFill(0,0,256,212);
 
-	VDPSetForegroundColor(0xee);
+	VDPSetForegroundColor(0x44);
 	for (i=0; i<256; i += 16)
 	{
 		u8 x = i;
@@ -158,45 +161,116 @@ void Test_Line(const char* pszTitle)
 		VDPWaitLine(0,y,255,y);
 	}
 
-	VDPSetForegroundColor(0x55);
-	for (i=0; i < 212; i += 8)
+	Clip_SetRect(64,255-64,64,191+16-64);
+	for(i = 0; i < 200; i++)
 	{
-		Clip_SetLine(16, i, 128, 104);
+		s16 sx,sy,ex,ey;
+		sx = 0xff & ((s16) msxRandGet16()>>8);
+		sy = 0xff & ((s16) msxRandGet16()>>4);
+		ex = 0xff & ((s16) msxRandGet16()>>6);
+		ey = 0xff & ((s16) msxRandGet16()>>8);
+		Clip_SetLine(sx, MIN(sy,211), ex, MIN(ey,211));
+		VDPSetForegroundColor(0x44);
 		Clip_VDPWaitLine();
-		Clip_SetLine(128, 104, 239, i);
-		Clip_VDPWaitLine();
+		VDPSetForegroundColor(0xff);
+		//ClipRect();
+		//Clip_VDPWaitLine();
+		ClipRect_VDPWaitLine();
 	}
-
-	Clip_SetRect(32,223,32,159);
-	for (i=0; i < 212; i += 8)
+#if 0
+	for(c = 0; c < 2; c++)
 	{
-		if (i&8)
+		for (i=16; i < 192; i += 8)
 		{
-			VDPSetForegroundColor(0x88);
-			Clip_SetLine(16, i, 128, 104);
-		}
-		else
-		{
-			VDPSetForegroundColor(0x22);
-			Clip_SetLine(128,104,16,i);
-		}
-		ClipLeft();
-		Clip_VDPWaitLine();
+			if (i&8)
+			{
+				VDPSetForegroundColor(0x88);
+				Clip_SetLine(16, i, 128, 104);
+			}
+			else
+			{
+				VDPSetForegroundColor(0x22);
+				Clip_SetLine(128,104,16,i);
+			}
+			if(c)
+			{
+				ClipRect_VDPWaitLine();
+			}
+			else
+			{
+				VDPSetForegroundColor(0x55);
+				Clip_VDPWaitLine();
+			}
 
-		if (i&8)
-		{
-			VDPSetForegroundColor(0x88);
-			Clip_SetLine(128, 104, 239, i);
+			if (i&8)
+			{
+				VDPSetForegroundColor(0x88);
+				Clip_SetLine(128, 104, 239, i);
+			}
+			else
+			{
+				VDPSetForegroundColor(0x22);
+				Clip_SetLine(239, i, 128, 104);
+			}
+
+			if(c)
+			{
+				ClipRect_VDPWaitLine();
+			}
+			else
+			{
+				VDPSetForegroundColor(0x55);
+			}
+			Clip_VDPWaitLine();
 		}
-		else
+
+		for (i=16; i < 240; i += 8)
 		{
-			VDPSetForegroundColor(0x22);
-			Clip_SetLine(128, 104, 239, i);
+			if (i&8)
+			{
+				VDPSetForegroundColor(0x88);
+				Clip_SetLine(i, 16, 128, 104);
+			}
+			else
+			{
+				VDPSetForegroundColor(0x22);
+				Clip_SetLine(128, 104, i, 16);
+			}
+
+			if(c)
+			{
+				ClipRect_VDPWaitLine();
+			}
+			else
+			{
+				VDPSetForegroundColor(0x55);
+				Clip_VDPWaitLine();
+			}
+
+			if (i&8)
+			{
+				VDPSetForegroundColor(0x88);
+				Clip_SetLine(i, 191, 128, 104);
+			}
+			else
+			{
+				VDPSetForegroundColor(0x22);
+				Clip_SetLine(128, 104, i, 191);
+			}
+
+			if(c)
+			{
+				ClipRect_VDPWaitLine();
+			}
+			else
+			{
+				VDPSetForegroundColor(0x55);
+				Clip_VDPWaitLine();
+			}
+	
 		}
-		ClipRight();
-		Clip_VDPWaitLine();
 	}
-
+#endif
 	VDPSetForegroundColor(0xff);
 	//VDPWaitLine(0,0,64,64);
 	Test_WaitForTrigger(pszTitle);
@@ -212,10 +286,10 @@ void Test(const char *pszTitle)
 
 	static const struct Item items[] =
 	{
-		{"SinCosLp",    Test_SinCosLp},
-		{"SinLp CosLp", Test_SinLp_CosLp},
-		{"SinHp CosHp", Test_SinHp},
-		{"Line",        Test_Line},
+		{"SINCOS 2:6",        Test_SinCosLp},
+		{"SIN 2:6  COS 2:6",  Test_SinLp_CosLp},
+		{"SIN 2:14 COS 2:14", Test_SinHp},
+		{"CLIP RECT",         Test_Line},
 		{NULL, NULL}
 	};
 

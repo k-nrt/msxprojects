@@ -40,6 +40,9 @@ s8 ClipLeft();
 s8 ClipRight();
 s8 ClipTop();
 s8 ClipBottom();
+s8 ClipRect();
+
+void ClipRect_VDPWaitLine();
 
 
 

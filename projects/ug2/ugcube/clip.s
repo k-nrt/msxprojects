@@ -21,9 +21,14 @@ _g_clipLineInOut:
     .area	_CODE
     .globl  _ClipLeft
     .globl  _ClipRight
+    .globl  _ClipTop
+    .globl  _ClipBottom
+    .globl  _ClipRect
+    .globl  _ClipRect_VDPWaitLine
     .globl  ClipLeft
     .globl  ClipRight
     .globl  IntersectZero
+    .globl  VDP_HLDE_LINE
 
 _ClipLeft:
     ld      hl,(#_g_clipLineInOut+#0x02)    ; hl' = sy
@@ -53,6 +58,97 @@ _ClipRight:
     exx
     ld      (#_g_clipLineInOut+#0x02),hl
     ld      (#_g_clipLineInOut+#0x06),de
+    ret
+
+_ClipTop:
+    ld      hl,(#_g_clipLineInOut+#0x00)    ; hl' = sx
+    ld      de,(#_g_clipLineInOut+#0x04)    ; de' = ex
+    exx
+    ld      bc,(#_g_clipRect+#0x04)         ; bc = top
+    ld      hl,(#_g_clipLineInOut+#0x02)    ; hl = sy
+    ld      de,(#_g_clipLineInOut+#0x06)    ; de = ey
+    call    ClipLeft
+    ld      (#_g_clipLineInOut+#0x02),hl
+    ld      (#_g_clipLineInOut+#0x06),de
+    exx
+    ld      (#_g_clipLineInOut+#0x00),hl
+    ld      (#_g_clipLineInOut+#0x04),de
+    ret
+
+_ClipBottom:
+    ld      hl,(#_g_clipLineInOut+#0x00)    ; hl' = sx
+    ld      de,(#_g_clipLineInOut+#0x04)    ; de' = ex
+    exx
+    ld      bc,(#_g_clipRect+#0x06)         ; bc = bottom
+    ld      hl,(#_g_clipLineInOut+#0x02)    ; hl = sy
+    ld      de,(#_g_clipLineInOut+#0x06)    ; de = ey
+    call    ClipRight
+    ld      (#_g_clipLineInOut+#0x02),hl
+    ld      (#_g_clipLineInOut+#0x06),de
+    exx
+    ld      (#_g_clipLineInOut+#0x00),hl
+    ld      (#_g_clipLineInOut+#0x04),de
+    ret
+
+_ClipRect:
+    ld      hl,(#_g_clipLineInOut+#0x02)    ; hl' = sy
+    ld      de,(#_g_clipLineInOut+#0x06)    ; de' = ey
+    exx
+    ld      bc,(#_g_clipRect+#0x00)         ; bc = left
+    ld      hl,(#_g_clipLineInOut+#0x00)    ; hl = sx
+    ld      de,(#_g_clipLineInOut+#0x04)    ; de = ex
+    call    ClipLeft
+    ld      bc,(#_g_clipRect+#0x02)
+    call    ClipRight
+    exx
+    ld      bc,(#_g_clipRect+#0x04)
+    call    ClipLeft
+    ld      bc,(#_g_clipRect+#0x06)
+    call    ClipRight
+    ld      (#_g_clipLineInOut+#0x02),hl
+    ld      (#_g_clipLineInOut+#0x06),de
+    exx
+    ld      (#_g_clipLineInOut+#0x00),hl
+    ld      (#_g_clipLineInOut+#0x04),de
+    ret
+
+;------------------------------------------------------------------------------
+; void ClipRect_VDPWaitLine();
+;------------------------------------------------------------------------------
+_ClipRect_VDPWaitLine:
+    ld      hl,(#_g_clipLineInOut+#0x02)    ; hl' = sy
+    ld      de,(#_g_clipLineInOut+#0x06)    ; de' = ey
+    exx
+    ld      bc,(#_g_clipRect+#0x00)         ; bc = left
+    ld      hl,(#_g_clipLineInOut+#0x00)    ; hl = sx
+    ld      de,(#_g_clipLineInOut+#0x04)    ; de = ex
+    call    ClipLeft
+    inc     a
+    ret     z
+    ld      bc,(#_g_clipRect+#0x02)
+    call    ClipRight
+    inc     a
+    ret     z
+    exx
+    ld      bc,(#_g_clipRect+#0x04)
+    call    ClipLeft
+    inc     a
+    ret     z
+    ld      bc,(#_g_clipRect+#0x06)
+    call    ClipRight
+    inc     a
+    ret     z       ; hl = sy, de = ey, hl'= sx, de'= ex
+
+    ld      a,e     ; a'= ey
+    ex      af,af'
+    ld      a,l     ; a = sy
+    exx
+    ld      h,l     ; h = sx
+    ld      l,a     ; l = sy
+    ld      d,e     ; d = ex
+    ex      af,af'
+    ld      e,a     ; e = ey
+    call    VDP_HLDE_LINE
     ret
 
 ;------------------------------------------------------------------------------
@@ -211,14 +307,28 @@ ClipRight_EX_Right_SX:
 
 IntersectZero:
 IntersectZero_Loop:
+IntersectZero_Test_Outer:
+    ld      a,l
+    or      h
+    jr      nz,IntersectZero_Test_Inner
+    exx             ; hl = outerY
+    ret
+
+IntersectZero_Test_Inner:
+    ld      a,e
+    or      d
+    jr      nz,IntersectZero_Make_Half
+    exx
+    ex      de,hl   ; hl = innerY
+    ret
+
+IntersectZero_Make_Half:
     ld      b,h     ; bc = outer
     ld      c,l
     add     hl,de   ; hl = (hl+de)/2 signed
     sra     h
     rr      l
 
-    ld      a,h     ; if hl == 0 then a = 0
-    or      l
     bit     7,h
     jr      z,IntersectZero_Zero_Half_Inner
 
@@ -227,10 +337,6 @@ IntersectZero_Half_Zero_Inner:    ; half----zero----inner
     add     hl,de
     sra     h
     rr      l
-    
-    or      a
-    ret     z       ; if a == 0 then hl = scissorY
-
     exx
     jr      IntersectZero_Loop   ; retry hl=half, de=inner
 
@@ -240,10 +346,6 @@ IntersectZero_Zero_Half_Inner:   ; outer----zero----half----inner
     add     hl,de       ; hl = (hl+de)/2
     sra     h
     rr      l
-
-    or      a           ; if a == 0 then hl = scissorY
-    ret     z
-
     ex      de,hl       ; de = halfY / hl = outerY
     exx
     ex      de,hl       ; de = half
