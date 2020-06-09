@@ -10,6 +10,7 @@
 	.globl	_SinCos_GetCosLp
 	.globl	_SinCos_GetSinHp
 	.globl	_SinCos_GetCosHp
+	.globl	_SinCos_RotateXYS8Lp
 
     .globl  MulCore_AxE_HL
 

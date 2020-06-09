@@ -63,4 +63,11 @@ extern void VDPPrintU8XCore(u8 value);
 extern void VDPPrintU16XCore(u16 value);
 
 extern void VDPPrintF(const char *pszFormat, ...);
+
+extern void VDPWriteByte(u8 addressHigh, u16 addressLow, u8 value);
+extern void VDPWriteBytes(u8 addressHigh, u16 addressLow, const void* values, u16 size);
+
+extern u8 VDPReadByte(u8 addressHigh, u16 addressLow);
+extern void VDPReadBytes(u8 addressHigh, u16 addressLow, void* values, u16 size);
+
 #endif //VDP_COMMAND_H

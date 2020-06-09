@@ -5,6 +5,9 @@
 #include "vdp_command.h"
 #include "sincos.h"
 #include "clip.h"
+#include "model_cube.h"
+#include "pers.h"
+
 #pragma codeseg CODE2
 
 u8 g_u8Timer = 0;
@@ -16,10 +19,16 @@ void OnTimer()
 void Init(void)
 {
 	msx2BiosChangeModePalette(5);
-	msxBiosChangeColor(6, 15, 4, 7);
+	msxBiosChangeColor(6, 15, 1, 7);
 
 	g_u8Timer = 0;
 	msxTimerSetCallBack(OnTimer);
+
+	VDPSetForegroundColor(0x11);
+	VDPFill(0,0,256,212);
+	VDPSetForegroundColor(0xFF);
+	VDPPrint(0,0,"CREATE TRANSFROM TABLE...");
+	PersInit();
 }
 
 void Test_WaitForTrigger(const char *pszTitle)
@@ -276,6 +285,54 @@ void Test_Line(const char* pszTitle)
 	Test_WaitForTrigger(pszTitle);
 }
 
+void Test_Pers(const char* pszTitle)
+{
+	static s8x3 vertices[32];
+	static u8 rz = 0;
+	u16 vramOffset = 0;
+	VDPSetForegroundColor(0x11);
+	VDPFill(0,0,256,212);
+	VDPWait();
+	vramOffset = PersRegisterVertices(g_modelCube.m_pVertices, g_modelCube.m_nbVertices, 0,0,rz,0);
+	rz++;
+	VDPReadBytes(0,vramOffset,vertices,g_modelCube.m_nbVertices*3);
+
+	//PersSetVertices(g_modelCube.m_pVertices, g_modelCube.m_nbVertices);
+	//PersSetVertices(vertices, g_modelCube.m_nbVertices);
+	PersSetVerticesVram(vramOffset, g_modelCube.m_nbVertices);
+
+	VDPSetForegroundColor(0xFF);
+	{
+		u8 i;
+		SPersScreenPos **ppPosition = (SPersScreenPos**) g_modelCube.m_pIndices;
+		for(i = 0; i < g_modelCube.m_nbLines ; i++)
+		{
+			u8 x0,y0,x1,y1;
+			
+			if ((*ppPosition)->m_clipBits)
+			{
+				ppPosition += 2;
+				continue;
+			}
+			ppPosition++;
+			if ((*ppPosition)->m_clipBits)
+			{
+				ppPosition++;
+				continue;
+			}
+			x0 = (*ppPosition)->m_x;
+			y0 = (*ppPosition)->m_y;
+			ppPosition--;
+			x1 = (*ppPosition)->m_x;
+			y1 = (*ppPosition)->m_y;
+			ppPosition += 2;
+			VDPWaitLine(x0,y0,x1,y1);
+		}
+	}
+
+	Test_WaitForTrigger(pszTitle);
+}
+
 void Test(const char *pszTitle)
 {
 	struct Item
@@ -290,6 +347,7 @@ void Test(const char *pszTitle)
 		{"SIN 2:6  COS 2:6",  Test_SinLp_CosLp},
 		{"SIN 2:14 COS 2:14", Test_SinHp},
 		{"CLIP RECT",         Test_Line},
+		{"BASIC CUBE",        Test_Pers},
 		{NULL, NULL}
 	};
 

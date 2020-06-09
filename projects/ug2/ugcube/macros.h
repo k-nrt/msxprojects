@@ -14,6 +14,6 @@
 
 #define VIEW_ROTATION_Z_MAX (8)
 
-#define UNUSED(_v) (void)(_v)
+#define UNUSED(_v) ((void)_v)
 #endif //MACROS_H
 
