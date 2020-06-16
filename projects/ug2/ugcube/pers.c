@@ -48,10 +48,10 @@ void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear)
     u8 *pTop        = s_u8TransformTop;
     u8 *pBottom     = s_u8TransformBottom;
     u16 *pPositions = s_u16TransformPointers;
-    const s16 kLeft   = g_persContext.m_s16ScreenX - g_persContext.m_viewPort.m_left;
-    const s16 kRight  = g_persContext.m_viewPort.m_right - g_persContext.m_s16ScreenX;
-    const s16 kTop    = g_persContext.m_s16ScreenY - g_persContext.m_viewPort.m_top;
-    const s16 kBottom = g_persContext.m_viewPort.m_bottom - g_persContext.m_s16ScreenY;
+    const s16 kLeft   = g_persContext.m_s16ScreenX - g_persContext.m_viewPort.m_left - 0;
+    const s16 kRight  = g_persContext.m_viewPort.m_right - g_persContext.m_s16ScreenX - 0;
+    const s16 kTop    = g_persContext.m_s16ScreenY - g_persContext.m_viewPort.m_top - 0;
+    const s16 kBottom = g_persContext.m_viewPort.m_bottom - g_persContext.m_s16ScreenY - 0;
     const s16 kMax    = MAX(MAX(kLeft,kRight),MAX(kTop,kBottom));
 
     g_persContext.m_s8ClipNear = s8ClipNear;
@@ -126,10 +126,10 @@ void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear)
                     break;
                 }
             }
-            *pLeft   = left;
-            *pRight  = right;
-            *pTop    = top;
-            *pBottom = bottom;
+            *pLeft   = left ? left - 1 : left;
+            *pRight  = right ? right - 1 : right;
+            *pTop    = top ? top - 1 : top;
+            *pBottom = bottom ? bottom - 1 : bottom;
         }
         pLeft++;
         pRight++;

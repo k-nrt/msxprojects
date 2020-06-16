@@ -3,8 +3,8 @@ setlocal enabledelayedexpansion
 
 set OutputName=ugcube
 set OutDir=.\Release
-set AsSrc=vdp_command sincos mul_core scaler_math clip vdp_write vdp_read pers
-set CcSrc=main vdp_command sincos model_cube pers
+set AsSrc=vdp_command vdp_palette sincos mul_core scaler_math clip vdp_write vdp_read pers pers_draw_lines model_zx_plane
+set CcSrc=main vdp_command sincos model_cube pers test test_sincos test_line test_pers
 set SdccAsSrc=divunsigned mul __sdcc_call_hl divsigned
 
 set SdccPath=D:\SDCC

@@ -60,7 +60,7 @@ extern void VDPPrintU16DCore(u16 value);
 #define VDPPrintU8X(_x,_y,_v) GRPACX=_x;GRPACY=_y;VDPPrintU8XCore(_v)
 #define VDPPrintU16X(_x,_y,_v) GRPACX=_x;GRPACY=_y;VDPPrintU16XCore(_v)
 extern void VDPPrintU8XCore(u8 value);
-extern void VDPPrintU16XCore(u16 value);
+extern void VDPPrintU16XCore(u16 value); 
 
 extern void VDPPrintF(const char *pszFormat, ...);
 
@@ -69,5 +69,7 @@ extern void VDPWriteBytes(u8 addressHigh, u16 addressLow, const void* values, u1
 
 extern u8 VDPReadByte(u8 addressHigh, u16 addressLow);
 extern void VDPReadBytes(u8 addressHigh, u16 addressLow, void* values, u16 size);
+
+extern void VDPPaletteWrite(u8 start, const u16 *p0GRB, u8 count); 
 
 #endif //VDP_COMMAND_H

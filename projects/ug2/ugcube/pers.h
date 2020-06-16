@@ -54,6 +54,8 @@ extern void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear);
 extern u16 PersRegisterVertices(s8x3 *pVertices, u8 nbVertices, u8 rx, u8 ry, u8 rz, u8 shift);
 extern u8 PersSetVerticesVram(u16 vramOffset, u8 nbVertices);
 extern u8 PersSetVertices(s8x3 *pVertices, u8 nbVertices);
+extern void PersDrawLines(const u16* pLines, u8 nbLines);
+
 extern const SPersScreenPos* PersGetPostions();
 
 #define PersTransform_Pointers     (0xC000) //. 2*128 entries.
@@ -67,5 +69,5 @@ extern const SPersScreenPos* PersGetPostions();
 
 
 #define PersSetPosition(inX,inY,inZ) s8x3Set(g_persContext.m_v3Position,inX,inY,inZ)
-#define PersSetVertexBuffer(inHigh1,inLow16) g_persContext.m_vramHigh=inHigh1;g_persContext.m_vramOffset.inLow16 
+#define PersSetVertexBuffer(inHigh1,inLow16) g_persContext.m_vramHigh1=inHigh1;g_persContext.m_vramLow16=inLow16 
 #endif //PERS_H
