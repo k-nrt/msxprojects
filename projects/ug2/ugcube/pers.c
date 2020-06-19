@@ -17,8 +17,12 @@ SDCC_FIXED_ADDRESS(PersTransform_Right)    u8  s_u8TransformRight[128];
 SDCC_FIXED_ADDRESS(PersTransform_Top)      u8  s_u8TransformTop[128];
 SDCC_FIXED_ADDRESS(PersTransform_Bottom)   u8  s_u8TransformBottom[128];
 
+//. pre multiprecated screenz/z
+SDCC_FIXED_ADDRESS(PersTransform_RcpZ)     u16  s_u16TransformRcpZ[128];
+
 //. transform positions.
 SDCC_FIXED_ADDRESS(PersTransform_Positions)  u8  s_u8TransformPositions[];
+
 
 void PersInit()
 {
@@ -36,8 +40,27 @@ void PersInit()
     g_persContext.m_vramLow16 = 0;
 
     PersMakeTransformTable(160,32);
+    PersMakeTrandformTable2();
 }
 
+static void PersMakeTrandformTable2()
+{
+    u8 z;
+    s16 s16ScreenZ = (g_persContext.m_s16ScreenZ) << 8;
+    u16 *pRcpZ = s_u16TransformRcpZ;
+    u8 clipNear = (u8) g_persContext.m_s8ClipNear;
+
+    for (z = 0; z < 128; z++)
+    {
+        s16 preRcpZ = 0;
+        if (clipNear <= z)
+        {
+            preRcpZ = s16ScreenZ/((s16)z);
+        }
+        *pRcpZ = (u16) preRcpZ;
+        pRcpZ++;
+    }
+}
 
 void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear)
 {
@@ -69,7 +92,7 @@ void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear)
             *pBottom = 0;
             *pPositions = 0;
         }
-        else if (PersScreenPositionsAddress <= (u16)pValues)
+        else if (PersTransform_Positions_End <= (u16)pValues)
         {
             //. position buffer over run.
             *pRight = 0;
@@ -114,7 +137,7 @@ void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear)
                 {
                     *pValues = (u8) xx;
                     pValues++;
-                    if(PersScreenPositionsAddress <= (u16)pValues)
+                    if(PersTransform_Positions_End <= (u16)pValues)
                     {
                         //. buffer over run.
                         break;

@@ -91,3 +91,48 @@ MulCore_AxDE_HL_Next:
 	jr		MulCore_AxDE_HL_Loop
 
 ;------------------------------------------------------------------------------
+; MulCoreUnsigned_BxDE_AHL
+; AHL = B x DE
+; in B
+; in DE
+; out AHL
+; use C A'
+;------------------------------------------------------------------------------
+				.area	_CODE
+				.globl	MulCoreUnsigned_BxDE_AHL
+				
+MulCoreUnsigned_BxDE_AHL:
+	xor		a
+    ld      h,a
+    ld      l,a
+	ld		c,a
+
+	; AHL = CDE x B
+
+MulCoreUnsigned_BxDE_AHL_Loop:
+	ex		af,af'							; push a
+	ld		a,b								; if b == 0 then end
+	or		a
+	jr		z,MulCoreUnsigned_BxDE_AHL_End
+	ld		a,d								; if cde == 0 then end
+	or		e
+	or		c
+	jr		z,MulCoreUnsigned_BxDE_AHL_End		
+
+	srl		b
+	jr		nc,MulCoreUnsigned_BxDE_AHL_Next
+ 
+	ex		af,af'							; pop a
+	add		hl,de							; ahl += cde
+	adc		a,c
+
+MulCoreUnsigned_BxDE_AHL_Next:
+	sla		e								; cde <<= 1
+	rl		d
+	rl		c
+	jr		MulCoreUnsigned_BxDE_AHL_Loop
+
+MulCoreUnsigned_BxDE_AHL_End:
+	ex		af,af'							; pop a
+	ret
+;------------------------------------------------------------------------------

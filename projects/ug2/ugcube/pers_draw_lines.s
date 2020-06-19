@@ -15,7 +15,7 @@
 ; B line count
 ;------------------------------------------------------------------------------
             .area   _CODE
- PersDrawLines:
+PersDrawLines:
 PersDrawLines_LoopStart:
     ld      e,(hl)          ; de = screen pos address
     inc     hl
@@ -26,11 +26,12 @@ PersDrawLines_LoopStart:
     ld      a,(hl)          ; A = clip bits
     or      a
     jr      nz,PersDrawLines_LoopNextX
+
     inc     hl
-    ld      a,(hl)
+    ld      a,(hl)          ; a = x
     inc     hl
     ex      af,af'
-    ld      a,(hl)
+    ld      a,(hl)          ; a = y
     exx
     ld      e,a             ; E' = screenY
     ex      af,af'
@@ -49,7 +50,7 @@ PersDrawLines_LoopStart:
     jr      nz,PersDrawLines_LoopNext
 
     inc     hl
-    ld      a,(hl)
+    ld      a,(hl)          ; a = x
     inc     hl
     ex      af,af'
     ld      a,(hl)

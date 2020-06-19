@@ -6,12 +6,13 @@
 
 enum EClipBit
 {
-    kClipBit_Near = 0x01,
-    kClipBit_Far  = 0x02,
-    kClipBit_Left = 0x04,
-    kClipBit_Right = 0x08,
-    kClipBit_Top   = 0x10,
+    kClipBit_Near   = 0x01,
+    kClipBit_Far    = 0x02,
+    kClipBit_Left   = 0x04,
+    kClipBit_Right  = 0x08,
+    kClipBit_Top    = 0x10,
     kClipBit_Bottom = 0x20,
+    kClipBit_16     = 0x80,
 };
 
 typedef struct tPersScreenPos
@@ -19,11 +20,11 @@ typedef struct tPersScreenPos
     u8 m_clipBits;
     u8 m_x;
     u8 m_y;
-    u8 m_pad0;
+    u8 m_xHigh;
+    u8 m_yHigh;
     s8 m_3dx;
     s8 m_3dy;
     s8 m_3dz;
-    u8 m_pad1;
 } SPersScreenPos;
 
 typedef struct tPersViewport
@@ -53,6 +54,7 @@ extern void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear);
 
 extern u16 PersRegisterVertices(s8x3 *pVertices, u8 nbVertices, u8 rx, u8 ry, u8 rz, u8 shift);
 extern u8 PersSetVerticesVram(u16 vramOffset, u8 nbVertices);
+extern void PersTransformClipXYVram(u16 vramOffset, u8 nbVertices);
 extern u8 PersSetVertices(s8x3 *pVertices, u8 nbVertices);
 extern void PersDrawLines(const u16* pLines, u8 nbLines);
 
@@ -64,8 +66,10 @@ extern const SPersScreenPos* PersGetPostions();
 #define PersTransform_Top          (0xC200) //. 1*128 entries.
 #define PersTransform_Bottom       (0xC280) //. 1*128 entries.
 
-#define PersTransform_Positions    (0xC300) //. 0xC300 - 0xDEFF
-#define PersScreenPositionsAddress (0xDF00) //. 4*64 entries.
+#define PersTransform_Positions         (0xC300) //. 0xC300 - 0xDDFF
+#define PersTransform_Positions_End     (0xDE00)
+#define PersTransform_RcpZ              (0xDE00) // 2*128 entries
+#define PersScreenPositionsAddress      (0xDF00) //. 4*64 entries.
 
 
 #define PersSetPosition(inX,inY,inZ) s8x3Set(g_persContext.m_v3Position,inX,inY,inZ)
