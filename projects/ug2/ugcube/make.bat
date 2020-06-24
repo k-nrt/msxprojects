@@ -1,10 +1,16 @@
+@echo off
 setlocal enabledelayedexpansion
 
-set OutputName=ug2
+set OutputName=ugcube
 set OutDir=.\Release
-set AsSrc=vdp_command pers slot math sincos
-set CcSrc=main vdp_command slot pers math sincos key_matrix vec_math model_data view player player_beam input explosion bg enemy
-set SdccAsSrc=divunsigned mul
+set AsSrc=vdp_command vdp_palette vdp_write vdp_read 
+set AsSrc=%AsSrc% sincos mul_core scaler_math 
+set AsSrc=%AsSrc% model_zx_plane
+set AsSrc=%AsSrc% clip clip_line_xyz_s8
+set AsSrc=%AsSrc% pers pers_draw_lines pers_transform_no_clip pers_transform_clip_xy pers_transform_clip_xyz 
+set AsSrc=%AsSrc% pers_transform_unsigned pers_transform_unsigned_fast
+set CcSrc=main vdp_command sincos model_cube pers test test_sincos test_line test_pers
+set SdccAsSrc=divunsigned mul __sdcc_call_hl divsigned
 
 set SdccPath=D:\SDCC
 set SdccBinPath=%SdccPath%\bin
@@ -25,15 +31,35 @@ set SdkLibPath=..\..\..\lib
 for %%n in (%SdkLibs%) do set Libs=!Libs! "%SdkLibPath%\%%n.rel"
 
 "%AS%" -g -l -o "%OutDir%\crt0.s.rel" crt0.s
-for %%i in (%AsSrc%) do "%AS%" -l -o "%OutDir%\%%i.s.rel" %%i.s
-for %%i in (%SdccAsSrc%) do "%AS%" -l -o "%OutDir%\%%i.s.rel" "%SdccSrcPath%\%%i.s"
+if %errorlevel% neq 0 exit /b
+
+for %%i in (%AsSrc%) do (
+    echo as %%i
+    "%AS%" -l -o "%OutDir%\%%i.s.rel" %%i.s
+    if %errorlevel% neq 0 exit /b
+)
+
+for %%i in (%SdccAsSrc%) do (
+    echo as %%i
+    "%AS%" -l -o "%OutDir%\%%i.s.rel" "%SdccSrcPath%\%%i.s"
+    if %errorlevel% neq 0 exit /b
+)
+
 rem for %%i in (%CcSrc%) do "%CC%" %%i.c %CCOptions% -I"%IncPath%" -I"%SdccIncPath%" -o "%OutDir%\%%i.rel"  --opt-code-speed --max-allocs-per-node 8
-for %%i in (%CcSrc%) do "%CC%" %%i.c %CCOptions% -I"%IncPath%" -I"%SdccIncPath%" -o "%OutDir%\%%i.rel"  --opt-code-speed
+for %%i in (%CcSrc%) do (
+    echo cc %%i
+    "%CC%" %%i.c %CCOptions% -I"%IncPath%" -I"%SdccIncPath%" -o "%OutDir%\%%i.rel" --opt-code-speed
+    if %errorlevel% neq 0 exit /b
+)
 
 set Objects="%OutDir%\crt0.s.rel"
 for %%i in (%AsSrc%) do set Objects=!Objects! "%OutDir%\%%i.s.rel"
 for %%i in (%SdccAsSrc%) do set Objects=!Objects! "%OutDir%\%%i.s.rel"
 for %%i in (%CcSrc%) do set Objects=!Objects! "%OutDir%\%%i.rel"
 
+echo link %OutDir%\%OutputName%.ihx
 "%CC%" -o "%OutDir%\%OutputName%.ihx" %Objects% %Libs% %LinkerOptions%
+if %errorlevel% neq 0 exit /b
+
+echo bin %OutDir%\%OutputName%.rom
 %BinPath%\ihx2bin "%OutDir%\%OutputName%.ihx" "%OutDir%\%OutputName%.rom" -offset 16384 -size 32768
