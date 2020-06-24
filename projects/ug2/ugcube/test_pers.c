@@ -118,8 +118,27 @@ void Test_DrawModel(s16x3 *pPosition, u16* pLodVertices, const SModel *pModel)
 	}
 	 
 	PersSetPosition(v3Temp.x,v3Temp.y,v3Temp.z);
-	PersSetVerticesVram(pLodVertices[lod], pModel->m_nbVertices);
+	PersTransformNoClipVram(pLodVertices[lod], pModel->m_nbVertices);
 	PersDrawLines(pModel->m_pIndices, pModel->m_nbLines);
+}
+
+void Test_DrawModelClipXY(s16x3 *pPosition, u16* pLodVertices, const SModel *pModel)
+{
+	s16x3 v3Temp;
+	u8 lod = 0;
+
+	s8x3Copy(v3Temp,(*pPosition));
+	while (80 < v3Temp.z)
+	{
+		v3Temp.x >>= 1;
+		v3Temp.y >>= 1;
+		v3Temp.z >>= 1;
+		lod++;
+	}
+	 
+	PersSetPosition(v3Temp.x,v3Temp.y,v3Temp.z);
+	PersTransformClipXYVram(pLodVertices[lod], pModel->m_nbVertices);
+	PersDrawLinesClipXY(pModel->m_pIndices, pModel->m_nbLines);
 }
 
 
@@ -141,7 +160,7 @@ void Test_Pers(const char* pszTitle)
 
 	//PersSetVertices(g_modelCube.m_pVertices, g_modelCube.m_nbVertices);
 	//PersSetVertices(vertices, g_modelCube.m_nbVertices);
-	PersSetVerticesVram(vramOffset, g_modelCube.m_nbVertices);
+	PersTransformNoClipVram(vramOffset, g_modelCube.m_nbVertices);
 
 	VDPSetForegroundColor(0xFF);
 	PersDrawLines(g_modelCube.m_pIndices,g_modelCube.m_nbLines);
@@ -178,7 +197,7 @@ void Test_PersAnim(const char* pszTitle)
         Test_FlipperClear();
 
 		PersSetPosition(0,0,80);
-		PersSetVerticesVram(vertices[u8Frame], g_modelCube.m_nbVertices);
+		PersTransformNoClipVram(vertices[u8Frame], g_modelCube.m_nbVertices);
 
         Test_FlipperSetDrawColor();
 		PersDrawLines(g_modelCube.m_pIndices,g_modelCube.m_nbLines);
@@ -203,6 +222,7 @@ void Test_PersScroll(const char* pszTitle)
 	u16* cubeVertices = (u16*) s_buffer;
 	u16* planeVertices = ((u16*) s_buffer)+4;
 	u8 u8TrigPrev = 0;
+    u8 u8StickPrev = 0;
 	s16x3 v3Position0;
 	s16x3 v3Position1;
 
@@ -225,30 +245,54 @@ void Test_PersScroll(const char* pszTitle)
 	for(;;)
 	{
 		u8 u8Trig = msxBiosGetTrigger(0);
+        u8 u8Stick = msxBiosGetStick(0);
 		if(u8TrigPrev == 0 && u8Trig != 0)
 		{
 			break;
 		}
 		u8TrigPrev = u8Trig;
 
+        if (u8Stick == 1)
+        {
+            v3Position0.z += 4;
+        }
+        else if(u8Stick == 5)
+        {
+            v3Position0.z -= 4;
+        }
+        
+        if (u8Stick == 3)
+        {
+            v3Position0.x += 4;
+        }
+        else if(u8Stick == 7)
+        {
+            v3Position0.x -= 4;
+        }
+        u8StickPrev = u8Stick;
+
         Test_FlipperClear();
 
-		v3Position0.z -= 8;
+		//v3Position0.z -= 1;
 		//v3Position.z = 49 ; 
 		if (v3Position0.z < 48)
 		{
-			v3Position0.z = 640;
+			v3Position0.z += (640 -64);
 		}
+        else if (640 < v3Position0.z)
+        {
+            v3Position0.z -= (640-48);
+        }
 
-		v3Position1.z -= 8;
+		v3Position1.z -= 1;
 		if (v3Position1.z < 48)
 		{
 			v3Position1.z = 640;
 		} 
 
         Test_FlipperSetDrawColor();
-		Test_DrawModel(&v3Position0, cubeVertices, &g_modelCube);
-		Test_DrawModel(&v3Position1, planeVertices, &g_modelZXPlane);
+		Test_DrawModelClipXY(&v3Position0, cubeVertices, &g_modelCube);
+		Test_DrawModelClipXY(&v3Position1, planeVertices, &g_modelZXPlane);
  
 		Test_DrawTimerAndWait();
         Test_FlipperFlip();

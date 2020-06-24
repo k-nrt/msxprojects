@@ -168,18 +168,49 @@ ClipLeft:
     or      a
     sbc     hl,bc           ; hl = sx - left        
     ex      de,hl           ; de = sx - left, hl = ex
-    jr      nc,ClipLeft_Left_SX
+    jp      m,ClipLeft_SX_Left
+    jp      ClipLeft_Left_SX
+
+ClipLeft_ClipIn:
+ClipLeft_Left_SX_EX:
+    ld      a,#01           ; clip in
+    pop     de
+    pop     hl
+    pop     bc
+    ret
+
+ClipLeft_ClipOut:
+ClipLeft_SX_EX_Left:
+    ld      a,#-1           ; clip out
+    pop     de
+    pop     hl
+    pop     bc
+    ret
+
+ClipLeft_Left_SX:
+    or      a 
+    sbc     hl,bc           ; hl = ex - left, de = sx - left
+    jp      m,ClipLeft_EX_Left_SX   ; intersect
+    jp      ClipLeft_Left_SX_EX     ; clip in 
 
 ClipLeft_SX_Left:
     or      a
     sbc     hl,bc           ; hl = ex - left
-    jr      nc,ClipLeft_SX_Left_EX
-ClipLeft_SX_EX_Left:
-    ld      a,#-1           ; a = clip out
-    pop     de              ; de = ex
-    pop     hl              ; hl = sx
+    jp      m,ClipLeft_SX_EX_Left   ; clip out
+    jp      nz,ClipLeft_SX_Left_EX  ; intersect
+    ld      a,#1                    ; ex is on left
+    pop     de
+    pop     hl
     pop     bc
+    exx
+    ld      l,e                     ; sy = ey
+    ld      h,d
+    exx
+    ld      l,e                     ; sx = ex
+    ld      h,d
     ret
+
+ClipLeft_Intersect:
 ClipLeft_SX_Left_EX:
     ex      de,hl           ; hl = sx - left, de = ex - left
     exx
@@ -196,16 +227,6 @@ ClipLeft_SX_Left_EX:
     xor     a               ; a = intersect 
     ret
 
-ClipLeft_Left_SX:
-    or      a 
-    sbc     hl,bc           ; hl = ex - left, de = sx - left
-    jr      c,ClipLeft_EX_Left_SX
-ClipLeft_Left_SX_EX:
-    ld      a,#1            ; a = clip in
-    pop     de              ; de = ex
-    pop     hl              ; hl = sx
-    pop     bc              ; bc = left
-    ret
 ClipLeft_EX_Left_SX:
     exx
     ex      de,hl           ; hl' = ey, de'= sy
@@ -239,18 +260,50 @@ ClipRight:
     or      a
     sbc     hl,bc           ; hl = sx - right       
     ex      de,hl           ; de = sx - right, hl = ex
-    jr      nc,ClipRight_Right_SX
+    jp      m,ClipRight_SX_Right
+    jp      ClipRight_Right_SX 
+
+ClipRight_ClipOut:
+ClipRight_Right_SX_EX:
+    ld      a,#-1           ; clip out
+    pop     de
+    pop     hl
+    pop     bc
+    ret
+
+ClipRight_ClipIn:
+ClipRight_SX_EX_Right:
+    ld      a,#1            ; clip in
+    pop     de
+    pop     hl
+    pop     bc
+    ret
 
 ClipRight_SX_Right:
     or      a
-    sbc     hl,bc           ; hl = ex - right
-    jr      nc,ClipRight_SX_Right_EX
-ClipRight_SX_EX_Right:
-    ld      a,#1            ; a = clip in
-    pop     de              ; de = ex
-    pop     hl              ; hl = sx
+    sbc     hl,bc                       ; hl = ex - right
+    jp      m,ClipRight_SX_EX_Right     ; clip in
+    jp      z,ClipRight_SX_EX_Right     ; clip in
+    jp      ClipRight_SX_Right_EX       ; intersect
+
+ClipRight_Right_SX:
+    or      a 
+    sbc     hl,bc                       ; hl = ex - right, de = sx - right
+    jp      m,ClipRight_EX_Right_SX     ; intersect
+    jp      nz,ClipRight_Right_SX_EX    ; clip out
+    ld      a,#1                        ; ex is on left
+    pop     de
+    pop     hl
     pop     bc
+    exx
+    ld      l,e                         ; sy = ey
+    ld      h,d
+    exx
+    ld      l,e                         ; sx = ex
+    ld      h,d
     ret
+
+ClipRight_Intersect:
 ClipRight_SX_Right_EX:
     ex      de,hl           ; hl = sx - right, de = ex - right
     exx
@@ -268,16 +321,6 @@ ClipRight_SX_Right_EX:
     xor     a               ; a = intersect 
     ret
 
-ClipRight_Right_SX:
-    or      a 
-    sbc     hl,bc           ; hl = ex - right, de = sx - right
-    jr      c,ClipRight_EX_Right_SX
-ClipRight_Right_SX_EX:
-    ld      a,#-1           ; a = clip out
-    pop     de              ; de = ex
-    pop     hl              ; hl = sx
-    pop     bc              ; bc = right
-    ret
 ClipRight_EX_Right_SX:
     exx
     ex      de,hl           ; hl' = ey, de'= sy
@@ -310,14 +353,14 @@ IntersectZero_Loop:
 IntersectZero_Test_Outer:
     ld      a,l
     or      h
-    jr      nz,IntersectZero_Test_Inner
+    jp      nz,IntersectZero_Test_Inner
     exx             ; hl = outerY
     ret
 
 IntersectZero_Test_Inner:
     ld      a,e
     or      d
-    jr      nz,IntersectZero_Make_Half
+    jp      nz,IntersectZero_Make_Half
     exx
     ex      de,hl   ; hl = innerY
     ret
@@ -327,10 +370,8 @@ IntersectZero_Make_Half:
     ld      c,l
     add     hl,de   ; hl = (hl+de)/2 signed
     sra     h
+    jp      z,IntersectZero_Zero_Half_Inner
     rr      l
-
-    bit     7,h
-    jr      z,IntersectZero_Zero_Half_Inner
 
 IntersectZero_Half_Zero_Inner:    ; half----zero----inner
     exx             ; compute Y value
@@ -338,9 +379,10 @@ IntersectZero_Half_Zero_Inner:    ; half----zero----inner
     sra     h
     rr      l
     exx
-    jr      IntersectZero_Loop   ; retry hl=half, de=inner
+    jp      IntersectZero_Loop   ; retry hl=half, de=inner
 
 IntersectZero_Zero_Half_Inner:   ; outer----zero----half----inner
+    rr      l
     exx                 ; compute Y value
     ex      de,hl       ; de = outerY, hl = innerY
     add     hl,de       ; hl = (hl+de)/2
@@ -351,4 +393,4 @@ IntersectZero_Zero_Half_Inner:   ; outer----zero----half----inner
     ex      de,hl       ; de = half
     ld      h,b         ; hl = outer
     ld      l,c
-    jr      IntersectZero_Loop   ; retry hl = outer, de = half
+    jp      IntersectZero_Loop   ; retry hl = outer, de = half

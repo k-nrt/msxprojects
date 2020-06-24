@@ -18,13 +18,13 @@ enum EClipBit
 typedef struct tPersScreenPos
 {
     u8 m_clipBits;
-    u8 m_x;
-    u8 m_y;
-    u8 m_xHigh;
-    u8 m_yHigh;
-    s8 m_3dx;
-    s8 m_3dy;
-    s8 m_3dz;
+    u8 m_x;             //. unsigned low 2D X or signed low 2D X for XY clipping
+    u8 m_y;             //. unsigned low 2D Y or signed low 2D Y for XY clipping
+    u8 m_xHigh;         //. signed high 2D X for XY clipping
+    u8 m_yHigh;         //. signed high 2D Y for XY clippimg
+    s8 m_3dx;           //. 3D X for near/far clipping
+    s8 m_3dy;           //. 3D Y for near/far clipping
+    s8 m_3dz;           //. 3D Z for near/far clipping
 } SPersScreenPos;
 
 typedef struct tPersViewport
@@ -50,13 +50,22 @@ typedef struct tPersContext
 extern SPersContext g_persContext;
 
 extern void PersInit();
-extern void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear);
+
+extern void PersMakeTransformTable
+(
+    s8 s8ClipNear,
+    s16 s16ScreenX, s16 s16ScreenY, s16 s16ScreenZ, 
+    s16 s16Left, s16 s16Right, s16 s16Top, s16 s16Bottom
+);
 
 extern u16 PersRegisterVertices(s8x3 *pVertices, u8 nbVertices, u8 rx, u8 ry, u8 rz, u8 shift);
-extern u8 PersSetVerticesVram(u16 vramOffset, u8 nbVertices);
+extern u8 PersTransformNoClipVram(u16 vramOffset, u8 nbVertices);
 extern void PersTransformClipXYVram(u16 vramOffset, u8 nbVertices);
+extern void PersTransformClipXYZVram(u16 vramOffset, u8 nbVertices);
 extern u8 PersSetVertices(s8x3 *pVertices, u8 nbVertices);
 extern void PersDrawLines(const u16* pLines, u8 nbLines);
+extern void PersDrawLinesClipXY(const u16* pLines, u8 nbLines);
+
 
 extern const SPersScreenPos* PersGetPostions();
 
@@ -69,7 +78,7 @@ extern const SPersScreenPos* PersGetPostions();
 #define PersTransform_Positions         (0xC300) //. 0xC300 - 0xDDFF
 #define PersTransform_Positions_End     (0xDE00)
 #define PersTransform_RcpZ              (0xDE00) // 2*128 entries
-#define PersScreenPositionsAddress      (0xDF00) //. 4*64 entries.
+#define PersScreenPositionsAddress      (0xDF00) //. internal vertex buffer 8*32 entries.
 
 
 #define PersSetPosition(inX,inY,inZ) s8x3Set(g_persContext.m_v3Position,inX,inY,inZ)

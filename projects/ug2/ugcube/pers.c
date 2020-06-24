@@ -1,6 +1,7 @@
 #include "macros.h"
 #include "pers.h"
 #include "vdp_command.h"
+#include "clip.h"
 
 SPersContext g_persContext;
 
@@ -23,6 +24,7 @@ SDCC_FIXED_ADDRESS(PersTransform_RcpZ)     u16  s_u16TransformRcpZ[128];
 //. transform positions.
 SDCC_FIXED_ADDRESS(PersTransform_Positions)  u8  s_u8TransformPositions[];
 
+static void PersMakeTransformTable2();
 
 void PersInit()
 {
@@ -39,30 +41,35 @@ void PersInit()
     g_persContext.m_vramHigh1 = 1;
     g_persContext.m_vramLow16 = 0;
 
-    PersMakeTransformTable(160,32);
-    PersMakeTrandformTable2();
+    PersMakeTransformTable(32,128,104,160,0,255,40,167);
+    PersMakeTransformTable2();
 }
 
-static void PersMakeTrandformTable2()
+static void PersMakeTransformTable2()
 {
     u8 z;
-    s16 s16ScreenZ = (g_persContext.m_s16ScreenZ) << 8;
+    u16 u16ScreenZ = ((u16)g_persContext.m_s16ScreenZ) << 8;
     u16 *pRcpZ = s_u16TransformRcpZ;
     u8 clipNear = (u8) g_persContext.m_s8ClipNear;
 
     for (z = 0; z < 128; z++)
     {
-        s16 preRcpZ = 0;
+        u16 preRcpZ = 0;
         if (clipNear <= z)
         {
-            preRcpZ = s16ScreenZ/((s16)z);
+            preRcpZ = u16ScreenZ/((u16)z);
         }
-        *pRcpZ = (u16) preRcpZ;
+        *pRcpZ = preRcpZ;
         pRcpZ++;
     }
 }
 
-void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear)
+void PersMakeTransformTable
+(
+    s8 s8ClipNear,
+    s16 s16ScreenX, s16 s16ScreenY, s16 s16ScreenZ, 
+    s16 s16Left, s16 s16Right, s16 s16Top, s16 s16Bottom
+)
 {
     u8 x, z;
     u8 *pValues     = s_u8TransformPositions;
@@ -71,14 +78,26 @@ void PersMakeTransformTable(s16 s16ScreenZ, s8 s8ClipNear)
     u8 *pTop        = s_u8TransformTop;
     u8 *pBottom     = s_u8TransformBottom;
     u16 *pPositions = s_u16TransformPointers;
-    const s16 kLeft   = g_persContext.m_s16ScreenX - g_persContext.m_viewPort.m_left - 0;
-    const s16 kRight  = g_persContext.m_viewPort.m_right - g_persContext.m_s16ScreenX - 0;
-    const s16 kTop    = g_persContext.m_s16ScreenY - g_persContext.m_viewPort.m_top - 0;
-    const s16 kBottom = g_persContext.m_viewPort.m_bottom - g_persContext.m_s16ScreenY - 0;
+    const s16 kLeft   = s16ScreenX - s16Left - 0;
+    const s16 kRight  = s16Right - s16ScreenX - 0;
+    const s16 kTop    = s16ScreenY - s16Top - 0;
+    const s16 kBottom = s16Bottom - s16ScreenY - 0;
     const s16 kMax    = MAX(MAX(kLeft,kRight),MAX(kTop,kBottom));
 
     g_persContext.m_s8ClipNear = s8ClipNear;
     g_persContext.m_s16ScreenZ = s16ScreenZ;
+    g_persContext.m_s16ScreenX = s16ScreenX;
+    g_persContext.m_s16ScreenY = s16ScreenY;
+    g_persContext.m_viewPort.m_left = s16Left;
+    g_persContext.m_viewPort.m_right = s16Right;
+    g_persContext.m_viewPort.m_top = s16Top;
+    g_persContext.m_viewPort.m_bottom = s16Bottom;
+
+    g_clipRect.m_s16Left = s16Left;
+    g_clipRect.m_s16Right = s16Right;
+    g_clipRect.m_s16Top = s16Top;
+    g_clipRect.m_s16Bottom = s16Bottom;
+
 
     for (z = 0; z < 128; z++)
     {
@@ -308,7 +327,82 @@ u8 PersSetVertices(s8x3 *pVertices, u8 nbVertices)
     return modelClipBits;
 }
 
+void PersSetViewport(s16 left, s16 top, s16 right, s16 bottom)
+{
+    g_persContext.m_viewPort.m_left = left;
+    g_persContext.m_viewPort.m_top  = top;
+    g_persContext.m_viewPort.m_right = right;
+    g_persContext.m_viewPort.m_bottom = bottom;
+    Clip_SetRect(left,right,top,bottom);
+}
+
 const SPersScreenPos* PersGetPostions()
 {
     return s_screenPositions;
+}
+
+void PersDrawLinesClipXY(const u16* pLines, u8 nbLines)
+{
+    const u16 *pLine = pLines;
+    u8 i;
+    for (i = 0; i < nbLines; i++)
+    {
+        const SPersScreenPos *pPos0 = (SPersScreenPos*)(*pLine);
+        const SPersScreenPos *pPos1 = (SPersScreenPos*)(*(pLine+1));
+        const u8 clipBitsOr  = pPos0->m_clipBits | pPos1->m_clipBits;
+        const u8 clipBitsAnd = pPos0->m_clipBits & pPos1->m_clipBits;
+
+        if(clipBitsAnd | (clipBitsOr & (kClipBit_Near|kClipBit_Far)))
+        {
+
+        }
+        else if(!clipBitsOr)
+        {
+            VDPWaitLine(pPos0->m_x, pPos0->m_y, pPos1->m_x, pPos1->m_y);
+        }
+        else
+        {
+            s16 sx,sy,ex,ey;
+            if(pPos0->m_clipBits & (kClipBit_Left|kClipBit_Right))
+            {
+                sx = (s16)((((u16)pPos0->m_xHigh)<<8) | ((u16)pPos0->m_x));
+            }
+            else
+            {
+                sx = (s16)((u16)pPos0->m_x);
+            }
+
+            if(pPos0->m_clipBits & (kClipBit_Top|kClipBit_Bottom))
+            {
+                sy = (s16)((((u16)pPos0->m_yHigh)<<8) | ((u16)pPos0->m_y));
+            }
+            else
+            {
+                sy = (s16)((u16)pPos0->m_y);
+            }
+
+            if(pPos1->m_clipBits & (kClipBit_Left|kClipBit_Right))
+            {
+                ex = (s16)((((u16)pPos1->m_xHigh)<<8) | ((u16)pPos1->m_x));
+            }
+            else
+            {
+                ex = (s16)((u16)pPos1->m_x);
+            }
+            
+            if(pPos1->m_clipBits & (kClipBit_Top|kClipBit_Bottom))
+            {
+                ey = (s16)((((u16)pPos1->m_yHigh)<<8) | ((u16)pPos1->m_y));
+            }
+            else
+            {
+                ey = (s16)((u16)pPos1->m_y);
+            }
+
+            Clip_SetLine(sx,sy,ex,ey);
+            ClipRect_VDPWaitLine();
+        }
+
+        pLine += 2;
+    }
 }

@@ -3,7 +3,12 @@ setlocal enabledelayedexpansion
 
 set OutputName=ugcube
 set OutDir=.\Release
-set AsSrc=vdp_command vdp_palette sincos mul_core scaler_math clip vdp_write vdp_read pers pers_transform_clip_xy pers_draw_lines model_zx_plane
+set AsSrc=vdp_command vdp_palette vdp_write vdp_read 
+set AsSrc=%AsSrc% sincos mul_core scaler_math 
+set AsSrc=%AsSrc% model_zx_plane
+set AsSrc=%AsSrc% clip clip_line_xyz_s8
+set AsSrc=%AsSrc% pers pers_draw_lines pers_transform_no_clip pers_transform_clip_xy pers_transform_clip_xyz 
+set AsSrc=%AsSrc% pers_transform_unsigned pers_transform_unsigned_fast
 set CcSrc=main vdp_command sincos model_cube pers test test_sincos test_line test_pers
 set SdccAsSrc=divunsigned mul __sdcc_call_hl divsigned
 

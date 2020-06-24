@@ -1,22 +1,22 @@
 ;------------------------------------------------------------------------------
-; pers_transform_clip_xy
+; pers_transform_clip_xyz
 ;------------------------------------------------------------------------------
                 .include    "pers_defs.s"
 
 ;------------------------------------------------------------------------------
-; PersTransformClipXY
+; PersTransformClipXYZ
 ; DE = vramLow 16
 ; B  = vertex count
 ;------------------------------------------------------------------------------
                 .area   _CODE
                 .globl  VDPReadBegin116DI
                 .globl  PersTransformUnsigned
-                .globl  PersTransformClipXY
+                .globl  PersTransformClipXYZ
 
-PersTransformClipXY:
+PersTransformClipXYZ:
     ld      a,b
     ex      af,af'                      ; A' = vertex count
-    ld      ix,#0xDF00
+    ld      ix,#0xDF00                  ; ix = internal vertex buffer
     ld      a,(#_g_persContext+#m_vramHigh)
     ld      b,a 
     call    VDPReadBegin116DI           ; B = vram high 1, DE = vram low 16
@@ -39,13 +39,13 @@ PersTransformClipXY:
     ; const E' = m_v3PositionY
     ; const L' = m_v3PositionZ
 
-PersTransformClipXY_LoopStart:
+PersTransformClipXYZ_LoopStart:
     ; var B = counter
     ; var C = vertex clip flag
     ; work A, DE, HL
     ld      c,#0x00         ; clear clip flag
 
-PersTransformClipXY_LoadVertex:
+PersTransformClipXYZ_LoadVertex:
     ; var B' = x + m_v3PositionX
     ; var H' = y + m_v3PositionY
     ; var A = z + m_v3PositionZ
@@ -53,31 +53,33 @@ PersTransformClipXY_LoadVertex:
     in      a,(c)
     add     a,d
     ld      b,a             ; b' = x + m_v3PositionX
+    ld      5(ix),a         ; store 3D x
 
     in      a,(c)
     add     a,e
     ld      h,a             ; h' = y + m_v3PositionY
+    ld      6(ix),a         ; store 3D y
 
     in      a,(c)
     add     a,l             ; a = z + m_v3PositionZ
-
+    ld      5(ix),a         ; store 3D z
     exx
-    jp      m,PersTransformClipXY_ClipNear
+    jp      m,PersTransformClipXYZ_ClipNear
 
     ld      d,a             ; d = z + m_v3PositionZ
     ld      a,(#_g_persContext+#m_clipNear)
     cp      d
-    jp      nc,PersTransformClipXY_ClipNear
-    jp      p,PersTransformClipXY_ClipFar
+    jp      nc,PersTransformClipXYZ_ClipNear
+    jp      p,PersTransformClipXYZ_ClipFar
 
-PersTransformClipXY_TransformX:
+PersTransformClipXYZ_TransformX:
     exx                     ; a = x + m_v3PositionX
     ld      a,b
     exx
     or      a
-    jp      m,PersTransformClipXY_TestLeft
+    jp      m,PersTransformClipXYZ_TestLeft
 
-PersTransformClipXY_TestRight:
+PersTransformClipXYZ_TestRight:
     ld      e,a             ; e = x + m_v3PositionX
     ld      hl,#0xC180
     push    de
@@ -91,15 +93,23 @@ PersTransformClipXY_TestRight:
     ld      1(ix),l         ; store screenX low
     ld      3(ix),h         ; store screenX high
     ex      af,af'          ; pop af
-    jp      nc,PersTransformClipXY_TransformY
+    jp      nc,PersTransformClipXYZ_TransformY
 
-PersTransformClipXY_ClipRight:
+PersTransformClipXYZ_ClipRight:
     ld      a,#kClipBit_Right
     or      c
     ld      c,a
-    jp      PersTransformClipXY_TransformY
+    jp      PersTransformClipXYZ_TransformY
 
-PersTransformClipXY_TestLeft:
+PersTransformClipXYZ_LoopEnd:
+    ld      0(ix),c         ; store vertex clip
+    ld      de,#0x0008      ; ix += sizeof(SPersScreenPos)
+    add     ix,de
+    djnz    PersTransformClipXYZ_LoopStart
+    ei
+    ret
+
+PersTransformClipXYZ_TestLeft:
     neg
     ld      e,a             ; e = -x
     ld      hl,#0xC100
@@ -115,43 +125,34 @@ PersTransformClipXY_TestLeft:
     ld      1(ix),l         ; store screenX low
     ld      3(ix),h         ; store screenX high
     ex      af,af'          ; pop af
-    jp      nc,PersTransformClipXY_TransformY
+    jp      nc,PersTransformClipXYZ_TransformY
 
-PersTransformClipXY_ClipLeft:
+PersTransformClipXYZ_ClipLeft:
     ld      a,#kClipBit_Left
     or      c
     ld      c,a
-    jp      PersTransformClipXY_TransformY
+    jp      PersTransformClipXYZ_TransformY
 
-PersTransformClipXY_ClipNear:
+PersTransformClipXYZ_ClipNear:
     ld      a,#kClipBit_Near
     or      c
     ld      c,a
-    jp      PersTransformClipXY_LoopEnd
+    jp      PersTransformClipXYZ_LoopEnd
 
-PersTransformClipXY_ClipFar:
+PersTransformClipXYZ_ClipFar:
     ld      a,#kClipBit_Far
     or      c
     ld      c,a
-    ;jp     PersTransformClipXY_LoopEnd
-  
-PersTransformClipXY_LoopEnd:
-    ld      0(ix),c         ; store vertex clip
-    ld      de,#0x0008      ; ix += sizeof(SPersScreenPos)
-    add     ix,de
-    djnz    PersTransformClipXY_LoopStart
+    jp     PersTransformClipXYZ_LoopEnd
 
-    ei
-    ret
-
-PersTransformClipXY_TransformY:
+PersTransformClipXYZ_TransformY:
     exx                     ; a = y + m_v3PositionY
     ld      a,h
     exx
     or      a
-    jp      m,PersTransformClipXY_TestTop
+    jp      m,PersTransformClipXYZ_TestTop
 
-PersTransformClipXY_TestBottom :
+PersTransformClipXYZ_TestBottom :
     ld      e,a             ; e = y + m_v3PositionY
     ld      hl,#0xC280
     push    bc
@@ -163,15 +164,15 @@ PersTransformClipXY_TestBottom :
     ld      2(ix),l         ; store screenY low
     ld      4(ix),h         ; store screenY high
     ex      af,af'          ; pop af
-    jp      nc,PersTransformClipXY_LoopEnd
+    jp      nc,PersTransformClipXYZ_LoopEnd
 
-PersTransformClipXY_ClipBottom:
+PersTransformClipXYZ_ClipBottom:
     ld      a,#kClipBit_Bottom
     or      c
     ld      c,a
-    jp      PersTransformClipXY_LoopEnd
+    jp      PersTransformClipXYZ_LoopEnd
 
-PersTransformClipXY_TestTop:
+PersTransformClipXYZ_TestTop:
     neg
     ld      e,a             ; e = -y
     ld      hl,#0xC200
@@ -185,10 +186,10 @@ PersTransformClipXY_TestTop:
     ld      2(ix),l         ; store screenY low
     ld      4(ix),h         ; store screenY high
     ex      af,af'          ; pop af
-    jp      nc,PersTransformClipXY_LoopEnd
+    jp      nc,PersTransformClipXYZ_LoopEnd
 
-PersTransformClipXY_ClipTop:
+PersTransformClipXYZ_ClipTop:
     ld      a,#kClipBit_Top
     or      c
     ld      c,a
-    jp      PersTransformClipXY_LoopEnd
+    jp      PersTransformClipXYZ_LoopEnd

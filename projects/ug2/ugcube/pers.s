@@ -155,7 +155,7 @@ PersGetTransformUnsigned_Clip:
 ; DE = vramLow 16
 ; B  = vertex count
 ;------------------------------------------------------------------------------
-PersSetVerticesVram:
+;PersSetVerticesVram:
     ld      a,b
     ex      af,af'                      ; A' = vertex count
     ld      ix,#0xDF00
@@ -322,11 +322,13 @@ PersSetVerticesVram_ClipTop:
     jr      PersSetVerticesVram_LoopEnd
 
 ;------------------------------------------------------------------------------
-; extern u8 PersSetVerticesVram(u16 vramOffset, u8 nbVertices);
+; extern u8 PersTransformNoClipVram(u16 vramOffset, u8 nbVertices);
 ;------------------------------------------------------------------------------
             .area   _CODE
-            .globl  _PersSetVerticesVram
-_PersSetVerticesVram:
+            .globl  _PersTransformNoClipVram
+            .globl  PersTransformNoClip
+
+_PersTransformNoClipVram:
     ld      hl,#0x0002
     add     hl,sp
     ld      e,(hl)
@@ -335,6 +337,46 @@ _PersSetVerticesVram:
     inc     hl
     ld      b,(hl)
     push    ix
-    call    PersSetVerticesVram
+    call    PersTransformNoClip
+    pop     ix
+    ret
+
+;------------------------------------------------------------------------------
+; extern void PersTransformClipXYVram(u16 vramOffset, u8 nbVertices);
+;------------------------------------------------------------------------------
+            .area   _CODE
+            .globl  _PersTransformClipXYVram
+            .globl PersTransformClipXY
+
+_PersTransformClipXYVram:
+    ld      hl,#0x0002
+    add     hl,sp
+    ld      e,(hl)
+    inc     hl
+    ld      d,(hl)
+    inc     hl
+    ld      b,(hl)
+    push    ix
+    call    PersTransformClipXY
+    pop     ix
+    ret
+
+;------------------------------------------------------------------------------
+; extern void PersTransformClipXYZVram(u16 vramOffset, u8 nbVertices);
+;------------------------------------------------------------------------------
+            .area   _CODE
+            .globl  _PersTransformClipXYZVram
+            .globl PersTransformClipXYZ
+
+_PersTransformClipXYZVram:
+    ld      hl,#0x0002
+    add     hl,sp
+    ld      e,(hl)
+    inc     hl
+    ld      d,(hl)
+    inc     hl
+    ld      b,(hl)
+    push    ix
+    call    PersTransformClipXYZ
     pop     ix
     ret
