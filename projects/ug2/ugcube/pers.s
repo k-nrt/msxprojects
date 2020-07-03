@@ -380,3 +380,41 @@ _PersTransformClipXYZVram:
     call    PersTransformClipXYZ
     pop     ix
     ret
+
+;------------------------------------------------------------------------------
+; extern u8 PersTransformViewPosition(s8x3 *pViewPosition, s16x2 *pScreenPosition);
+;------------------------------------------------------------------------------
+            .area   _CODE
+            .globl  _PersTransformViewPosition
+            .globl  PersTransformPosition
+
+_PersTransformViewPosition:
+    push    ix          ; save ix
+    di
+    ld      hl,#0x0000
+    add     hl,sp       ; hl = sp
+
+    pop     af          ; ix
+    pop     af          ; ret
+    pop     de          ; de = pViewPosition
+    pop     ix          ; ix = pScreenPosition
+    ld      sp,hl       ; restore sp
+    ei
+    ex      de,hl       ; hl = pViewPosition
+
+    ld      d,(hl)      ; d = x
+    inc     hl
+    ld      e,(hl)      ; e = y
+    inc     hl
+    ld      b,(hl)      ; b = z
+
+    ; in D = x + m_v3PositionX
+    ; in E = y + m_v3PositionY
+    ; in B = z + m_v3PositionZ
+    ; out IX = s16x2 position
+    ; out C  = clip flag
+    call    PersTransformPosition
+
+    ld      l,c         ; result = clip flag
+    pop     ix          ; restore ix
+    ret

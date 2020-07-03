@@ -21,6 +21,7 @@ void Test_DrawTimerAndWait()
 	volatile u8 u8Timer = g_u8Timer;
 	VDPSetForegroundColor(0xff);
 	VDPSetBackgroundColor(0x11);
+	VDPWait();
 	VDPPrintU8X(240, 0, g_u8Timer);
 	while(u8Timer == g_u8Timer);  
 }

@@ -406,3 +406,94 @@ void PersDrawLinesClipXY(const u16* pLines, u8 nbLines)
         pLine += 2;
     }
 }
+
+void PersDrawLinesClipXYZ(const u16* pLines, u8 nbLines)
+{
+    const u16 *pLine = pLines;
+    u8 i;
+    for (i = 0; i < nbLines; i++)
+    {
+        const SPersScreenPos *pPos0 = (SPersScreenPos*)(*pLine);
+        const SPersScreenPos *pPos1 = (SPersScreenPos*)(*(pLine+1));
+        const u8 clipBitsOr  = pPos0->m_clipBits | pPos1->m_clipBits;
+        const u8 clipBitsAnd = pPos0->m_clipBits & pPos1->m_clipBits;
+
+        if(clipBitsAnd)
+        {
+
+        }
+        else if(!clipBitsOr)
+        {
+            VDPWaitLine(pPos0->m_x, pPos0->m_y, pPos1->m_x, pPos1->m_y);
+        }
+        else if(clipBitsOr & (kClipBit_Near|kClipBit_Far))
+        {
+            s8 clipLine;
+            s8x3Set(g_clipLineS8x3.m_v3Start, pPos0->m_3dx, pPos0->m_3dy, pPos0->m_3dz);
+            s8x3Set(g_clipLineS8x3.m_v3End,   pPos1->m_3dx, pPos1->m_3dy, pPos1->m_3dz);
+
+            clipLine = ClipLineS8x3(g_persContext.m_s8ClipNear);
+
+            if (0 <= clipLine)
+            {
+                u8 clip0 = PersTransformViewPosition(&g_clipLineS8x3.m_v3Start,(s16x2*)&g_clipLineInOut.sx);
+                u8 clip1 = PersTransformViewPosition(&g_clipLineS8x3.m_v3End,  (s16x2*)&g_clipLineInOut.ex);
+                u8 clipOr = clip0 | clip1;
+                u8 clipAnd = clip0 & clip1;
+
+                if (!clipOr)
+                {
+                    Clip_VDPWaitLine();
+                }
+                else if(!clipAnd)
+                {
+                    ClipRect_VDPWaitLine();
+                }
+            }
+        }
+        else
+        {
+            s16 sx,sy,ex,ey;
+            if(pPos0->m_clipBits & (kClipBit_Left|kClipBit_Right))
+            {
+                sx = (s16)((((u16)pPos0->m_xHigh)<<8) | ((u16)pPos0->m_x));
+            }
+            else
+            {
+                sx = (s16)((u16)pPos0->m_x);
+            }
+
+            if(pPos0->m_clipBits & (kClipBit_Top|kClipBit_Bottom))
+            {
+                sy = (s16)((((u16)pPos0->m_yHigh)<<8) | ((u16)pPos0->m_y));
+            }
+            else
+            {
+                sy = (s16)((u16)pPos0->m_y);
+            }
+
+            if(pPos1->m_clipBits & (kClipBit_Left|kClipBit_Right))
+            {
+                ex = (s16)((((u16)pPos1->m_xHigh)<<8) | ((u16)pPos1->m_x));
+            }
+            else
+            {
+                ex = (s16)((u16)pPos1->m_x);
+            }
+            
+            if(pPos1->m_clipBits & (kClipBit_Top|kClipBit_Bottom))
+            {
+                ey = (s16)((((u16)pPos1->m_yHigh)<<8) | ((u16)pPos1->m_y));
+            }
+            else
+            {
+                ey = (s16)((u16)pPos1->m_y);
+            }
+
+            Clip_SetLine(sx,sy,ex,ey);
+            ClipRect_VDPWaitLine();
+        }
+
+        pLine += 2;
+    }
+}

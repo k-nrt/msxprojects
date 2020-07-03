@@ -394,3 +394,88 @@ IntersectZero_Zero_Half_Inner:   ; outer----zero----half----inner
     ld      h,b         ; hl = outer
     ld      l,c
     jp      IntersectZero_Loop   ; retry hl = outer, de = half
+
+;------------------------------------------------------------------------------
+; s8 ClipLineS8x3(s8 s8Near);
+;------------------------------------------------------------------------------
+                .area   _DATA
+                .globl  _g_clipLineS8x3
+                
+_g_clipLineS8x3:
+    .byte     0
+    .byte     0
+    .byte     0
+
+    .byte     0
+    .byte     0
+    .byte     0
+
+                .area   _CODE
+                .globl  _ClipLineS8x3
+                .globl  ClipLineS8x3
+
+_ClipLineS8x3:
+    ld      hl,#0x0002
+    add     hl,sp
+    ld      b,(hl)
+    exx
+    ld      hl,#_g_clipLineS8x3
+    ld      d,(hl)          ; sx
+    inc     hl
+    ld      e,(hl)          ; sy
+    inc     hl
+    ld      a,(hl)          ; a' = sz
+    inc     hl
+    ld      b,(hl)          ; b = ex
+    inc     hl
+    ld      c,(hl)          ; c = ey
+    inc     hl
+    ex      af,af'
+    ld      a,(hl)          ; a = ez
+    ld      h,b             ; h = b = ex
+    ld      l,c             ; l = c = ey
+    exx
+    ld      e,a             ; e = ez
+    ex      af,af'
+    ld      d,a             ; d = sz
+     
+    ; in B near
+    ; inout D SZ
+    ; inout E EZ
+    ; inout D' SX
+    ; inout E' SY
+    ; inout H' EX
+    ; inout L' EY
+    ; out A -1 out 0 intersect 1 = in
+    call    ClipLineS8x3
+
+    ld      b,a
+    exx
+    ld      a,h
+    ex      af,af'
+    ld      a,l
+    exx
+
+    ld      hl,#_g_clipLineS8x3+#5
+    ld      (hl),e          ; ez
+    dec     hl
+    ld      (hl),a          ; ey
+    dec     hl
+    ex      af,af'          
+    ld      (hl),a          ; ex
+    dec     hl
+    ld      (hl),d          ; sz
+    dec     hl
+    
+    exx
+    ld      a,d
+    ex      af,af'
+    ld      a,e
+    exx
+    ld      (hl),a          ; sy
+    dec     hl
+    ex      af,af'
+    ld      (hl),a          ; sx
+
+    ld      l,b
+    ret
