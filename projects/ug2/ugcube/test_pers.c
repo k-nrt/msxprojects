@@ -6,6 +6,7 @@
 #include "model_cube.h"
 #include "model_zx_plane.h"
 #include "pers.h"
+#include "clip.h"
 #include "test.h"
 
 #pragma codeseg CODE2
@@ -91,6 +92,7 @@ void Test_FlipperFlip()
     u8 colorFrame = g_flipper.m_u8Frame >> 1;
 	u8 color = FLIPPER_COLOR_START + (colorFrame & FLIPPER_COLOR_MASK);
     u8 colorPrev = FLIPPER_COLOR_START + ((colorFrame - 1) & FLIPPER_COLOR_MASK);
+	VDPWait();
 	VDPPaletteWrite(colorPrev,&g_flipper.m_u16ClearColor,1);
 	VDPPaletteWrite(color,&g_flipper.m_u16DrawColor,1);
   
@@ -141,6 +143,24 @@ void Test_DrawModelClipXY(s16x3 *pPosition, u16* pLodVertices, const SModel *pMo
 	PersDrawLinesClipXY(pModel->m_pIndices, pModel->m_nbLines);
 }
 
+void Test_DrawModelClipXYZ(s16x3 *pPosition, u16* pLodVertices, const SModel *pModel)
+{
+	s16x3 v3Temp;
+	u8 lod = 0;
+
+	s8x3Copy(v3Temp,(*pPosition));
+	while (80 < v3Temp.z)
+	{
+		v3Temp.x >>= 1;
+		v3Temp.y >>= 1;
+		v3Temp.z >>= 1;
+		lod++;
+	}
+	 
+	PersSetPosition(v3Temp.x,v3Temp.y,v3Temp.z);
+	PersTransformClipXYZVram(pLodVertices[lod], pModel->m_nbVertices);
+	PersDrawLinesClipXYZ(pModel->m_pIndices, pModel->m_nbLines);
+}
 
 void Test_Pers(const char* pszTitle)
 {
@@ -246,6 +266,8 @@ void Test_PersScroll(const char* pszTitle)
 	{
 		u8 u8Trig = msxBiosGetTrigger(0);
         u8 u8Stick = msxBiosGetStick(0);
+		s16 vx = 0;
+		s16 vz = 0;
 		if(u8TrigPrev == 0 && u8Trig != 0)
 		{
 			break;
@@ -254,27 +276,27 @@ void Test_PersScroll(const char* pszTitle)
 
         if (u8Stick == 1)
         {
-            v3Position0.z += 4;
+            vz = -8;
         }
         else if(u8Stick == 5)
         {
-            v3Position0.z -= 4;
+            vz = 8;
         }
         
         if (u8Stick == 3)
         {
-            v3Position0.x += 4;
+            vx = -4;
         }
         else if(u8Stick == 7)
         {
-            v3Position0.x -= 4;
+            vx = 4;
         }
         u8StickPrev = u8Stick;
 
         Test_FlipperClear();
 
-		//v3Position0.z -= 1;
-		//v3Position.z = 49 ; 
+		v3Position0.z += vz - 4;
+		v3Position0.x += vx;
 		if (v3Position0.z < 48)
 		{
 			v3Position0.z += (640 -64);
@@ -284,16 +306,21 @@ void Test_PersScroll(const char* pszTitle)
             v3Position0.z -= (640-48);
         }
 
-		v3Position1.z -= 1;
+		v3Position1.z += vz - 4;
+		v3Position1.x += vx;
 		if (v3Position1.z < 48)
 		{
-			v3Position1.z = 640;
+			v3Position1.z += (640 -64);
 		} 
+        else if (640 < v3Position1.z)
+        {
+            v3Position1.z -= (640-48);
+        }
 
         Test_FlipperSetDrawColor();
-		Test_DrawModelClipXY(&v3Position0, cubeVertices, &g_modelCube);
-		Test_DrawModelClipXY(&v3Position1, planeVertices, &g_modelZXPlane);
- 
+		Test_DrawModelClipXYZ(&v3Position0, cubeVertices, &g_modelCube);
+		Test_DrawModelClipXYZ(&v3Position1, planeVertices, &g_modelZXPlane);
+		
 		Test_DrawTimerAndWait();
         Test_FlipperFlip();
 	}

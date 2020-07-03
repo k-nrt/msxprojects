@@ -81,10 +81,9 @@ IntersectZeroS8x3_Zero_Half_Inner:   ; outer----zero----half----inner
 ; inout H' EX
 ; inout L' EY
 ; out A -1 out 0 intersect 1 = in
-; out H intersectionX
-; our L intersectionY
 ;------------------------------------------------------------------------------
                 .area   _CODE
+                .globl  ClipLineS8x3
 ClipLineS8x3:
 ClipLineS8x3_Test:
     ld      a,d             ; a = sz - near
@@ -114,14 +113,13 @@ ClipLineS8x3_SZ_EZ_Near:
 ClipLineS8x3_EZ_Near_SZ:
     ld      e,b     ; d = sz, e = ez = near
     push    de
-    ld      e,a     ; e = outer = ez - near
+    ld      e,a     ; e = outer = ez - near   
     ex      af,af'
     ld      d,a     ; d = inner = sz - near
     exx
     push    de      ; push inner sxsy
     exx
     call    IntersectZeroS8x3
-    exx
     pop     de      ; de' = sxsy, hl' = intersect exey
     exx
     pop     de      ; d = sz, e = near
@@ -139,7 +137,6 @@ ClipLineS8x3_SZ_Near_EZ:
     push    de      ; push inner exey
     exx
     call    IntersectZeroS8x3
-    exx
     pop     de
     ex      de,hl   ; hl' = inner exey, de' = intersect sxsy
     exx

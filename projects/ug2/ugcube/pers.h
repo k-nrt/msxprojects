@@ -3,6 +3,7 @@
 
 #include <msx-types.h>
 #include "vec_math.h"
+#include "vec2.h"
 
 enum EClipBit
 {
@@ -63,8 +64,12 @@ extern u8 PersTransformNoClipVram(u16 vramOffset, u8 nbVertices);
 extern void PersTransformClipXYVram(u16 vramOffset, u8 nbVertices);
 extern void PersTransformClipXYZVram(u16 vramOffset, u8 nbVertices);
 extern u8 PersSetVertices(s8x3 *pVertices, u8 nbVertices);
+
+extern u8 PersTransformViewPosition(s8x3 *pViewPosition, s16x2 *pScreenPosition);
+
 extern void PersDrawLines(const u16* pLines, u8 nbLines);
 extern void PersDrawLinesClipXY(const u16* pLines, u8 nbLines);
+extern void PersDrawLinesClipXYZ(const u16* pLines, u8 nbLines);
 
 
 extern const SPersScreenPos* PersGetPostions();

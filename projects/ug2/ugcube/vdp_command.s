@@ -1,6 +1,9 @@
 ;------------------------------------------------------------------------------
 ; VDP Command.
 ;------------------------------------------------------------------------------
+        VDPRead  = 0x0006
+        VDPWrite = 0x0007
+
 ;------------------------------------------------------------------------------
 ; void VDPSetPage(u8 nPage);
 ;------------------------------------------------------------------------------
@@ -17,7 +20,11 @@
 	.globl	_VDPSetDisplayPage
 
 _VDPSetDisplayPage:
-	ld		hl,#2
+	ld		a,(#VDPWrite)
+	inc		a
+	ld      c,a             ; c = write control register
+
+	ld		hl,#0x0002
 	add		hl,sp
 	ld		a,(hl)		; nPage
 	ld		(_DFPAGE),a
@@ -26,11 +33,11 @@ _VDPSetDisplayPage:
 	rrca
 	rrca
 	or		#0x1f
-
+	
 	di
-	out		(0x99),a
-	ld		a,#0x82
-	out		(0x99),a
+	out		(c),a
+	ld		a,#0x80+#0x02	; R#2 = pattern name table address
+	out		(c),a
 	ei
 		
 	ret
@@ -42,24 +49,33 @@ _VDPSetDisplayPage:
 	.globl	_VDPWait
 
 _VDPWait:
-	ld		a,#0x02
 	di
-	out		(0x99),a
-	ld		a,#0x8f
-	out		(0x99),a
-	nop
-	in		a,(0x99)
-;	ei
+VDPWait_Loop:
+	ld		a,(#VDPWrite)
+	inc		a
+	ld		c,a				; c = write control register
+	ld		a,#0x02			; S#2 = vdp command status
+	out		(c),a
+	ld		a,#0x80+#0x0f	; R#15 = read status register
+	out		(c),a
+	ld		a,(#VDPRead)
+	inc		a
+	ld		c,a				; c = read status register 
+	in		a,(c)
 	and		#0x01
-	jr		nz,_VDPWait
+	jp		nz,VDPWait_Loop
 
-	xor		a
-;	di
-	out		(0x99),a
-	ld		a,#0x8f
-	out		(0x99),a
-	nop
-	in		a,(0x99)
+	ld		a,(#VDPWrite)
+	inc		a
+	ld		c,a				; c = write control register
+	xor		a				; S#0 = interrupt status
+	out		(c),a
+	ld		a,#0x80+#0x0f	; R#15 = read status register
+	out		(c),a
+	ld		a,(#VDPRead)
+	inc		a
+	ld		c,a				; c = read status register 
+ 	in		a,(c)
 	ei
 	
 	ret
@@ -137,8 +153,9 @@ WAIT_VDP:
 	call	_VDPWait	; wait last vdp command
 
 ISSUE_VDP_COMMAND:
-	ld		c,#0x98			; issue vdp command
-	inc		c
+	ld		a,(#VDPWrite)
+	inc		a
+	ld		c,a			; issue vdp command
 	ld		a,#36			; reg #36
 	di
 	out		(c),a
@@ -482,7 +499,9 @@ EVAL_100:
 	ld		a,#'0'
 	add		l
 	ld		ix,#GRPPRT
+	di
 	call	EXTROM
+	ei
 
 	pop		ix
 	ret
@@ -505,8 +524,9 @@ EVAL_10000_Loop:
 EVAL_10000_Print:
 	pop		de
 	ld		ix,#GRPPRT
+	di
 	call	EXTROM
-
+	ei
 	ret
 
 ;------------------------------------------------------------------------------
@@ -562,7 +582,9 @@ VDP_PRINT_HEX:
 	ld		a,(hl)
 	exx
 	ld		ix,#GRPPRT
+	di
 	call	EXTROM
+	ei
 	exx
 
 	ld		a,c
@@ -573,7 +595,9 @@ VDP_PRINT_HEX:
 	add		hl,de
 	ld		a,(hl)
 	ld		ix,#GRPPRT
+	di
 	call	EXTROM
+	ei
 
 	ret
 

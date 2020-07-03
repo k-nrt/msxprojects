@@ -62,7 +62,7 @@ PersTransformClipXYZ_LoadVertex:
 
     in      a,(c)
     add     a,l             ; a = z + m_v3PositionZ
-    ld      5(ix),a         ; store 3D z
+    ld      7(ix),a         ; store 3D z
     exx
     jp      m,PersTransformClipXYZ_ClipNear
 

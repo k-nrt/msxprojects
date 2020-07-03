@@ -3,6 +3,7 @@
 
 #include <msx-types.h>
 #include "vec2.h"
+#include "vec_math.h"
 
 typedef struct
 {
@@ -44,6 +45,15 @@ s8 ClipRect();
 
 void ClipRect_VDPWaitLine();
 
+typedef struct 
+{
+    s8x3 m_v3Start;
+    s8x3 m_v3End;
+} SLine8x3;
+
+extern SLine8x3 g_clipLineS8x3;
+
+s8 ClipLineS8x3(s8 s8Near);
 
 
 #endif //CLIP_H
