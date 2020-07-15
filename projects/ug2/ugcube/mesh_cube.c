@@ -1,5 +1,5 @@
 
-#include "model_cube.h"
+#include "mesh_cube.h"
 
 const static s8x3 s_vertexCube[] =
 {
@@ -29,9 +29,8 @@ const static u16 s_indexCube[] =
 	LINE(3, 7),
 };
 
-const SModel g_modelCube =
+const SMesh g_meshCube =
 {
-	-16, 16, -16, 16, -16, 16,
 	8, 12,
     s_vertexCube,
 	s_indexCube,

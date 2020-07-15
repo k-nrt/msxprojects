@@ -418,3 +418,23 @@ _PersTransformViewPosition:
     ld      l,c         ; result = clip flag
     pop     ix          ; restore ix
     ret
+
+;------------------------------------------------------------------------------
+; extern u8 PersTransformClipTest(s8 x, s8 y, s8 z, s8 near);
+;------------------------------------------------------------------------------
+                .area   _CODE
+                .globl  _PersTransformClipTest
+                .globl  PersTransformClipTest
+_PersTransformClipTest:
+    ld      hl,#0x0002
+    add     hl,sp
+    ld      b,(hl)      ; b = x
+    inc     hl
+    ld      c,(hl)      ; c = y
+    inc     hl
+    ld      d,(hl)      ; d = z
+    inc     hl
+    ld      e,(hl)      ; e = near
+    call    PersTransformClipTest
+    ld      l,a
+    ret

@@ -22,6 +22,12 @@ kClipBit_Right  = 0x08
 kClipBit_Top    = 0x10
 kClipBit_Bottom = 0x20
 
+; box clip
+kBBoxClip_Out        = 0
+kBBoxClip_In         = 1
+kBBoxClip_ScissorXY  = 2
+kBBoxClip_ScissorXYZ = 3
+
 ; context members
 m_v3PositionX       = 0
 m_v3PositionY       = 1

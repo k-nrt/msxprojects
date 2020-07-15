@@ -66,6 +66,7 @@ void Test(const char *pszTitle)
 		{"BASIC CUBE",        Test_Pers},
 		{"ROTATE CUBE",       Test_PersAnim},
 		{"SCROLL CUBE",       Test_PersScroll},
+		{"CLIP BBOX",         Test_BBoxClip},
 		{NULL, NULL}
 	};
 

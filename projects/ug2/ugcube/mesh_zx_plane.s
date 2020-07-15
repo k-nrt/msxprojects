@@ -2,7 +2,7 @@
 ; model_zx_plane
 ;------------------------------------------------------------------------------
         .area   _CODE
-        .globl  _g_modelZXPlane
+        .globl  _g_meshZXPlane
 
         .macro  LINE    inIndex0, inIndex1
         .word   0xDF00+inIndex0*8, 0xDF00+inIndex1*8
@@ -20,10 +20,7 @@ Indices:
     LINE    2,3
     LINE    3,0
 
-_g_modelZXPlane:
-    .byte   -32,32
-    .byte    0,0
-    .byte   -32,32
+_g_meshZXPlane:
     .byte   4
     .byte   4
     .word   Vertices

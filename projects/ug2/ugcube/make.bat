@@ -5,11 +5,12 @@ set OutputName=ugcube
 set OutDir=.\Release
 set AsSrc=vdp_command vdp_palette vdp_write vdp_read 
 set AsSrc=%AsSrc% sincos mul_core scaler_math timer 
-set AsSrc=%AsSrc% model_zx_plane
+set AsSrc=%AsSrc% mesh_zx_plane
 set AsSrc=%AsSrc% clip clip_line_xyz_s8
-set AsSrc=%AsSrc% pers pers_draw_lines pers_transform_no_clip pers_transform_clip_xy pers_transform_clip_xyz pers_transform_position
+set AsSrc=%AsSrc% pers pers_draw_lines
+set AsSrc=%AsSrc% pers_transform_clip_test pers_transform_no_clip pers_transform_clip_xy pers_transform_clip_xyz pers_transform_position
 set AsSrc=%AsSrc% pers_transform_unsigned pers_transform_unsigned_fast
-set CcSrc=main vdp_command sincos model_cube pers test test_sincos test_line test_pers
+set CcSrc=main vdp_command sincos mesh_cube pers bbox test test_sincos test_line test_pers
 set SdccAsSrc=divunsigned mul __sdcc_call_hl divsigned
 
 set SdccPath=D:\SDCC

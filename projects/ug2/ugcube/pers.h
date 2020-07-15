@@ -5,6 +5,8 @@
 #include "vec_math.h"
 #include "vec2.h"
 
+
+
 enum EClipBit
 {
     kClipBit_Near   = 0x01,
@@ -71,6 +73,7 @@ extern void PersDrawLines(const u16* pLines, u8 nbLines);
 extern void PersDrawLinesClipXY(const u16* pLines, u8 nbLines);
 extern void PersDrawLinesClipXYZ(const u16* pLines, u8 nbLines);
 
+extern u8 PersTransformClipTest(s8 x, s8 y, s8 z, s8 near);
 
 extern const SPersScreenPos* PersGetPostions();
 

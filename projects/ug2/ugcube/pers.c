@@ -102,7 +102,7 @@ void PersMakeTransformTable
     for (z = 0; z < 128; z++)
     {
         VDPPrintU16X(0,8,(u16)pValues);
-        if (z < (u8)s8ClipNear)
+        if (z < 1)
         {
             //. near clip.
             *pLeft = 0;
