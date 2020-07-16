@@ -346,6 +346,7 @@ void Test_BBoxClip(const char* pszTitle)
 	u8 u8TrigPrev = 0;
     u8 u8StickPrev = 0;
 	u16* cubeVertices = (u16*) MemoryAllocate(sizeof(u16)*4);
+	SBBox *pBBoxes = (SBBox*) MemoryAllocate(sizeof(SBBox)*4);
 
 	s16x3 v3Position0;
 
@@ -356,6 +357,8 @@ void Test_BBoxClip(const char* pszTitle)
 	cubeVertices[1] = PersRegisterVertices(g_meshCube.m_pVertices, g_meshCube.m_nbVertices, 0, 0, 0, 1);
 	cubeVertices[2] = PersRegisterVertices(g_meshCube.m_pVertices, g_meshCube.m_nbVertices, 0, 0, 0, 2);
 	cubeVertices[3] = PersRegisterVertices(g_meshCube.m_pVertices, g_meshCube.m_nbVertices, 0, 0, 0, 3);
+
+	
 	s8x3Set(v3Position0, 64,0,512);
 	 
 	for(;;)
