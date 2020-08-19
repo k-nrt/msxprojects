@@ -418,3 +418,215 @@ _PersTransformViewPosition:
     ld      l,c         ; result = clip flag
     pop     ix          ; restore ix
     ret
+
+;------------------------------------------------------------------------------
+; extern u8 PersClipPoint(s8 x, s8 y, s8 z, s8 near);
+;------------------------------------------------------------------------------
+                .area   _CODE
+                .globl  _PersClipPoint
+                .globl  PersTransformClipTest
+
+_PersClipPoint:
+    ld      hl,#0x0002
+    add     hl,sp
+    ld      b,(hl)      ; b = x
+    inc     hl
+    ld      c,(hl)      ; c = y
+    inc     hl
+    ld      d,(hl)      ; d = z
+    inc     hl
+    ld      e,(hl)      ; e = near
+    call    PersTransformClipTest
+    ld      l,a
+    ret
+;------------------------------------------------------------------------------
+; extern u8 PersClipBBox(const SBBox *pBBox, s8 x, s8 y, s8 z, s8 near);
+;------------------------------------------------------------------------------
+                .area   _CODE
+                .globl  _PersClipBBox
+                .globl  PersTransformClipTestBBox
+
+_PersClipBBox:
+    ld      hl,#0x0002
+    add     hl,sp
+    ld      e,(hl)          ; de = pBBox
+    inc     hl
+    ld      d,(hl)
+    inc     hl
+    ld      b,(hl)          ; b = x
+    inc     hl
+    ld      c,(hl)          ; c = y
+    inc     hl
+    ld      a,(hl)          ; a = z
+    inc     hl
+    ld      l,(hl)          ; l = near
+    ld      h,a             ; h = z
+
+    ld      a,(de)          ; b' = minX + x
+    add     a,b
+    exx
+    ld      b,a
+    exx
+    inc     de
+
+    ld      a,(de)          ; c' = maxX + x
+    add     a,b
+    exx
+    ld      c,a
+    exx
+    inc     de
+
+    ld      a,(de)          ; d' = minY + y
+    add     a,c
+    exx
+    ld      d,a
+    exx
+    inc     de
+    
+    ld      a,(de)          ; e' = maxY + y
+    add     a,c
+    exx
+    ld      e,a
+    exx
+    inc     de
+
+    ld      a,(de)          ; h' = minZ + z
+    add     a,h
+    exx
+    ld      h,a
+    exx
+    inc     de
+
+    ld      a,(de)          ; l' = maxZ + z
+    add     a,h
+    exx
+    ld      l,a
+    exx
+    
+    ld      a,l             ; a = near
+    exx                     ; bc = minX+x,maxX+x
+                            ; de = minY+y,maxY+y
+                            ; hl = minZ+z,maxZ+z
+
+    call    PersTransformClipTestBBox
+
+    ld      l,a
+    ret
+
+;------------------------------------------------------------------------------
+; extern u16 PersCreateBBox(u16 vramOffset, u8 nbVertices);
+;------------------------------------------------------------------------------
+                .area   _CODE
+                .globl _PersCreateBBox
+
+;------------------------------------------------------------------------------
+; PersCreateBBox
+; in B  vram high 1
+; in C  vertex count
+; in DE vram low 16 to read vertices
+; in HL vram low 16 to write bbox
+; use A,A',BC',DE',HL'
+;------------------------------------------------------------------------------
+                .globl PersCreateBBox
+
+_PersCreateBBox:
+    ld      hl,#0x0002
+    add     hl,sp
+    ld      e,(hl)      ; de = vramOffset
+    inc     hl
+    ld      d,(hl)
+    inc     hl
+    ld      c,(hl)      ; c = nbVertices
+
+    ld      a,(#_g_persContext+#m_vramHigh)
+    ld      b,a         ; b = vram high
+
+    ld      hl,(#_g_persContext+#m_vramOffset)  ; hl = vram offset
+
+    call    PersCreateBBox
+
+    ld      de,#0x0006                          ; g_persContext.m_vramOffset += 6
+    ld      hl,(#_g_persContext+#m_vramOffset)
+    ld      b,h                                 ; bc = hl
+    ld      c,l
+    add     hl,de
+    ld      (#_g_persContext+#m_vramOffset),hl
+
+    ld      h,b                                 ; return vram offset
+    ld      l,c
+    ret
+
+;------------------------------------------------------------------------------
+; extern u8 PersClipBBoxVram(u16 vramOffset, s8 x, s8 y, s8 z, s8 near);
+;------------------------------------------------------------------------------
+                .area   _CODE
+                .globl  _PersClipBBoxVram
+
+_PersClipBBoxVram:
+    ld      hl,#0x0002
+    add     hl,sp
+
+    ld      e,(hl)
+    inc     hl
+    ld      d,(hl)
+    inc     hl
+
+    ld      a,(#_g_persContext+#m_vramHigh)
+    ld      b,a
+
+    call    VDPReadBegin116DI
+
+    ld      b,(hl)      ; b = x
+    inc     hl
+    ld      d,(hl)      ; d = y
+    inc     hl
+    ld      e,(hl)      ; e = z
+    inc     hl
+    ld      a,(hl)      ; a' = near
+    ex      af,af'
+
+    in      a,(c)       ; b' = minX + x
+    add     a,b
+    exx
+    ld      b,a
+    exx
+
+    in      a,(c)       ; c' = maxX + x
+    add     a,b
+    exx
+    ld      c,a
+    exx
+
+    in      a,(c)       ; d' = minY + y
+    add     a,d
+    exx
+    ld      d,a
+    exx
+
+    in      a,(c)       ; e' = maxY + y  
+    add     a,d
+    exx
+    ld      e,a
+    exx
+
+    in      a,(c)       ; h' = minZ + z
+    add     a,e
+    exx
+    ld      h,a
+    exx
+
+    in      a,(c)       ; l' = maxZ + z
+    ei
+    add     a,e
+    exx
+    ld      l,a
+    
+    ex      af,af'      ; a = near
+    
+    call    PersTransformClipTestBBox
+
+    ld      l,a
+    ret
+      
+
+

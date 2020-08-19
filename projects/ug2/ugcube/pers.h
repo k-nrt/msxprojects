@@ -4,6 +4,8 @@
 #include <msx-types.h>
 #include "vec_math.h"
 #include "vec2.h"
+#include "bbox.h"
+
 
 enum EClipBit
 {
@@ -16,16 +18,26 @@ enum EClipBit
     kClipBit_16     = 0x80,
 };
 
+
+enum EBBoxClip
+{
+    kBBoxClip_Out        = 0,
+    kBBoxClip_In         = 1,
+    kBBoxClip_ScissorXY  = 2,
+    kBBoxClip_ScissorXYZ = 3,
+};
+
+
 typedef struct tPersScreenPos
 {
-    u8 m_clipBits;
-    u8 m_x;             //. unsigned low 2D X or signed low 2D X for XY clipping
-    u8 m_y;             //. unsigned low 2D Y or signed low 2D Y for XY clipping
-    u8 m_xHigh;         //. signed high 2D X for XY clipping
-    u8 m_yHigh;         //. signed high 2D Y for XY clippimg
-    s8 m_3dx;           //. 3D X for near/far clipping
-    s8 m_3dy;           //. 3D Y for near/far clipping
-    s8 m_3dz;           //. 3D Z for near/far clipping
+    u8 m_clipBits;      //< combination of EClipBit
+    u8 m_x;             //< unsigned low 2D X or signed low 2D X for XY clipping
+    u8 m_y;             //< unsigned low 2D Y or signed low 2D Y for XY clipping
+    u8 m_xHigh;         //< signed high 2D X for XY clipping
+    u8 m_yHigh;         //< signed high 2D Y for XY clippimg
+    s8 m_3dx;           //< 3D X for near/far clipping
+    s8 m_3dy;           //< 3D Y for near/far clipping
+    s8 m_3dz;           //< 3D Z for near/far clipping
 } SPersScreenPos;
 
 typedef struct tPersViewport
@@ -71,6 +83,11 @@ extern void PersDrawLines(const u16* pLines, u8 nbLines);
 extern void PersDrawLinesClipXY(const u16* pLines, u8 nbLines);
 extern void PersDrawLinesClipXYZ(const u16* pLines, u8 nbLines);
 
+extern u8 PersClipPoint(s8 x, s8 y, s8 z, s8 near);
+extern u8 PersClipBBox(const SBBox *pBBox, s8 x, s8 y, s8 z, s8 near);
+
+extern u16 PersCreateBBox(u16 vramOffset, u8 nbVertices);
+extern u8 PersClipBBoxVram(u16 vramOffset, s8 x, s8 y, s8 z, s8 near);
 
 extern const SPersScreenPos* PersGetPostions();
 

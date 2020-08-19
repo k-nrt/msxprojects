@@ -13,6 +13,7 @@ extern void Test_Line(const char* pszTitle);
 extern void Test_Pers(const char* pszTitle);
 extern void Test_PersAnim(const char* pszTitle);
 extern void Test_PersScroll(const char* pszTitle);
+extern void Test_BBoxClip(const char* pszTitle);
 
 //. test.c
 extern void Test_DrawTitle(const char *pszTitle);
