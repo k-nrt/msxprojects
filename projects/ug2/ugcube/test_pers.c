@@ -124,12 +124,14 @@ s8 Test_GetLod(const s16x3 *pPosition, s8x3 *pLodPosition)
 	s16 y = pPosition->y;
 	s16 z = pPosition->z;
 	s8 lod = 0;
+	s8 maxZ = 32;
 
-	while ((127 - 32) < z)
+	while ((127 - maxZ) < z)
 	{
 		x >>= 1;
 		y >>= 1;
 		z >>= 1;
+		maxZ >>= 1;
 		lod++;
 	}
 

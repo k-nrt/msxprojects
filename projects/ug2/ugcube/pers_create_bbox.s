@@ -68,11 +68,11 @@ Test_X_Start:
     exx
 Test_MinX:
     cp      b
-    jp      m,Test_MaxX
+    jp      p,Test_MaxX
     ld      b,a
 Test_MaxX:
     cp      c
-    jp      p,Test_X_End
+    jp      m,Test_X_End
     ld      c,a
 Test_X_End:
     exx
@@ -82,11 +82,11 @@ Test_Y_Start:
     exx
 Test_MinY:
     cp      d
-    jp      m,Test_MaxY
+    jp      p,Test_MaxY
     ld      d,a
 Test_MaxY:
     cp      e
-    jp      p,Test_Y_End
+    jp      m,Test_Y_End
     ld      e,a
 Test_Y_End:
     exx
@@ -96,11 +96,11 @@ Test_Z_Start:
     exx
 Test_MinZ:
     cp      h
-    jp      m,Test_MaxZ
+    jp      p,Test_MaxZ
     ld      h,a
 Test_MaxZ:
     cp      l
-    jp      p,Test_Z_End
+    jp      m,Test_Z_End
     ld      l,a
 Test_Z_End:
     exx

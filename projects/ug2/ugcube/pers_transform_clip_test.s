@@ -231,7 +231,7 @@ PersTransformClipTestBBox_MaxY_Top:
 PersTransformClipTestBBox_TestMinZ:
     bit     7,h
     jp      nz,PersTransformClipTestBBox_Far_MinZ   ; clip out
-    cp      e               ; near - 1 - minZ
+    cp      h               ; near - 1 - minZ
     jp      m,PersTransformClipTestBBox_Near_MinZ_MaxZ_Far
 
 PersTransformClipTestBBox_MinZ_Near_MaxZ:
