@@ -1,6 +1,15 @@
 @echo off
 setlocal enabledelayedexpansion
 
+if "%SDCC_ROOT_DIR%" neq ""  goto check_dir
+echo set SDCC_ROOT_DIR
+exit /b
+
+:check_dir
+if exist .\Release goto initialize_variables
+mkdir .\Release
+
+:initialize_variables
 set OutputName=ugcube
 set OutDir=.\Release
 set AsSrc=vdp_command vdp_palette vdp_write vdp_read 
@@ -13,7 +22,7 @@ set AsSrc=%AsSrc% pers_transform_unsigned pers_transform_unsigned_fast
 set CcSrc=main vdp_command sincos mesh_cube pers bbox test test_sincos test_line test_pers
 set SdccAsSrc=divunsigned mul __sdcc_call_hl divsigned
 
-set SdccPath=D:\SDCC
+set SdccPath=%SDCC_ROOT_DIR%
 set SdccBinPath=%SdccPath%\bin
 set SdccIncPath=%SdccPath%\include
 set SdccSrcPath=%SdccPath%\lib\src\z80
@@ -40,13 +49,21 @@ for %%i in (%AsSrc%) do (
     if %errorlevel% neq 0 exit /b
 )
 
+set SdccAsInputs=
+set IsEnableSdccAsInputs=
 for %%i in (%SdccAsSrc%) do (
     echo as %%i
-    "%AS%" -l -o "%OutDir%\%%i.s.rel" "%SdccSrcPath%\%%i.s"
+    set SdccAsInputs=!SdccAsInputs! "%SdccSrcPath%\%%i.s"
+    set IsEnableSdccAsInputs=True
+)
+
+set SdccAsOutput=
+if "%IsEnableSdccAsInputs%" neq "" (
+    set SdccAsOutput=sdcc_as_output
+    "%AS%" -l -o "%OutDir%\!SdccAsOutput!.s.rel" %SdccAsInputs%
     if %errorlevel% neq 0 exit /b
 )
 
-rem for %%i in (%CcSrc%) do "%CC%" %%i.c %CCOptions% -I"%IncPath%" -I"%SdccIncPath%" -o "%OutDir%\%%i.rel"  --opt-code-speed --max-allocs-per-node 8
 for %%i in (%CcSrc%) do (
     echo cc %%i
     "%CC%" %%i.c %CCOptions% -I"%IncPath%" -I"%SdccIncPath%" -o "%OutDir%\%%i.rel" --opt-code-speed
@@ -55,7 +72,7 @@ for %%i in (%CcSrc%) do (
 
 set Objects="%OutDir%\crt0.s.rel"
 for %%i in (%AsSrc%) do set Objects=!Objects! "%OutDir%\%%i.s.rel"
-for %%i in (%SdccAsSrc%) do set Objects=!Objects! "%OutDir%\%%i.s.rel"
+if "%SdccAsOutput%" neq "" set Objects=!Objects! "%OutDir%\%SdccAsOutput%.s.rel"
 for %%i in (%CcSrc%) do set Objects=!Objects! "%OutDir%\%%i.rel"
 
 echo link %OutDir%\%OutputName%.ihx
