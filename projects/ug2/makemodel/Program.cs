@@ -16,6 +16,8 @@ namespace makemodel
 			string strPrefix = "";
 			string strName = "";
 
+			string strType = "ugxmodel";
+			
 			for (int i = 0; i < args.Length;i++ )
 			{
 				string arg = args[i];
@@ -44,6 +46,11 @@ namespace makemodel
 					case "-name":
 						i++;
 						strName = args[i];
+						break;
+
+					case "-type":
+						i++;
+						strType = args[i];
 						break;
 				}
 			}
@@ -94,7 +101,14 @@ namespace makemodel
 
 			Ugx.Model model = Ugx.ModelFactory.Create(document, strPrefix, fScale);
 
-			Ugx.ModelWriter.Write(strOutput, model, strName);
+			if (strType=="ugxnodel")
+			{ 
+				Ugx.ModelWriter.Write(strOutput, model, strName);
+			}
+			else if (strType=="ugxmesh")
+            {
+				Ugx.ModelWriter.WriteMesh(strOutput, model, strName);
+            }
 		}
 	}
 }
