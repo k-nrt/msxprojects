@@ -12,6 +12,32 @@
 
 #pragma codeseg CODE2
 
+static const SFlipperConfig s_testFlipperConfig =
+{
+	0x11,
+	2, 13, 
+	{0, 32, 256, 160},
+	{
+		{0,0,0,0},
+		{0,0,0,0},
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,2),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,3),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,4),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,5),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,6),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,7),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,8),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,9),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,10),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,11),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,12),
+		FLIPPER_VERTICAL_TILE(2,13,0,32,256,160,13),
+		{0,0,0,0},
+		{0,0,0,0},
+	}
+};
+
+
 static u8 s_buffer[256];
 static u8* s_pMemory = s_buffer;
 
@@ -146,7 +172,7 @@ void Test_PersAnim(const char* pszTitle)
 	u8 u8TrigPrev = 0;
 	u8 u8Frame = 0;
 	
-    FlipperInit();
+    FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
 
 	PersSetVertexBuffer(0,0x0800);
@@ -171,7 +197,7 @@ void Test_PersAnim(const char* pszTitle)
 		PersSetPosition(0,0,80);
 		PersTransformNoClipVram(vertices[u8Frame], g_meshCube.m_nbVertices);
 
-        FlipperSetDrawColor();
+        FlipperApplyForegroundColor();
 		PersDrawLines(g_meshCube.m_pIndices,g_meshCube.m_nbLines);
 
 		u8Frame++;
@@ -198,7 +224,7 @@ void Test_PersScroll(const char* pszTitle)
 	s16x3 v3Position0;
 	s16x3 v3Position1;
 
-    FlipperInit();
+    FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
 
 	PersSetVertexBuffer(1,0x0000);
@@ -270,7 +296,7 @@ void Test_PersScroll(const char* pszTitle)
             v3Position1.z -= (640-48);
         }
 
-        FlipperSetDrawColor();
+        FlipperApplyForegroundColor();
 		Test_DrawModelClipXYZ(&v3Position0, cubeVertices, &g_meshCube);
 		Test_DrawModelClipXYZ(&v3Position1, planeVertices, &g_meshZXPlane);
 		
@@ -290,7 +316,7 @@ void Test_BBoxClip(const char* pszTitle)
 
 	s16x3 v3Position0;
 
-    FlipperInit();
+    FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
 
 	PersSetVertexBuffer(1,0x0000);
@@ -350,7 +376,7 @@ void Test_BBoxClip(const char* pszTitle)
             v3Position0.z -= (640-48);
         }
 
-        FlipperSetDrawColor();
+        FlipperApplyForegroundColor();
 		{
 			s8x3 v3Pos;
 			s8 lod = -1;

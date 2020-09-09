@@ -3,37 +3,46 @@
 #include "flipper.h"
 
 SFlipper g_flipper;
+static const SFlipperConfig *s_pConfig = NULL;
 
-void FlipperInit()
+void FlipperInit
+(
+    const SFlipperConfig *pConfig,
+    u16 u16Background0GRB,          //< background palette.
+    u16 u16Foreground0GRB           //< foreground palette.
+)
 {
     u8 i;
-    g_flipper.m_u8Frame = 0;
+
+    s_pConfig = pConfig;
+    g_flipper.m_u16Background0GRB = u16Background0GRB;
+    g_flipper.m_u16Foreground0GRB = u16Foreground0GRB;
 
     g_flipper.m_u8DisplayPage = 0;
     g_flipper.m_u8ActivePage = 1;
 
-    g_flipper.m_u16ClearColor = 0x0000;
-    g_flipper.m_u16DrawColor = 0x0777;
+    g_flipper.m_u8Tile = s_pConfig->m_startColor;
+    g_flipper.m_pTile = &s_pConfig->m_tiles[s_pConfig->m_startColor];
 
-    msxBiosChangeColor(6,15,1,13);
+    msxBiosChangeColor(6,15,1,1);
 
     VDPSetActivePage(0);
-    VDPSetForegroundColor(0x11);
+    VDPSetForegroundColor(s_pConfig->m_clearValue);
     VDPFill(0,0,256,212);
     VDPWait();
 
     VDPSetActivePage(1);
-    VDPSetForegroundColor(0x11);
+    VDPSetForegroundColor(s_pConfig->m_clearValue);
     VDPFill(0,0,256,212);
     VDPWait();
 
     //VDPSetActivePage(0);
 
-    for(i = 0; i < FLIPPER_COLOR_COUNT; i++)
+    for(i = s_pConfig->m_startColor; i <= s_pConfig->m_endColor; i++)
     {
-        VDPPaletteWrite(FLIPPER_COLOR_START + i, &g_flipper.m_u16ClearColor, 1);
+        VDPPaletteWrite(i, &g_flipper.m_u16Background0GRB, 1);
     }
-    //VDPPaletteWrite(FLIPPER_COLOR_START, &g_flipper.m_u16DrawColor, 1);
+    VDPPaletteWrite(s_pConfig->m_clearValue & 0x0f, &g_flipper.m_u16Background0GRB, 1);
 }
 
 void FlipperTerm()
@@ -58,32 +67,52 @@ void FlipperPrint(u16 x, u16 y, u8 color, const char *pszText)
 
 void FlipperClear()
 {
-    u8 colorFrame = g_flipper.m_u8Frame >> 1;
-    u8 u8X = (colorFrame & FLIPPER_COLOR_MASK) << FLIPPER_CLEAR_SHIFT;
-    VDPSetForegroundColor(0x11);
-	VDPFill(u8X, 32, FLIPPER_CLEAR_WIDTH, 160);
+    const SFlipperTile *pTile = g_flipper.m_pTile;
+    VDPSetForegroundColor(s_pConfig->m_clearValue);
+	VDPFill(pTile->x, pTile->y, pTile->w, pTile->h);
 }
 
-void FlipperSetDrawColor()
+void FlipperApplyForegroundColor()
 {
-    u8 colorFrame = g_flipper.m_u8Frame >> 1;
-	u8 color = FLIPPER_COLOR_START + (colorFrame & FLIPPER_COLOR_MASK);
-    VDPSetForegroundColor(color);
+    VDPSetForegroundColor(g_flipper.m_u8Tile);
 }
 
 void FlipperFlip()
 {
-    u8 colorFrame = g_flipper.m_u8Frame >> 1;
-	u8 color = FLIPPER_COLOR_START + (colorFrame & FLIPPER_COLOR_MASK);
-    u8 colorPrev = FLIPPER_COLOR_START + ((colorFrame - 1) & FLIPPER_COLOR_MASK);
-	VDPWait();
-	VDPPaletteWrite(colorPrev,&g_flipper.m_u16ClearColor,1);
-	VDPPaletteWrite(color,&g_flipper.m_u16DrawColor,1);
-  
-    g_flipper.m_u8Frame++;
+    if (!g_flipper.m_u8ActivePage)
+    {
+        //. 0 -> 1.
+        u8 u8PrevTile = g_flipper.m_u8Tile - 1;
+        if (u8PrevTile < s_pConfig->m_startColor)
+        {
+           u8PrevTile = s_pConfig->m_endColor;
+        }
 
-    g_flipper.m_u8DisplayPage = g_flipper.m_u8Frame & 0x01;
-    g_flipper.m_u8ActivePage = g_flipper.m_u8DisplayPage ^ 0x01;
+        g_flipper.m_u8ActivePage = 1;
+        g_flipper.m_u8DisplayPage = 0;
+
+        VDPWait();
+        VDPPaletteWrite(u8PrevTile,&g_flipper.m_u16Background0GRB,1);
+        VDPPaletteWrite(g_flipper.m_u8Tile,&g_flipper.m_u16Foreground0GRB,1);
+    }
+    else
+    {
+        //. 1 -> 0.
+        if (g_flipper.m_u8Tile < s_pConfig->m_endColor)
+        {
+            g_flipper.m_u8Tile++;
+            g_flipper.m_pTile++;
+        }
+        else
+        {
+            g_flipper.m_u8Tile = s_pConfig->m_startColor;
+            g_flipper.m_pTile = &s_pConfig->m_tiles[s_pConfig->m_startColor];
+        }
+
+        g_flipper.m_u8ActivePage = 0;
+        g_flipper.m_u8DisplayPage = 1;
+
+    }
 
     VDPSetDisplayPage(g_flipper.m_u8DisplayPage);
     VDPSetActivePage(g_flipper.m_u8ActivePage);

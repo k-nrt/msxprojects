@@ -15,9 +15,33 @@ extern u8 g_u8Timer;
 void WaitVSync()
 {
 	volatile u8 u8Timer = g_u8Timer;
-	VDPWait();
 	while(u8Timer == g_u8Timer);
 }
+
+static const SFlipperConfig s_mtkFlipperConfig =
+{
+	0x11,
+	2, 13, 
+	{0, 16, 256, 192},
+	{
+		{0,0,0,0},
+		{0,0,0,0},
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,2),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,3),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,4),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,5),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,6),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,7),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,8),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,9),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,10),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,11),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,12),
+		FLIPPER_VERTICAL_TILE(2,13,0,16,256,192,13),
+		{0,0,0,0},
+		{0,0,0,0},
+	}
+};
 
 void Mtk_Main(const char* pszTitle)
 {
@@ -27,7 +51,7 @@ void Mtk_Main(const char* pszTitle)
 	u8 u8TrigPrev = 0;
 	u8 u8Frame = 0;
 	
-    FlipperInit();
+    FlipperInit(&s_mtkFlipperConfig,0x0001,0x0657);
 	FlipperPrint(0,0,0xff,pszTitle);
 
 	PersSetVertexBuffer(1,0x0000);
@@ -49,10 +73,11 @@ void Mtk_Main(const char* pszTitle)
 		u8TrigPrev = u8Trig;
         FlipperClear();
 
-		PersSetPosition(0,0,80);
+		PersSetPosition(0,0,60);
 		PersTransformNoClipVram(vertices[u8Frame], g_meshe1.m_nbVertices);
 
-        FlipperSetDrawColor();
+        FlipperApplyForegroundColor();
+		VDPWait();
 		PersDrawLines(g_meshe1.m_pIndices,g_meshe1.m_nbLines);
 
 		u8Frame++;

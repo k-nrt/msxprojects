@@ -9,29 +9,58 @@ enum EFlipperMode
     kFlipperMode_Palette,
 };
 
+typedef struct tFlipperTile
+{
+    u8 x,y;
+    u16 w,h;
+} SFlipperTile;
+
+typedef struct tFlipperConfig
+{
+    u8 m_clearValue;            //< clear value for HMMV.
+    u8 m_startColor;            //< start color code to draw.
+    u8 m_endColor;              //< end color code to draw.
+    SFlipperTile m_screenRect;  //< screen rectangle
+    SFlipperTile m_tiles[16];   //< clear tiles.
+} SFlipperConfig;
+
+#define FLIPPER_VERTICAL_TILE(_s,_e,_x,_y,_w,_h,_i) \
+{(_x), (_y)+((_i-_s)*(_h))/((_e)-(_s)+1), _w, (((_i-_s+1)*(_h))/((_e)-(_s)+1))-(((_i-_s)*(_h))/((_e)-(_s)+1))}
+
 typedef struct tFlipper
 {
-    u8 m_u8Frame;
     u8 m_u8DisplayPage;
     u8 m_u8ActivePage;
-    u16 m_u16ClearColor;
-    u16 m_u16DrawColor;
+    u8 m_u8Tile;
+    SFlipperTile *m_pTile;
 
+    u16 m_u16Background0GRB;    //< background palette.
+    u16 m_u16Foreground0GRB;    //< foreground palette.
+
+    SFlipperConfig *m_pConfig;
 } SFlipper;
 extern SFlipper g_flipper;
 
-#define FLIPPER_COLOR_START 2
-#define FLIPPER_COLOR_COUNT 8
-#define FLIPPER_COLOR_MASK  0x07
-#define FLIPPER_CLEAR_WIDTH 32
-#define FLIPPER_CLEAR_SHIFT 5
+extern void FlipperInit
+(
+    const SFlipperConfig *pConfig,
+    u16 u16Background0GRB,          //< background palette.
+    u16 u16Foreground0GRB           //< foreground palette.
+);
 
-extern void FlipperInit();
 extern void FlipperTerm();
+
+extern void FlipperSetForegroundColor(u16 u160GRB);
+
 extern void FlipperPrint(u16 x, u16 y, u8 color, const char *pszText);
 
+//! clear screen.
 extern void FlipperClear();
-extern void FlipperSetDrawColor();
+
+//! apply current foreground color code to FORCLR
+extern void FlipperApplyForegroundColor();
+
+//! flip page and palettes.
 extern void FlipperFlip();
 
 #endif //FLIPPER_H
