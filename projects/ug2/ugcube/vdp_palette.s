@@ -29,6 +29,7 @@ VDPPaletteWrite_Loop:
     ld      a,(de)
     out     (c),a
     inc     de
+    ld      a,(de)
     out     (c),a
     inc     de
 
