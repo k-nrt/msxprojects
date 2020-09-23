@@ -9,6 +9,10 @@ typedef struct
 	s16 x, y, z;
 } s16x3;
 
+#define s16x3Set(_v,_x,_y,_z) _v.x=_x;_v.y=_y;_v.z=_z
+#define s16x3Copy(_v,_r) _v.x=_r.x;_v.y=_r.y;_v.z=_r.z
+#define s16x3Op(_r,_a,_op,_b) _r.x=_a.x _op _b.x;_r.y=_a.y _op _b.y;_r.z=_a.z _op _b.z
+
 typedef struct
 {
 	s8 x, y, z;

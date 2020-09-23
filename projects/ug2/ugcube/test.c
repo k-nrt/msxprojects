@@ -49,6 +49,8 @@ void Test_WaitForTrigger(const char *pszTitle)
 	}
 }
 
+extern void Mtk_Main(const char *);
+
 void Test(const char *pszTitle)
 {
 	struct Item
@@ -67,6 +69,7 @@ void Test(const char *pszTitle)
 		{"ROTATE CUBE",       Test_PersAnim},
 		{"SCROLL CUBE",       Test_PersScroll},
 		{"CLIP BBOX",         Test_BBoxClip},
+		{"MTK",               Mtk_Main},
 		{NULL, NULL}
 	};
 
