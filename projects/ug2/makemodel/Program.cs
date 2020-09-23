@@ -101,7 +101,7 @@ namespace makemodel
 
 			Ugx.Model model = Ugx.ModelFactory.Create(document, strPrefix, fScale);
 
-			if (strType=="ugxnodel")
+			if (strType=="ugxmodel")
 			{ 
 				Ugx.ModelWriter.Write(strOutput, model, strName);
 			}
