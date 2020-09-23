@@ -21,7 +21,7 @@ set AsSrc=%AsSrc% pers_transform_clip_test pers_transform_no_clip pers_transform
 set AsSrc=%AsSrc% pers_transform_unsigned pers_transform_unsigned_fast
 set CcSrc=main vdp_command sincos mesh_cube pers bbox flipper
 set CcSrc=%CcSrc% test test_sincos test_line test_pers
-set CcSrc=%CcSrc% mtk_main
+set CcSrc=%CcSrc% mtk_main mtk_mesh mtk_model mtk_input mtk_effect mtk_player mtk_enemy mtk_shot
 set SdccAsSrc=divunsigned mul __sdcc_call_hl divsigned
 
 set SdccPath=%SDCC_ROOT_DIR%
