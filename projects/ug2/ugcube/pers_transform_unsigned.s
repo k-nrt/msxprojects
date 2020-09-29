@@ -1,3 +1,5 @@
+                .include    "pers_defs.s"
+
 ;------------------------------------------------------------------------------
 ; PersTransformUnsigned
 ; fetch transform table or calc transform position if 3D position is out of table
@@ -35,7 +37,7 @@ PersTransformUnsigned:
 
 PersTransformUnsigned_Clip:
     ld      b,e         ; b = x
-    ld      h,#0xDE
+    ld      h,#PersTransform_RcpZ >> 8
     ld      l,d         ; d = z
     sla     l
     ld      e,(hl)      ; de = screenZ/z

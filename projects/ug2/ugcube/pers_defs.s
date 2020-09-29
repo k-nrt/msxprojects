@@ -45,3 +45,4 @@ m_vramOffset        = 19
 
 ; screen positions
 PersScreenPositionsAddress = 0xDE00
+PersTransform_RcpZ         = 0xDD00

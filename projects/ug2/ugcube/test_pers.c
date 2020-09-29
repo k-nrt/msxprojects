@@ -226,6 +226,13 @@ void Test_PersScroll(const char* pszTitle)
 
     FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
+	Clip_SetRect
+	(
+		g_persContext.m_viewPort.m_left,
+		g_persContext.m_viewPort.m_right,
+		g_persContext.m_viewPort.m_top,
+		g_persContext.m_viewPort.m_bottom
+	);
 
 	PersSetVertexBuffer(1,0x0000);
 	cubeVertices[0] = PersRegisterVertices(g_meshCube.m_pVertices, g_meshCube.m_nbVertices, 0, 0, rz, 0);
@@ -318,6 +325,13 @@ void Test_BBoxClip(const char* pszTitle)
 
     FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
+	Clip_SetRect
+	(
+		g_persContext.m_viewPort.m_left,
+		g_persContext.m_viewPort.m_right,
+		g_persContext.m_viewPort.m_top,
+		g_persContext.m_viewPort.m_bottom
+	);
 
 	PersSetVertexBuffer(1,0x0000);
 	cubeVertices[0] = PersRegisterVertices(g_meshCube.m_pVertices, g_meshCube.m_nbVertices, 0, 0, 0, 0);
