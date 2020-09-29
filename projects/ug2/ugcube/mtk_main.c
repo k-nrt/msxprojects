@@ -23,6 +23,8 @@
 #include "mtk_mesh_exp2.inc"
 #include "mtk_mesh_exp3.inc"
 
+#pragma codeseg CODE2
+
 static u16 s_vertices[64];
 
 extern u8 g_u8Timer;

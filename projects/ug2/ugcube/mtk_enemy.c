@@ -1,6 +1,8 @@
 #include "mtk_player.h"
 #include "mtk_enemy.h"
 
+#pragma codeseg CODE2
+
 SMtkEnemy g_mtkEnemies[MTK_ENEMY_MAX];
 void MtkEnemyInit()
 {

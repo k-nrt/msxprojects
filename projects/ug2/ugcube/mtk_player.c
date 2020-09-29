@@ -1,6 +1,8 @@
 #include "mtk_input.h"
 #include "mtk_player.h"
 
+#pragma codeseg CODE2
+
 SMtkPlayer g_mtkPlayer;
 void MtkPlayerInit()
 {

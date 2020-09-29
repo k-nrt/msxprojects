@@ -1,6 +1,8 @@
 #include "pers.h"
 #include "mtk_mesh.h"
 
+#pragma codeseg CODE2
+
 void MtkMeshCreate(SMtkMesh *pMesh, const SMesh *pSrcMesh, u8 rx, u8 ry, u8 rz, u8 shift)
 {
 	pMesh->m_verticesVram = PersRegisterVertices(pSrcMesh->m_pVertices, pSrcMesh->m_nbVertices, rx, ry, rz, shift);

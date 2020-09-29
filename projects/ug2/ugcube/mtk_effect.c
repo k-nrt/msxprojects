@@ -1,6 +1,8 @@
 #include "macros.h"
 #include "mtk_effect.h"
 
+#pragma codeseg CODE2
+
 SMtkEffect g_mtkEfects[MTK_EFFECT_MAX];
 
 void MtkEffectInit()

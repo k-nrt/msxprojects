@@ -1,6 +1,8 @@
 #include <msx-bios-wrapper.h>
 #include "mtk_input.h"
 
+#pragma codeseg CODE2
+
 SMtkInput g_mtkInput;
 void MtkInputInit()
 {

@@ -2,6 +2,8 @@
 #include "mtk_player.h"
 #include "mtk_shot.h"
 
+#pragma codeseg CODE2
+
 SMtkShot g_mtkShots[MTK_SHOT_MAX];
 
 void MtkShotInit()

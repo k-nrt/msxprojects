@@ -1,6 +1,8 @@
 #include "pers.h"
 #include "mtk_model.h"
 
+#pragma codeseg CODE2
+
 void MtkModelCreate(SMtkModel *pModel, const SMesh *pSrcMesh, u8 rx, u8 ry, u8 rz)
 {
 	u8 i;
