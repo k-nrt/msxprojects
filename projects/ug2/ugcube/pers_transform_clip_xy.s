@@ -16,7 +16,7 @@
 PersTransformClipXY:
     ld      a,b
     ex      af,af'                      ; A' = vertex count
-    ld      ix,#0xDF00
+    ld      ix,#PersScreenPositionsAddress
     ld      a,(#_g_persContext+#m_vramHigh)
     ld      b,a 
     call    VDPReadBegin116DI           ; B = vram high 1, DE = vram low 16

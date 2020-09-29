@@ -42,3 +42,6 @@ m_viewPortTop       = 14
 m_viewPortBottom    = 16
 m_vramHigh          = 18
 m_vramOffset        = 19
+
+; screen positions
+PersScreenPositionsAddress = 0xDE00

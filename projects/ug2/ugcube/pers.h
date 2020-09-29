@@ -98,9 +98,9 @@ extern const SPersScreenPos* PersGetPostions();
 #define PersTransform_Bottom       (0xC280) //. 1*128 entries.
 
 #define PersTransform_Positions         (0xC300) //. 0xC300 - 0xDDFF
-#define PersTransform_Positions_End     (0xDE00)
-#define PersTransform_RcpZ              (0xDE00) // 2*128 entries
-#define PersScreenPositionsAddress      (0xDF00) //. internal vertex buffer 8*32 entries.
+#define PersTransform_Positions_End     (0xDD00)
+#define PersTransform_RcpZ              (0xDD00) // 2*128 entries
+#define PersScreenPositionsAddress      (0xDE00) //. internal vertex buffer 8*64 entries.
 
 
 #define PersSetPosition(inX,inY,inZ) s8x3Set(g_persContext.m_v3Position,inX,inY,inZ)
