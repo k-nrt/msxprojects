@@ -12,7 +12,7 @@ mkdir .\Release
 :initialize_variables
 set OutputName=ugcube
 set OutDir=.\Release
-set AsSrc=vdp_command vdp_palette vdp_write vdp_read 
+set AsSrc=vdp_command vdp_palette vdp_write vdp_read vdp_pset
 set AsSrc=%AsSrc% sincos mul_core scaler_math timer halt
 set AsSrc=%AsSrc% mesh_zx_plane
 set AsSrc=%AsSrc% clip clip_line_xyz_s8

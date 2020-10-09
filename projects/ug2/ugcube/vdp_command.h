@@ -34,6 +34,10 @@ SDCC_FIXED_ADDRESS(0xFCB7) extern u16 GRPACX;
 //! 内容	グラフィックアキュムレータ(Y座標).
 SDCC_FIXED_ADDRESS(0xFCB9) extern u16 GRPACY;
 
+//! LOGOPR(FB02H, 1)
+//! 内容	ロジカル・オペレーション・コード.
+SDCC_FIXED_ADDRESS(0xFB02) extern u8 LOGOPR;
+
 extern void VDPSetDisplayPage(u8 nPage);
 
 #define VDPSetActivePage(_page) ACPAGE=_page
@@ -47,6 +51,8 @@ void VDPWaitLine(u8 sx, u8 sy, u8 ex, u8 ey);
 void VDPWaitLine2(u8 sx, u8 sy, u8 ex, u8 ey);
 
 void VDPFill(u8 x, u8 y, u16 w, u16 h);
+
+extern void VDPPSet(u8 x, u8 y);
 
 #define VDPSetPrintPosition(_x,_y) GRPACX=_x;GRPACY=_y
 #define VDPPrint(_x,_y,_string) GRPACX=_x;GRPACY=_y;VDPPrintCore(_string)
