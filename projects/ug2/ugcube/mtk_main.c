@@ -1,5 +1,6 @@
 #include <msx-types.h>
 #include <msx-bios-wrapper.h>
+#include <msx-rand.h>
 
 #include "pers.h"
 #include "clip.h"
@@ -68,16 +69,80 @@ SMtkModel g_modelExp2;
 SMtkModel g_modelExp3;
 SMtkModel g_modelShot;
 
+void MtkOnProgress(u16 address)
+{
+	VDPPrintU16X(256 - 32, 8, address);
+}
+
+const s8 kMtk_NearZ = 32;
+const s16 kMtk_ScreenZ = 160;
+const s16 kMtk_ScreenCenterX = 128;
+const s16 kMtk_ScreenCenterY = 16 + 96;
+const s16 kMtk_ViewportLeft = 0;
+const s16 kMtk_ViewportRight = 256 - 1;
+const s16 kMtk_ViewportTop = 16;
+const s16 kMtk_ViewportBottom = 16 + 96 + 96 - 1;
+
+#define MTK_STAR_MAX (32)
+s8x3 g_mtkStars[MTK_STAR_MAX];
+s8x3 g_mtkStarPosition;
+
+void MtkStarInit()
+{
+	u8 i;
+	s8x3 *pStar = g_mtkStars;
+	for(i = 0; i < MTK_STAR_MAX; i++, pStar++)
+	{
+		s16 x = (msxRandGet16() >> 3);
+		s16 y = (msxRandGet8());
+		s16 z = (msxRandGet16() >> 7) & 0x07f;
+		pStar->x = (s8) x;
+		pStar->y = (s8) y;
+		pStar->z = (s8) z;
+	}
+
+	s8x3Set(g_mtkStarPosition, 0, 0, 0);
+}
+
+void MtkStarUpdate()
+{
+	s8x3Op(g_mtkStarPosition, g_mtkStarPosition, -, g_mtkPlayer.m_velocity);
+}
+
+extern void MtkStarRender();
+
 void MtkInit()
 {
-    FlipperInit(&s_mtkFlipperConfig,0x0001,0x0657);
-	FlipperPrint(0,0,0xff, "initialize mtk ...");
+	msxRandInit(0x53, 0x94a1);
 
+	//. Flipper.
+    FlipperInit(&s_mtkFlipperConfig, 0x0001, 0x0657);
+	FlipperPrint(0, 0, 0xff, "initializing mtk ...");
+
+    VDPSetActivePage(g_flipper.m_u8DisplayPage);
+	VDPSetForegroundColor(0xff);
+
+	//. Perspective Transform Engine.
+	VDPPrint(0, 8, "create transform table ... ");
+	PersInit
+	(
+		kMtk_NearZ, kMtk_ScreenZ,
+		kMtk_ScreenCenterX, kMtk_ScreenCenterY,
+		kMtk_ViewportLeft, kMtk_ViewportRight, kMtk_ViewportTop, kMtk_ViewportBottom,
+		MtkOnProgress
+	);
+	Clip_SetRect(kMtk_ViewportLeft, kMtk_ViewportRight, kMtk_ViewportTop, kMtk_ViewportBottom);
+
+	//. Subsystems.
 	MtkInputInit();
 	MtkPlayerInit();
 	MtkShotInit();
 	MtkEnemyInit();
 	MtkEffectInit();
+	MtkStarInit();
+
+	//. Models.
+	VDPPrint(0, 16, "create models ... ");
 
 	PersSetVertexBuffer(1,0x0000);
 
@@ -89,7 +154,16 @@ void MtkInit()
 	MtkModelCreate(&g_modelExp2, &g_meshExp2, 0, 0, 0);
 	MtkModelCreate(&g_modelExp3, &g_meshExp3, 0, 0, 0);
 
-	FlipperPrint(0,0,0xff, "                  ");
+	//. Clear screen.
+	VDPSetForegroundColor(0x00);
+	VDPWait();
+	VDPFill(0, 0, 256, 212);
+	VDPWait();
+
+	//. Restore back buffer.
+    VDPSetActivePage(g_flipper.m_u8ActivePage);
+	VDPFill(0, 0, 256, 212);
+	VDPWait();
 }
 
 
@@ -108,6 +182,7 @@ void Mtk_Main(const char* pszTitle)
 		MtkPlayerUpdate();
 		MtkShotUpdate();
 		MtkEnemyUpdate();
+		MtkStarUpdate();
 
 		{
 			SMtkShot *pShot = g_mtkShots;
@@ -197,6 +272,30 @@ void Mtk_Main(const char* pszTitle)
 			}
 		}
 
+		{
+			static s8x3 *pStar;
+			LOGOPR = 0;
+			VDPWait();
+			VDPPSet(128, 16+96);
+
+			MtkStarRender();
+#if 0
+			pStar = g_mtkStars;
+			for(i = 0; i < MTK_STAR_MAX; i++, pStar++)
+			{
+				static u8 py, pz;
+				py = pStar->y;
+				pz = pStar->z;
+				if (16 <= py && py < 16 + 192 && 32 < pz)
+				{
+					VDPWait();
+					VDPPSet(pStar->x, py);
+				}
+
+			}
+#endif
+
+		}
 		WaitVSync();
         FlipperFlip();
 	}

@@ -5,7 +5,7 @@
 #include "mesh.h"
 #include "mtk_mesh.h"
 
-#define MTK_MODEL_LOD_MAX (4)
+#define MTK_MODEL_LOD_MAX (5)
 
 typedef struct tMtkModel
 {

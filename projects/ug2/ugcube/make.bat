@@ -19,6 +19,7 @@ set AsSrc=%AsSrc% clip clip_line_xyz_s8
 set AsSrc=%AsSrc% pers pers_draw_lines pers_create_bbox
 set AsSrc=%AsSrc% pers_transform_clip_test pers_transform_no_clip pers_transform_clip_xy pers_transform_clip_xyz pers_transform_position
 set AsSrc=%AsSrc% pers_transform_unsigned pers_transform_unsigned_fast
+set AsSrc=%AsSrc% mtk_star
 set CcSrc=main vdp_command sincos mesh_cube pers bbox flipper
 set CcSrc=%CcSrc% test test_sincos test_line test_pers
 set CcSrc=%CcSrc% mtk_main mtk_mesh mtk_model mtk_input mtk_effect mtk_player mtk_enemy mtk_shot

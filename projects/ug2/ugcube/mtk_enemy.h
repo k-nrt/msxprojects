@@ -8,6 +8,7 @@ typedef struct tMtkEnemy
 	u8 m_status;
 	s16x3 m_position;
 	s16x3 m_velocity;
+	s16x3 m_target;
 } SMtkEnemy;
 
 enum EMtkEnemyStatus
