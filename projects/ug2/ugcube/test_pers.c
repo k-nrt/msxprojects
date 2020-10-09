@@ -226,6 +226,13 @@ void Test_PersScroll(const char* pszTitle)
 
     FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
+	Clip_SetRect
+	(
+		g_persContext.m_viewPort.m_left,
+		g_persContext.m_viewPort.m_right,
+		g_persContext.m_viewPort.m_top,
+		g_persContext.m_viewPort.m_bottom
+	);
 
 	PersSetVertexBuffer(1,0x0000);
 	cubeVertices[0] = PersRegisterVertices(g_meshCube.m_pVertices, g_meshCube.m_nbVertices, 0, 0, rz, 0);
@@ -318,6 +325,13 @@ void Test_BBoxClip(const char* pszTitle)
 
     FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
+	Clip_SetRect
+	(
+		g_persContext.m_viewPort.m_left,
+		g_persContext.m_viewPort.m_right,
+		g_persContext.m_viewPort.m_top,
+		g_persContext.m_viewPort.m_bottom
+	);
 
 	PersSetVertexBuffer(1,0x0000);
 	cubeVertices[0] = PersRegisterVertices(g_meshCube.m_pVertices, g_meshCube.m_nbVertices, 0, 0, 0, 0);
@@ -392,27 +406,30 @@ void Test_BBoxClip(const char* pszTitle)
 
 				if (clip == kBBoxClip_In)
 				{
+					VDPWait();
 					PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
 					PersTransformNoClipVram(cubeVertices[lod], g_meshCube.m_nbVertices);
 					PersDrawLines(g_meshCube.m_pIndices, g_meshCube.m_nbLines);
 				}
 				else if(clip == kBBoxClip_ScissorXY)
 				{
+					VDPWait();
 					PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
 					PersTransformClipXYVram(cubeVertices[lod], g_meshCube.m_nbVertices);
 					PersDrawLinesClipXY(g_meshCube.m_pIndices, g_meshCube.m_nbLines);
 				}
 				else if (clip == kBBoxClip_ScissorXYZ)
 				{
+					VDPWait();
 					PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
  					PersTransformClipXYZVram(cubeVertices[lod], g_meshCube.m_nbVertices);
 					PersDrawLinesClipXYZ(g_meshCube.m_pIndices, g_meshCube.m_nbLines);
 				}
-				
 			}
 		}
 		//Test_DrawModelClipXYZ(&v3Position0, cubeVertices, &g_meshCube);
 		
+		VDPWait();
 		Test_DrawTimerAndWait();
         FlipperFlip();
 	}

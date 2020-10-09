@@ -37,6 +37,10 @@ SDCC_FIXED_ADDRESS(0xFCB7) u16 GRPACX;
 //! 内容	グラフィックアキュムレータ(Y座標).
 SDCC_FIXED_ADDRESS(0xFCB9) u16 GRPACY;
 
+//! LOGOPR(FB02H, 1)
+//! 内容	ロジカル・オペレーション・コード.
+SDCC_FIXED_ADDRESS(0xFB02) u8 LOGOPR;
+
 void VDPPrintCore(register const char *pszString)
 {
 	for (; *pszString != 0; pszString++)

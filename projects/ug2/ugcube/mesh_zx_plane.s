@@ -1,3 +1,5 @@
+                .include    "pers_defs.s"
+
 ;------------------------------------------------------------------------------
 ; model_zx_plane
 ;------------------------------------------------------------------------------
@@ -5,7 +7,7 @@
         .globl  _g_meshZXPlane
 
         .macro  LINE    inIndex0, inIndex1
-        .word   0xDF00+inIndex0*8, 0xDF00+inIndex1*8
+        .word   PersScreenPositionsAddress+inIndex0*8, PersScreenPositionsAddress+inIndex1*8
         .endm
 
 Vertices:

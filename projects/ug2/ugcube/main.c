@@ -16,6 +16,11 @@ void OnTimer()
 	g_u8Timer++;
 }
 
+void OnProgress(u16 address)
+{
+	VDPPrintU16X(0, 8, address);
+}
+
 void Init(void)
 {
 	msx2BiosChangeModePalette(5);
@@ -28,7 +33,7 @@ void Init(void)
 	VDPFill(0,0,256,212);
 	VDPSetForegroundColor(0xFF);
 	VDPPrint(0,0,"CREATE TRANSFROM TABLE...");
-	PersInit();
+	PersInit(32, 160, 128, 104, 0, 255, 104 - 64, 104 + 63, OnProgress);
 }
 
 void main(void)

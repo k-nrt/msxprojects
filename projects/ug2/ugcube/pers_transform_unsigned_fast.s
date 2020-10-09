@@ -1,4 +1,9 @@
 ;------------------------------------------------------------------------------
+; pers_transform_unsigned_fast
+;------------------------------------------------------------------------------
+                .include    "pers_defs.s"
+
+;------------------------------------------------------------------------------
 ; PersTransformUnsignedFast
 ; fetch transform table only
 ; in HL 0xC100 = left, 0xC180 = right, 0xC200 = top, 0xC280 = bottom
@@ -11,7 +16,7 @@
 ;------------------------------------------------------------------------------
                 .area   _CODE
                 .globl  PersTransformUnsignedFast
-                
+
 PersTransformUnsignedFast:
     ld      a,l     ; hl |= z
     or      d
@@ -19,7 +24,7 @@ PersTransformUnsignedFast:
     ld      a,(hl)  ; a = max
     cp      e       ; max - x
     jp      c,PersTransformUnsignedFast_Clip
-    ld      h,#0xC0
+    ld      h,#PersTransform_Pointers >> 8
     ld      l,d
     sla     l       ; HL = ptr + z*2
     ld      a,(hl)

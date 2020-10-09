@@ -58,18 +58,25 @@ typedef struct tPersContext
     SPersViewport m_viewPort;
     u8   m_vramHigh1;
     u16  m_vramLow16;
+    
+    void (*m_pProgress)(u16 address);
 } SPersContext;
 
 extern SPersContext g_persContext;
 
-extern void PersInit();
-
-extern void PersMakeTransformTable
+extern void PersInit
 (
     s8 s8ClipNear,
-    s16 s16ScreenX, s16 s16ScreenY, s16 s16ScreenZ, 
-    s16 s16Left, s16 s16Right, s16 s16Top, s16 s16Bottom
+    s16 s16ScreenZ,
+    s16 s16ScreenCenterX,
+    s16 s16ScreenCenterY,
+    s16 s16Left,
+    s16 s16Right,
+    s16 s16Top,
+    s16 s16Bottom,
+    void (*pProgress)(u16)
 );
+
 
 extern u16 PersRegisterVertices(s8x3 *pVertices, u8 nbVertices, u8 rx, u8 ry, u8 rz, u8 shift);
 extern u8 PersTransformNoClipVram(u16 vramOffset, u8 nbVertices);
@@ -98,9 +105,9 @@ extern const SPersScreenPos* PersGetPostions();
 #define PersTransform_Bottom       (0xC280) //. 1*128 entries.
 
 #define PersTransform_Positions         (0xC300) //. 0xC300 - 0xDDFF
-#define PersTransform_Positions_End     (0xDE00)
-#define PersTransform_RcpZ              (0xDE00) // 2*128 entries
-#define PersScreenPositionsAddress      (0xDF00) //. internal vertex buffer 8*32 entries.
+#define PersTransform_Positions_End     (0xDD00)
+#define PersTransform_RcpZ              (0xDD00) // 2*128 entries
+#define PersScreenPositionsAddress      (0xDE00) //. internal vertex buffer 8*64 entries.
 
 
 #define PersSetPosition(inX,inY,inZ) s8x3Set(g_persContext.m_v3Position,inX,inY,inZ)
