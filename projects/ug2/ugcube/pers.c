@@ -346,6 +346,7 @@ const SPersScreenPos* PersGetPostions()
     return s_screenPositions;
 }
 
+#if 0
 void PersDrawLinesClipXY(const u16* pLines, u8 nbLines)
 {
     const u16 *pLine = pLines;
@@ -411,6 +412,7 @@ void PersDrawLinesClipXY(const u16* pLines, u8 nbLines)
         pLine += 2;
     }
 }
+#endif
 
 void PersDrawLinesClipXYZ(const u16* pLines, u8 nbLines)
 {

@@ -280,6 +280,9 @@ ClipRight_SX_EX_Right:
     ret
 
 ClipRight_SX_Right:
+                                        ; bc = right
+                                        ; de = sx - right
+                                        ; hl = ex
     or      a
     sbc     hl,bc                       ; hl = ex - right
     jp      m,ClipRight_SX_EX_Right     ; clip in
@@ -287,8 +290,11 @@ ClipRight_SX_Right:
     jp      ClipRight_SX_Right_EX       ; intersect
 
 ClipRight_Right_SX:
+                                        ; bc = right
+                                        ; de = sx - right
+                                        ; hl = ex
     or      a 
-    sbc     hl,bc                       ; hl = ex - right, de = sx - right
+    sbc     hl,bc                       ; hl = ex - right
     jp      m,ClipRight_EX_Right_SX     ; intersect
     jp      nz,ClipRight_Right_SX_EX    ; clip out
     ld      a,#1                        ; ex is on left
@@ -305,6 +311,10 @@ ClipRight_Right_SX:
 
 ClipRight_Intersect:
 ClipRight_SX_Right_EX:
+                            ; de = sx - right
+                            ; hl = ex - right
+                            ; de' = ey
+                            ; hl' = sy
     ex      de,hl           ; hl = sx - right, de = ex - right
     exx
     push    hl              ; push sy
@@ -322,6 +332,10 @@ ClipRight_SX_Right_EX:
     ret
 
 ClipRight_EX_Right_SX:
+                            ; de = sx - right
+                            ; hl = ex - right
+                            ; de' = ey
+                            ; hl' = sy
     exx
     ex      de,hl           ; hl' = ey, de'= sy
     push    hl              ; push ey

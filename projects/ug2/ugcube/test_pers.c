@@ -406,27 +406,30 @@ void Test_BBoxClip(const char* pszTitle)
 
 				if (clip == kBBoxClip_In)
 				{
+					VDPWait();
 					PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
 					PersTransformNoClipVram(cubeVertices[lod], g_meshCube.m_nbVertices);
 					PersDrawLines(g_meshCube.m_pIndices, g_meshCube.m_nbLines);
 				}
 				else if(clip == kBBoxClip_ScissorXY)
 				{
+					VDPWait();
 					PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
 					PersTransformClipXYVram(cubeVertices[lod], g_meshCube.m_nbVertices);
 					PersDrawLinesClipXY(g_meshCube.m_pIndices, g_meshCube.m_nbLines);
 				}
 				else if (clip == kBBoxClip_ScissorXYZ)
 				{
+					VDPWait();
 					PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
  					PersTransformClipXYZVram(cubeVertices[lod], g_meshCube.m_nbVertices);
 					PersDrawLinesClipXYZ(g_meshCube.m_pIndices, g_meshCube.m_nbLines);
 				}
-				
 			}
 		}
 		//Test_DrawModelClipXYZ(&v3Position0, cubeVertices, &g_meshCube);
 		
+		VDPWait();
 		Test_DrawTimerAndWait();
         FlipperFlip();
 	}
