@@ -220,6 +220,9 @@ void WaitVSYNC()
 
 void Copy(void *pDst, const void *pSrc, u16 size)
 {
+	UNUSED(pDst);
+	UNUSED(pSrc);
+	UNUSED(size);
 	//. ‚±‚±‚É
 	//. push ix
 	//. add ix,sp
@@ -346,6 +349,7 @@ void main(void)
 {
 	u8 y;
 	u8 nColor;
+	UNUSED(nColor);
 
 	msx2BiosChangeModePalette(5);
 
@@ -525,6 +529,7 @@ void BgUpdate( u16 newpos )
 	static u16 pos = 0;
 	static u16 prev = 0;
 	static u8 phase = 0;
+	UNUSED(newpos);
 
 	if (phase == 0)
 	{
