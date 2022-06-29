@@ -130,7 +130,7 @@ void SpbUpdate(void)
 		pVdp = (u8*) s_spritePlanes;
 		for( i = 0 ; i < SPRITE_MAX ; i++, pVdp+=sizeof(struct SSpritePlane) )
 		{
-			register u8 y, m;
+			register u8 y;
 			register u8 max;
 			register u8 *pCounter;
 
@@ -170,7 +170,7 @@ void SpbUpdate(void)
 		pVdp = (u8*) s_spritePlanes;
 		for( i = 0 ; i < SPRITE_MAX ; i++ )
 		{
-			register u8 y, m;
+			register u8 y;
 			register u8 max;
 			register u8 *pCounter;
 
