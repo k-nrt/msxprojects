@@ -79,22 +79,22 @@ extern void PersInit
 
 
 extern u16 PersRegisterVertices(s8x3 *pVertices, u8 nbVertices, u8 rx, u8 ry, u8 rz, u8 shift);
-extern u8 PersTransformNoClipVram(u16 vramOffset, u8 nbVertices);
-extern void PersTransformClipXYVram(u16 vramOffset, u8 nbVertices);
-extern void PersTransformClipXYZVram(u16 vramOffset, u8 nbVertices);
+extern u8 PersTransformNoClipVram(u16 vramOffset, u8 nbVertices) SDCCCALL(0);
+extern void PersTransformClipXYVram(u16 vramOffset, u8 nbVertices) SDCCCALL(0);
+extern void PersTransformClipXYZVram(u16 vramOffset, u8 nbVertices) SDCCCALL(0);
 extern u8 PersSetVertices(s8x3 *pVertices, u8 nbVertices);
 
-extern u8 PersTransformViewPosition(s8x3 *pViewPosition, s16x2 *pScreenPosition);
+extern u8 PersTransformViewPosition(s8x3 *pViewPosition, s16x2 *pScreenPosition) SDCCCALL(0);
 
-extern void PersDrawLines(const u16* pLines, u8 nbLines);
-extern void PersDrawLinesClipXY(const u16* pLines, u8 nbLines);
+extern void PersDrawLines(const u16* pLines, u8 nbLines) SDCCCALL(0);
+extern void PersDrawLinesClipXY(const u16* pLines, u8 nbLines) SDCCCALL(0);
 extern void PersDrawLinesClipXYZ(const u16* pLines, u8 nbLines);
 
-extern u8 PersClipPoint(s8 x, s8 y, s8 z, s8 near);
-extern u8 PersClipBBox(const SBBox *pBBox, s8 x, s8 y, s8 z, s8 near);
+extern u8 PersClipPoint(s8 x, s8 y, s8 z, s8 near) SDCCCALL(0);
+extern u8 PersClipBBox(const SBBox *pBBox, s8 x, s8 y, s8 z, s8 near) SDCCCALL(0);
 
-extern u16 PersCreateBBox(u16 vramOffset, u8 nbVertices);
-extern u8 PersClipBBoxVram(u16 vramOffset, s8 x, s8 y, s8 z, s8 near);
+extern u16 PersCreateBBox(u16 vramOffset, u8 nbVertices) SDCCCALL(0);
+extern u8 PersClipBBoxVram(u16 vramOffset, s8 x, s8 y, s8 z, s8 near) SDCCCALL(0);
 
 extern const SPersScreenPos* PersGetPostions();
 

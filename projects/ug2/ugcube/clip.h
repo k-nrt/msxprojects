@@ -37,13 +37,13 @@ extern SLine16 g_clipLineInOut;
 
 #define Clip_VDPWaitLine() VDPWaitLine(g_clipLineInOut.sx, g_clipLineInOut.sy, g_clipLineInOut.ex, g_clipLineInOut.ey)
 
-s8 ClipLeft();
-s8 ClipRight();
-s8 ClipTop();
-s8 ClipBottom();
-s8 ClipRect();
+s8 ClipLeft() SDCCCALL(0);
+s8 ClipRight() SDCCCALL(0);
+s8 ClipTop() SDCCCALL(0);
+s8 ClipBottom() SDCCCALL(0);
+s8 ClipRect() SDCCCALL(0);
 
-void ClipRect_VDPWaitLine();
+void ClipRect_VDPWaitLine() SDCCCALL(0);
 
 typedef struct 
 {
@@ -53,7 +53,7 @@ typedef struct
 
 extern SLine8x3 g_clipLineS8x3;
 
-s8 ClipLineS8x3(s8 s8Near);
+s8 ClipLineS8x3(s8 s8Near) SDCCCALL(0);
 
 
 #endif //CLIP_H
