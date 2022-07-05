@@ -3,7 +3,7 @@
 
 #include <msx-types.h>
 
-s16 SinCos_GetSin(u8 rot);
+s16 SinCos_GetSin(u8 rot) SDCCCALL(0);
 s16 SinCos_GetCos(u8 rot);
 
 s16 SinCos_MulS8x256(s8 s8Value, s16 s16Sin);

@@ -11,14 +11,14 @@
 #define INT_ENABLE()
 #endif //__INTELLISENSE__
 
-extern u8 SLOTReadDI(u8 iSlot, u16 nAddress);
-extern void SLOTWriteDI(u8 iSlot, u16 nAddress, u8 nParam);
-extern void SLOTEnableDI(u8 iSlot, u16 nAddress);
+extern u8 SLOTReadDI(u8 iSlot, u16 nAddress) SDCCCALL(0);
+extern void SLOTWriteDI(u8 iSlot, u16 nAddress, u8 nParam) SDCCCALL(0);
+extern void SLOTEnableDI(u8 iSlot, u16 nAddress)  SDCCCALL(0);
 
 
 typedef u8 SlotInfo;
 
-extern SlotInfo SLOTGetSlotInfo(u16 address);
+extern SlotInfo SLOTGetSlotInfo(u16 address) SDCCCALL(0);
 #define SlotInfo_HasExtension(_info)  (_info & 0x80)
 #define SlotInfo_PrimarySlot(_info)   (_info & 0x03)
 #define SlotInfo_ExtensionSlot(_info) ((_info >> 2)& 0x03)

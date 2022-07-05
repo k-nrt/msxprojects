@@ -34,7 +34,7 @@ SDCC_FIXED_ADDRESS(0xFCB7) extern u16 GRPACX;
 //! 内容	グラフィックアキュムレータ(Y座標).
 SDCC_FIXED_ADDRESS(0xFCB9) extern u16 GRPACY;
 
-extern void VDPSetDisplayPage(u8 nPage);
+extern void VDPSetDisplayPage(u8 nPage) SDCCCALL(0);
 
 #define VDPSetActivePage(_page) ACPAGE=_page
 #define VDPSetForegroundColor(_color) FORCLR=_color
@@ -42,11 +42,11 @@ extern void VDPSetDisplayPage(u8 nPage);
 #define VDPSetBorderColor(_color) BDRCLR=_color
 #define VDPSetColor(_fg,_bg,_bd) FORCLR=_fg;BAKCLR=_bg;BDRCLR=_bd
 
-void VDPWait();
-void VDPWaitLine(u8 sx, u8 sy, u8 ex, u8 ey);
-void VDPWaitLine2(u8 sx, u8 sy, u8 ex, u8 ey);
+void VDPWait() SDCCCALL(0);
+void VDPWaitLine(u8 sx, u8 sy, u8 ex, u8 ey) SDCCCALL(0);
+void VDPWaitLine2(u8 sx, u8 sy, u8 ex, u8 ey) SDCCCALL(0);
 
-void VDPFill(u8 x, u8 y, u16 w, u16 h);
+void VDPFill(u8 x, u8 y, u16 w, u16 h) SDCCCALL(0);
 
 #define VDPSetPrintPosition(_x,_y) GRPACX=_x;GRPACY=_y
 #define VDPPrint(_x,_y,_string) GRPACX=_x;GRPACY=_y;VDPPrintCore(_string)
@@ -54,13 +54,13 @@ extern void VDPPrintCore(const char *pszString);
 
 #define VDPPrintU8D(_x,_y,_v) GRPACX=_x;GRPACY=_y;VDPPrintU8DCore(_v)
 #define VDPPrintU16D(_x,_y,_v) GRPACX=_x;GRPACY=_y;VDPPrintU16DCore(_v)
-extern void VDPPrintU8DCore(u8 value);
-extern void VDPPrintU16DCore(u16 value);
+extern void VDPPrintU8DCore(u8 value) SDCCCALL(0);
+extern void VDPPrintU16DCore(u16 value) SDCCCALL(0);
 
 #define VDPPrintU8X(_x,_y,_v) GRPACX=_x;GRPACY=_y;VDPPrintU8XCore(_v)
 #define VDPPrintU16X(_x,_y,_v) GRPACX=_x;GRPACY=_y;VDPPrintU16XCore(_v)
-extern void VDPPrintU8XCore(u8 value);
-extern void VDPPrintU16XCore(u16 value);
+extern void VDPPrintU8XCore(u8 value) SDCCCALL(0);
+extern void VDPPrintU16XCore(u16 value) SDCCCALL(0);
 
 extern void VDPPrintF(const char *pszFormat, ...);
 #endif //VDP_COMMAND_H
