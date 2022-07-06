@@ -140,6 +140,14 @@ void main(void)
 	u8 i;
 	u16 nTimer;
 
+	msxBiosInitializeText32Mode();
+	//msxBiosChangeColor(1, 15, 4, 7);
+
+	for(i = 0; i < 128; i++)
+	{
+		msxBiosWriteVRAM(0x1800+i,i);
+	}
+
 	msxBiosInitializeGraphicMode();
 	msxBiosChangeColor( 1, 15, 4, 0 );
 	msxTimerSetCallBack( TimerCallBack ); 
@@ -156,6 +164,9 @@ void main(void)
 
 	msxBiosFillVRAM( 0x1800, 768, 0 );
 	msxBiosFillVRAM( 0x1c00, 768, 0 );
+
+
+
 
 	PersInit();
 
