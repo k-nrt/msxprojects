@@ -8,7 +8,7 @@
 
 #pragma codeseg CODE2
 
-extern void SetTimer(void (pCallBack(void)) );
+extern void SetTimer(void (pCallBack(void)) ) SDCCCALL(0);
 
 u8 g_u8Timer = 0;
 void OnTimer()

@@ -5,7 +5,7 @@
 
 extern void UgxInitialize();
 
-extern u8 UgxGetValueU8(u8 x, u8 z);
+extern u8 UgxGetValueU8(u8 x, u8 z) SDCCCALL(0);
 extern u8 UgxGetValueU16(u16 x, u16 z);
 
 typedef s8x3 SUgxModelVertex;

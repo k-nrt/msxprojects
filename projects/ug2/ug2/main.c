@@ -37,7 +37,7 @@ UgxBuffer g_bufferGridXYVertices[17];
 u8 g_screenFlash = 0;
 
 u8 g_debug = FALSE;
-void UgxCopyToVRAM8Internal(void *pDst, const void* pSrc, u8 sizeInBytes);
+void UgxCopyToVRAM8Internal(void *pDst, const void* pSrc, u8 sizeInBytes) SDCCCALL(0);
 
 void Test()
 {
@@ -161,10 +161,10 @@ void main(void)
 	VDPSetForegroundColor(0x44);
 	VDPWait();
 	VDPFill(0, 0, 256, 212);
+	VDPSetForegroundColor(0xff);
 	VDPPrint(0, 0, "PROJECT UG2");
 
 	UgxInitialize();
-	//UxRenderInit();
 
 	g_bufferGridXYIndices = UgxCreateIndexBuffer(g_modelGridXY.pIndices, g_modelGridXY.nbLines * 2);
 	for (y = 0; y < 17; y++)

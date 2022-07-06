@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-//. ����.
+//. types.
 //-----------------------------------------------------------------------------
 #ifndef __MSX_TYPES_H__
 #define __MSX_TYPES_H__
@@ -17,4 +17,9 @@ typedef u8 bool;
 #define FALSE (0)
 #define NULL  (0)
 
+#if !defined(__INTELLISENSE__)
+#define SDCCCALL(value) __sdcccall(value)
+#endif
+
+#define UNUSED(value) (value)
 #endif //__MSX_TYPES_H__

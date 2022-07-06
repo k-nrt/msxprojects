@@ -1,6 +1,6 @@
 #include "hmmm.h"
 
-void HMMM(u8 sx, u16 sy, u8 w, u8 h, u8 dx, u16 dy)
+void HMMM(u8 sx, u16 sy, u8 w, u8 h, u8 dx, u16 dy) SDCCCALL(0)
 {
 	sx;
 	sy;

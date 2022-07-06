@@ -246,7 +246,7 @@ void UgxCopyToIntenalRAM8Internal(void *pDst, const void* pSrc, u8 sizeInBytes)
 }
 
 
-void UgxCopyToVRAM8Internal(void *pDst, const void* pSrc, u8 sizeInBytes);
+void UgxCopyToVRAM8Internal(void *pDst, const void* pSrc, u8 sizeInBytes) SDCCCALL(0);
 /*
 {
 	register u8 i;
@@ -382,9 +382,9 @@ void UgxBeginFrame()
 
 
 #if 1
-u8 UgxGetValueU16Internal(u16 u16X, u16 u16Z);
+u8 UgxGetValueU16Internal(u16 u16X, u16 u16Z) SDCCCALL(0);
 #else
-u8 UgxGetValueU16Internal(u16 u16X, u16 u16Z)
+u8 U16Internal(u16 u16X, u16 u16Z)
 {
 	register u16 x = u16X;
 	register u16 z = u16Z;
@@ -421,7 +421,7 @@ u8 s_u8ScreenX;
 u8 s_u8ScreenY;
 
 #if 1
-u8 UgxPersXInternal();
+u8 UgxPersXInternal() SDCCCALL(0);
 #else
 u8 UgxPersXInternal()//s16 x, s16 z, u8 *pOutX)
 {
@@ -454,7 +454,7 @@ u8 UgxPersXInternal()//s16 x, s16 z, u8 *pOutX)
 }
 #endif
 #if 1
-u8 UgxPersYInternal();
+u8 UgxPersYInternal() SDCCCALL(0);
 #else
 u8 UgxPersYInternal()//s16 y, s16 z, u8 *pOutY)
 {
@@ -495,7 +495,7 @@ SUgxInternalVertex *g_pOutVertices;
 u8 g_u8Clip;
 
 #if 1
-void UgxPersModelInternal();
+void UgxPersModelInternal() SDCCCALL(0);
 #else
 void UgxPersModelInternal()
 {
@@ -818,7 +818,7 @@ void UgxEndFrame()
 
 
 #if 1
-void UgxOnCommandRenderObjectClip(SUgxCommandRenderObject *pCommand);
+void UgxOnCommandRenderObjectClip(SUgxCommandRenderObject *pCommand) SDCCCALL(0);
 #else
 void UgxOnCommandRenderObjectClip(SUgxCommandRenderObject *pCommand)
 {
@@ -856,7 +856,7 @@ void UgxOnCommandRenderObjectClip(SUgxCommandRenderObject *pCommand)
 #endif
 
 #if 1
-extern void UgxOnCommandRenderObjectNoClip(SUgxCommandRenderObject *pCommand);
+extern void UgxOnCommandRenderObjectNoClip(SUgxCommandRenderObject *pCommand) SDCCCALL(0);
 #else
 void UgxOnCommandRenderObjectNoClip(SUgxCommandRenderObject *pCommand)
 {

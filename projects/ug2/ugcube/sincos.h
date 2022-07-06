@@ -17,15 +17,15 @@ typedef u16 s8XY;
 #define s8XY_GetY(xy) (s8)(xy)
 
 //. get sin/cos low precision
-extern SinCosLp SinCos_GetSinCosLp(u8 rot);
-extern fp2_6 SinCos_GetSinLp(u8 rot);
-extern fp2_6 SinCos_GetCosLp(u8 rot);
+extern SinCosLp SinCos_GetSinCosLp(u8 rot) SDCCCALL(0);
+extern fp2_6 SinCos_GetSinLp(u8 rot) SDCCCALL(0);
+extern fp2_6 SinCos_GetCosLp(u8 rot) SDCCCALL(0);
 
 //. get sin/cos high precision
-extern fp2_14 SinCos_GetSinHp(u8 rot);
-extern fp2_14 SinCos_GetCosHp(u8 rot);
+extern fp2_14 SinCos_GetSinHp(u8 rot) SDCCCALL(0);
+extern fp2_14 SinCos_GetCosHp(u8 rot) SDCCCALL(0);
 
 //. rotate xy low precision
-extern s8XY SinCos_RotateXYS8Lp(s8 x, s8 y, u8 rot);
+extern s8XY SinCos_RotateXYS8Lp(s8 x, s8 y, u8 rot) SDCCCALL(0);
 
 #endif //SINCOS_H
