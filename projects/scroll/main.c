@@ -4,7 +4,7 @@
 
 u8 g_buffer[512];
 
-void DiskRead(void *pAddress, u16 sector, u8 count)
+void DiskRead(void *pAddress, u16 sector, u8 count) SDCCCALL(0)
 {
     UNUSED(pAddress);
     UNUSED(sector);
@@ -36,7 +36,7 @@ void DiskRead(void *pAddress, u16 sector, u8 count)
     __endasm;
 }
 
-void VDPWriteBytes(u8 vramHigh, u16 vramLow, const void *pAddress, u16 size)
+void VDPWriteBytes(u8 vramHigh, u16 vramLow, const void *pAddress, u16 size) SDCCCALL(0)
 {
     UNUSED(vramHigh);
     UNUSED(vramLow);
@@ -111,7 +111,7 @@ void VDPWriteBytes(u8 vramHigh, u16 vramLow, const void *pAddress, u16 size)
     __endasm;
 }
 
-void VDPPaletteWrite(u8 start, const u16 *p0GRB, u8 count)
+void VDPPaletteWrite(u8 start, const u16 *p0GRB, u8 count) SDCCCALL(0) 
 {
     UNUSED(start);
     UNUSED(p0GRB);
@@ -174,7 +174,7 @@ void VDPPaletteWrite(u8 start, const u16 *p0GRB, u8 count)
 //! 内容	ディスプレイページ番号
 SDCC_FIXED_ADDRESS(0xFAF5) u8 DFPAGE;
 
-void VDPSetDisplayPage(u8 nPage)
+void VDPSetDisplayPage(u8 nPage) SDCCCALL(0)
 {
     UNUSED(nPage);
 
@@ -203,7 +203,7 @@ void VDPSetDisplayPage(u8 nPage)
     __endasm;
 }
 
-void VDPCommandHMMM(u16 sx, u16 sy, u16 dx, u16 dy, s16 nx, s16 ny)
+void VDPCommandHMMM(u16 sx, u16 sy, u16 dx, u16 dy, s16 nx, s16 ny) SDCCCALL(0)
 {
     UNUSED(sx);
     UNUSED(sy);
@@ -337,7 +337,7 @@ void VDPCommandHMMM(u16 sx, u16 sy, u16 dx, u16 dy, s16 nx, s16 ny)
     __endasm;
 }
 
-void VDPCommandHMMV(u16 x, u16 y, u16 w, u16 h, u8 fill)
+void VDPCommandHMMV(u16 x, u16 y, u16 w, u16 h, u8 fill) SDCCCALL(0)
 {
     UNUSED(x);
     UNUSED(y);
@@ -456,7 +456,7 @@ void VDPCommandWait()
     __endasm;
 }
 
-void VDPSetAdjust(s8 x, s8 y)
+void VDPSetAdjust(s8 x, s8 y) SDCCCALL(0)
 {
     UNUSED(x);
     UNUSED(y);
