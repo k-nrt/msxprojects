@@ -13,9 +13,9 @@ set MsxCcSrc=msx-timer.c msx-sprite.c msx-rand.c
 set ProjectAsmSrc=
 set ProjectCcSrc=main.c sprite_blinker.c
 
-python bmp2sprite.py galaxy.png --output galaxy_sprite.inl
+"%BinPath%\bmp2sprite.exe" galaxy.png --output galaxy_sprite.inl
 if %errorlevel% neq 0 (
-    goto end_of_bat
+    goto :end_of_bat
 )
 
 call %ProjectDir%\..\build\build-32k-rom.bat

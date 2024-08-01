@@ -1,13 +1,19 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29009.5
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34330.188
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "msxbmp2mc", "msxbmp2mc\msxbmp2mc.csproj", "{B5ED65BE-C008-41C4-B248-1B0A1B73819A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bmp2sprite", "bmp2sprite\bmp2sprite.csproj", "{4ED93194-D87C-4842-A509-6B15AAA6394A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "bmp2cell", "bmp2cell\bmp2cell.csproj", "{A431111A-2F99-4554-85D3-E8D32A698FD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ihx2bin", "ihx2bin\ihx2bin.csproj", "{05661407-8769-4E10-AF51-10250F8ADF8B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "makedsk", "makedsk\makedsk.csproj", "{0000CD47-5579-4E8D-A0E7-4D3DE7A27B71}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "writedsk", "writedsk\writedsk.csproj", "{BE776694-5412-4EAA-9371-986BFD924D91}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +33,18 @@ Global
 		{A431111A-2F99-4554-85D3-E8D32A698FD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A431111A-2F99-4554-85D3-E8D32A698FD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A431111A-2F99-4554-85D3-E8D32A698FD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{05661407-8769-4E10-AF51-10250F8ADF8B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{05661407-8769-4E10-AF51-10250F8ADF8B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{05661407-8769-4E10-AF51-10250F8ADF8B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{05661407-8769-4E10-AF51-10250F8ADF8B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0000CD47-5579-4E8D-A0E7-4D3DE7A27B71}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0000CD47-5579-4E8D-A0E7-4D3DE7A27B71}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0000CD47-5579-4E8D-A0E7-4D3DE7A27B71}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0000CD47-5579-4E8D-A0E7-4D3DE7A27B71}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE776694-5412-4EAA-9371-986BFD924D91}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE776694-5412-4EAA-9371-986BFD924D91}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE776694-5412-4EAA-9371-986BFD924D91}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE776694-5412-4EAA-9371-986BFD924D91}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
