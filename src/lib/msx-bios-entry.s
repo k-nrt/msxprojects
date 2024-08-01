@@ -1,0 +1,50 @@
+;------------------------------------------------------------------------------
+; BIOS
+;------------------------------------------------------------------------------
+; MSX-DOS.
+RDSLT	= 0x000C
+WRSLT	= 0x0014
+CALSLT	= 0x001C
+ENASLT	= 0x0024
+CALLF	= 0x0030
+INTRPT	= 0x0038
+
+; MAIN-ROM.
+DISSCR	= 0x0041
+ENASCR	= 0x0044
+WRTVDP	= 0x0047
+RDVRM	= 0x004A
+WRTVRM	= 0x004D
+SETRD	= 0x0050
+SETWRT	= 0x0053
+FILVRM	= 0x0056
+LDIRMV	= 0x0059
+LDIRVM	= 0x005C
+CHGMOD	= 0x005F
+CHGCLR	= 0x0062
+CLRSPR	= 0x0069
+GRPPRT	= 0x008D
+
+WRTPSG	= 0x0093
+RDPSG	= 0x0096
+
+GTSTCK	= 0x00D5
+GTTRIG	= 0x00D8
+
+RDVDP	= 0x013E
+SNSMAT	= 0x0141
+
+KILBUF	= 0x0156
+
+; MSX2 MAIN-ROM.
+SUBROM	= 0x015C
+EXTROM	= 0x015F
+BIGFIL	= 0x016B
+NSETRD	= 0x016E
+NSTWRT	= 0x0171
+NRDVRM	= 0x0174
+NWRVRM	= 0x0177
+
+; SUB-ROM.
+SETPAG	= 0x013D
+
