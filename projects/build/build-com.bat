@@ -17,14 +17,14 @@ set Crt0Output=%OutDir%\crt0-com.s.rel
 
 call "%BuildRoot%\build.bat"
 if %errorlevel% neq 0 (
-	goto error_end_of_bat
+	goto :error_end_of_bat
 )
 
 "%BinPath%\ihx2bin.exe" -input "%OutDir%\%OutName%.ihx" -output "%OutDir%\%OutName%.com"
 
 if %errorlevel% neq 0 (
 	echo error in %OutDir%\%OutName%.ihx
-	goto error_end_of_bat
+	goto :error_end_of_bat
 )
 
 :end_of_bat
