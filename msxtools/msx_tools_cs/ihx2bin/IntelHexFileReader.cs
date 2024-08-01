@@ -11,6 +11,8 @@ namespace ihx2bin
         public IntelHexFileReader(StreamReader reader)
         {
             m_image = new byte[65536];
+            m_addressMin = m_image.Length;
+            m_addressMax = 0;
 
             while(true)
             {
@@ -32,6 +34,15 @@ namespace ihx2bin
 
                 if (type == 0x00)
                 {
+                    if (offset < m_addressMin)
+                    {
+                        m_addressMin = offset;
+                    }
+
+                    if (m_addressMax < (offset + length - 1))
+                    {
+                        m_addressMax = offset + length - 1;
+                    }
                     //. フツーのバイナリ.
                     for (int i = 0; i < length; i++)
                     {
@@ -75,6 +86,18 @@ namespace ihx2bin
             get { return m_image; }
         }
 
+        public int AddressMin
+        {
+            get { return m_addressMin;}
+        }
+
+        public int AddressMax
+        {
+            get { return m_addressMax;}
+        }
+
         private byte[] m_image;
+        private int m_addressMin;
+        private int m_addressMax;
     }
 }

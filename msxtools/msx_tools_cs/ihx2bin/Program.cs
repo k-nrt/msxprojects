@@ -11,6 +11,8 @@ namespace ihx2bin
         {
             string inputPathName = null;
             string outputPathName = null;
+
+            bool enableOutputRegieon = false;
             int offset = 0;
             int size = 65536;
 
@@ -54,6 +56,7 @@ namespace ihx2bin
                         Console.Error.WriteLine("Can not parse offset value.");
                         return 1;
                     }
+                    enableOutputRegieon = true;
                     i++;
                 }
                 else if (args[i] == "-size")
@@ -68,6 +71,7 @@ namespace ihx2bin
                         Console.Error.WriteLine("Can not parse size value.");
                         return 1;
                     }
+                    enableOutputRegieon = true;
                     i++;
                 }
             }
@@ -81,18 +85,6 @@ namespace ihx2bin
             if (outputPathName == null)
             {
                 Console.Error.WriteLine("Output path is not specified.");
-                return 1;
-            }
-
-            if (offset < 0 || 65536 <= offset)
-            {
-                Console.Error.WriteLine("Output offset is out of range.");
-                return 1;
-            }
-
-            if (size <= 0 || 65536 <= (offset + size))
-            {
-                Console.Error.WriteLine("Output size is out of range.");
                 return 1;
             }
 
@@ -114,6 +106,29 @@ namespace ihx2bin
                 Console.Error.WriteLine(string.Format("Can not open {0}", outputPathName));
                 return 1;
             }
+
+            if (!enableOutputRegieon)
+            {
+                offset = intelHexFileReader.AddressMin;
+                size = intelHexFileReader.AddressMax - intelHexFileReader.AddressMin + 1;
+
+                Console.WriteLine(string.Format("Begin : {0:X}", intelHexFileReader.AddressMin));
+                Console.WriteLine(string.Format("End   : {0:X}", intelHexFileReader.AddressMax));
+            }
+
+            if (offset < 0 || 65536 <= offset)
+            {
+                Console.Error.WriteLine("Output offset is out of range.");
+                return 1;
+            }
+
+            if (size <= 0 || 65536 <= (offset + size))
+            {
+                Console.Error.WriteLine("Output size is out of range.");
+                return 1;
+            }
+
+
             fileStream.Write(intelHexFileReader.Image, offset, size);
             fileStream.Close();
 
