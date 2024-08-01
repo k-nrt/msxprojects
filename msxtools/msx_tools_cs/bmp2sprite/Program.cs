@@ -3,44 +3,88 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.IO;
+using System.Security.Permissions;
 
 namespace bmp2sprite
 {
 	class Program
 	{
-		static void Main(string[] args)
+		static int Main(string[] args)
 		{
 			string strInputName = "";
 			string strOutputName = "";
 
             Rectangle rectPalette = new Rectangle(0, 0, 0, 0);
-            Rectangle rectPatterns = new Rectangle(0, 0, 8 * 16, 8 * 16);
+            Rectangle rectPatterns = new Rectangle(0, 0, 0, 0);
+            bool enablePatternRegion = false;
 
             ColorSpace colorSpace = new ColorSpaceYCbCr();
 
             bool isSpriteMode2 = false;
+            Mode mode = Mode.Size16x16;
 
 			for( int i = 0 ; i < args.Length ; i++ )
 			{
 				switch( args[i] )
 				{
-					case "-o":
+					case "--output":
+                        if (args.Length <= (i+1))
+                        {
+                            Console.Error.WriteLine("Not specified output file.");
+                            return 1;
+                        }
 						strOutputName = args[i+1];
 						i++;
 						break;
 
-                    case "-palette":
+                    case "--palette":
+                        if (args.Length <= (i+4))
+                        {
+                            Console.Error.WriteLine("Not specified palette region.");
+                            return 1;
+                        }
                         rectPalette = new Rectangle(int.Parse(args[i + 1]), int.Parse(args[i + 2]), int.Parse(args[i + 3]), int.Parse(args[i + 4]));
                         i += 4;
                         break;
 
-                    case "-pattern":
+                    case "--pattern":
+                        if (args.Length <= (i+4))
+                        {
+                            Console.Error.WriteLine("Not specified pattern region.");
+                            return 1;
+                        }
+                        enablePatternRegion = true;
                         rectPatterns = new Rectangle(int.Parse(args[i + 1]), int.Parse(args[i + 2]), int.Parse(args[i + 3]), int.Parse(args[i + 4]));
                         i += 4;
                         break;
 
-                    case "-spritemode2":
+                    case "--spritemode2":
                         isSpriteMode2 = true;
+                        break;
+
+                    case "--size":
+                        if (args.Length <= (i+1))
+                        {
+                            Console.Error.WriteLine("Not specified sprite size.");
+                            return 1;
+                        }
+                        else
+                        {
+                            if (args[i+1] == "8x8")
+                            {
+                                mode = Mode.Size8x8;
+                            }
+                            else if (args[i+1] == "16x16")
+                            {
+                                mode = Mode.Size16x16;
+                            }
+                            else
+                            {
+                                Console.Error.WriteLine("Invalid argument.");
+                                return 1;
+                            }
+                        }
                         break;
 
 					default:
@@ -51,81 +95,137 @@ namespace bmp2sprite
 
 			if( strInputName == "" )
 			{
-				return;
+                Console.Error.WriteLine("Not specified input file.");
+				return 1;
 			}
 
 			if( strOutputName == "" )
 			{
-				return;
+                Console.Error.WriteLine("Not specified output file.");
+				return 1;
 			}
+            
+            if (!File.Exists(strInputName))
+            {
+                Console.Error.WriteLine(string.Format("Not found input file {0}", strInputName));
+                return 1;
+            }
 
-			Bitmap bitmap = new Bitmap( strInputName );
+			Bitmap bitmap = new Bitmap(strInputName);
+            if (bitmap == null)
+            {
+                Console.Error.WriteLine(string.Format("Not supported image format {0}", strInputName));
+                return 1;
+            }
 
-            ColorList colorList = CreatePalette(bitmap, rectPalette);
+            StreamWriter writer = new StreamWriter(strOutputName);
+            if (writer == null)
+            {
+                Console.Error.WriteLine(string.Format("Can not open output file {0}", strOutputName));
+                return 1;
+            }
 
-            CreateSpriteMode2(strOutputName, bitmap, rectPatterns, colorList, colorSpace);
+            if (!enablePatternRegion)
+            {
+                rectPatterns = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
+            }
 
-            Bitmap test = ReduceColors(bitmap, rectPatterns, colorList );
-            test.Save("test.bmp");
+            if (isSpriteMode2)
+            {
+                ColorList colorList = CreatePalette(bitmap, rectPalette);
 
-            /*
+                WriteSpriteMode2(writer, bitmap, rectPatterns, colorList, colorSpace);
 
-			System.IO.StreamWriter writer = new System.IO.StreamWriter(strOutputName);
+                //Bitmap test = ReduceColors(bitmap, rectPatterns, colorList);
+                //test.Save("test.bmp");
+            }
+            else
+            {
+                WriteSpriteMode1(writer, bitmap, rectPatterns, mode);
+            }
 
+            writer.Close();
+            return 0;
+        }
+
+        enum Mode
+        {
+            Size8x8,
+            Size16x16,
+        }
+
+        private static void WriteSpriteMode1(StreamWriter writer, Bitmap bitmap, Rectangle rectPatterns, Mode mode)
+        { 
 			Color colorZero = bitmap.GetPixel(0, 0);
+            int unit = mode == Mode.Size8x8 ? 8 : 16;
 
-			int nXCount = bitmap.Width/16;
-			int nYCount = bitmap.Height/16;
-
-			for (int y = 0; y < nYCount; y++)
+			for (int y = 0; y < rectPatterns.Height; y += unit)
 			{
-				for (int x = 0; x < nXCount; x++)
+                if (rectPatterns.Height < y + unit)
+                {
+                    continue;
+                }
+                
+                for (int x = 0; x < rectPatterns.Width; x += unit)
 				{
-					writer.Write("\t");
+                    if (rectPatterns.Width < x + unit)
+                    {
+                        continue;
+                    }
 
-					//. 左半分.
-					for (int yy = 0; yy < 16; yy++)
-					{
-						int nBits = 0;
-						for (int xx = 0; xx < 8; xx++)
-						{
-							if (bitmap.GetPixel(x * 16 + xx, y * 16 + yy) != colorZero)
-							{
-								nBits |= 0x80 >> xx;
-							}
-						}
+                    writer.Write('\t');
 
-						writer.Write( string.Format( "0x{0:X2},", nBits ) ); 
-					}
+                    if (mode == Mode.Size8x8)
+                    {
+                        for (int yy = 0; yy < 8; yy++)
+                        {
+                            int bits = 0;
+                            for (int xx = 0; xx < 8; xx++)
+                            {
+                                if (bitmap.GetPixel(x + xx, y + yy) != colorZero)
+                                {
+                                    bits |= 0x80 >> xx;
+                                }
+                            }
+                            writer.Write(string.Format("0x{0:X2},", bits));
+                        }
+                        writer.WriteLine();
+                    }
+                    else
+                    { 
+					    //. 左半分.
+					    for (int yy = 0; yy < 16; yy++)
+					    {
+						    int bits = 0;
+						    for (int xx = 0; xx < 8; xx++)
+						    {
+							    if (bitmap.GetPixel(x + xx, y + yy) != colorZero)
+							    {
+								    bits |= 0x80 >> xx;
+							    }
+						    }
+						    writer.Write(string.Format( "0x{0:X2},", bits)); 
+					    }
+					    writer.Write(" ");
 
-					writer.Write( " " );
+					    //. 右半分.
+					    for (int yy = 0; yy < 16; yy++)
+					    {
+						    int bits = 0;
+						    for (int xx = 0; xx < 8; xx++)
+						    {
+							    if (bitmap.GetPixel(x + xx + 8, y + yy) != colorZero)
+							    {
+								    bits |= 0x80 >> xx;
+							    }
+						    }
 
-					//. 右半分.
-					for (int yy = 0; yy < 16; yy++)
-					{
-						int nBits = 0;
-						for (int xx = 0; xx < 8; xx++)
-						{
-							if (bitmap.GetPixel(x * 16 + xx + 8, y * 16 + yy) != colorZero)
-							{
-								nBits |= 0x80 >> xx;
-							}
-						}
-
-						writer.Write( string.Format( "0x{0:X2},", nBits ) ); 
-
-						if( yy < 15 )
-						{
-//							writer.Write( "," );
-						}
-					}
-
-					writer.WriteLine();
+						    writer.Write(string.Format("0x{0:X2},", bits)); 
+					    }
+					    writer.WriteLine();
+                    }
 				}
 			}
-
-			writer.Close();
-             */
 		}
 
 		static Color[] s_colors = new Color[15]
@@ -222,10 +322,8 @@ namespace bmp2sprite
             }
         }
 
-        static void CreateSpriteMode2( string strOutputName, Bitmap bitmap, Rectangle rectPatterns, ColorList colorList, ColorSpace colorSpace )
+        static void WriteSpriteMode2(StreamWriter writer, Bitmap bitmap, Rectangle rectPatterns, ColorList colorList, ColorSpace colorSpace)
         {
-            System.IO.StreamWriter writer = new System.IO.StreamWriter(strOutputName);
-
             for (int y = 0; y < rectPatterns.Height; y += 16)
             {
                 int yy = rectPatterns.Y + y;
@@ -308,8 +406,6 @@ namespace bmp2sprite
                     }
                 }
             }
-
-            writer.Close();
         }
 
         static Dictionary<int,int> FindColors(Bitmap bitmap,int x, int y, ColorList colorList, ColorSpace colorSpace )
