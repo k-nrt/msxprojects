@@ -19,6 +19,8 @@ typedef u8 bool;
 
 #if !defined(__INTELLISENSE__)
 #define SDCCCALL(value) __sdcccall(value)
+#else
+#define SDCCCALL(value)
 #endif
 
 #define UNUSED(value) (value)
