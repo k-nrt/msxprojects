@@ -333,9 +333,9 @@ L2_SET_DY:
 	
 	ret
 
-	.area	_DATA
+	.area	_INITIALIZED
 _L2_MAJH:
-	.db		0
+	.ds		1
 
 ;------------------------------------------------------------------------------
 ; extern void VDPFill( u8 x, u8 y, u16 w, u16 h ); 
