@@ -22,8 +22,8 @@ enum EMtkInput
 };
 
 extern SMtkInput g_mtkInput;
-extern void MtkInputInit();
-extern void MtkInputScan();
+extern void MtkInputInit(void);
+extern void MtkInputScan(void);
 
 #define MtkInputIsDown(input)    (g_mtkInput.m_down    & (input))
 #define MtkInputIsUp(input)      (g_mtkInput.m_up      & (input))

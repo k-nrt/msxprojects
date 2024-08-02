@@ -4,12 +4,12 @@
 #pragma codeseg CODE2
 
 SMtkPlayer g_mtkPlayer;
-void MtkPlayerInit()
+void MtkPlayerInit(void)
 {
 	s16x3Set(g_mtkPlayer.m_velocity,0,0,0);
 }
 
-void MtkPlayerUpdate()
+void MtkPlayerUpdate(void)
 {
 	s16 vx = g_mtkPlayer.m_velocity.x;
 	s16 vy = g_mtkPlayer.m_velocity.y;

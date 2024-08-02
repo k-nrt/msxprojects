@@ -46,7 +46,7 @@ extern void VDPSetDisplayPage(u8 nPage);
 #define VDPSetBorderColor(_color) BDRCLR=_color
 #define VDPSetColor(_fg,_bg,_bd) FORCLR=_fg;BAKCLR=_bg;BDRCLR=_bd
 
-void VDPWait() SDCCCALL(0);
+void VDPWait(void) SDCCCALL(0);
 void VDPWaitLine(u8 sx, u8 sy, u8 ex, u8 ey) SDCCCALL(0);
 void VDPWaitLine2(u8 sx, u8 sy, u8 ex, u8 ey) SDCCCALL(0);
 

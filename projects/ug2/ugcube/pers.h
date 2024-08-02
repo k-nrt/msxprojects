@@ -96,7 +96,7 @@ extern u8 PersClipBBox(const SBBox *pBBox, s8 x, s8 y, s8 z, s8 near) SDCCCALL(0
 extern u16 PersCreateBBox(u16 vramOffset, u8 nbVertices) SDCCCALL(0);
 extern u8 PersClipBBoxVram(u16 vramOffset, s8 x, s8 y, s8 z, s8 near) SDCCCALL(0);
 
-extern const SPersScreenPos* PersGetPostions();
+extern const SPersScreenPos* PersGetPostions(void);
 
 #define PersTransform_Pointers     (0xC000) //. 2*128 entries.
 #define PersTransform_Left         (0xC100) //. 1*128 entries.

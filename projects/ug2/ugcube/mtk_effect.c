@@ -5,7 +5,7 @@
 
 SMtkEffect g_mtkEfects[MTK_EFFECT_MAX];
 
-void MtkEffectInit()
+void MtkEffectInit(void)
 {
 	u8 i;
 	SMtkEffect *pEffect = g_mtkEfects;
@@ -39,7 +39,7 @@ u8 MtkEffectSpawn(enum EMtkEffectType type, const s16x3 *pPosition, const s16x3 
 	return FALSE;
 }
 
-void MtkEffectUpdate()
+void MtkEffectUpdate(void)
 {
 	u8 i;
 	SMtkEffect *pEffect = g_mtkEfects;

@@ -5,7 +5,7 @@
 #pragma codeseg CODE2
 
 SMtkEnemy g_mtkEnemies[MTK_ENEMY_MAX];
-void MtkEnemyInit()
+void MtkEnemyInit(void)
 {
 	u8 i;
 	SMtkEnemy *pEnemy = g_mtkEnemies;
@@ -22,7 +22,7 @@ void MtkEnemyInit()
 	}
 }
 
-void MtkEnemyUpdate()
+void MtkEnemyUpdate(void)
 {
 	u8 i;
 	SMtkEnemy *pEnemy;

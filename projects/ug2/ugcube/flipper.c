@@ -45,7 +45,7 @@ void FlipperInit
     VDPPaletteWrite(s_pConfig->m_clearValue & 0x0f, &g_flipper.m_u16Background0GRB, 1);
 }
 
-void FlipperTerm()
+void FlipperTerm(void)
 {
     msx2BiosChangeModePalette(5);
     VDPSetActivePage(0);
@@ -65,19 +65,19 @@ void FlipperPrint(u16 x, u16 y, u8 color, const char *pszText)
     VDPSetActivePage(g_flipper.m_u8ActivePage);
 }
 
-void FlipperClear()
+void FlipperClear(void)
 {
     const SFlipperTile *pTile = g_flipper.m_pTile;
     VDPSetForegroundColor(s_pConfig->m_clearValue);
 	VDPFill(pTile->x, pTile->y, pTile->w, pTile->h);
 }
 
-void FlipperApplyForegroundColor()
+void FlipperApplyForegroundColor(void)
 {
     VDPSetForegroundColor(g_flipper.m_u8Tile);
 }
 
-void FlipperFlip()
+void FlipperFlip(void)
 {
     if (!g_flipper.m_u8ActivePage)
     {

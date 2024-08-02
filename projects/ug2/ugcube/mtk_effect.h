@@ -19,8 +19,8 @@ enum EMtkEffectType
 
 #define MTK_EFFECT_MAX (3)
 extern SMtkEffect g_mtkEfects[MTK_EFFECT_MAX];
-extern void MtkEffectInit();
+extern void MtkEffectInit(void);
 extern u8 MtkEffectSpawn(enum EMtkEffectType type, const s16x3 *pPosition, const s16x3 *pVelocity);
-extern void MtkEffectUpdate();
+extern void MtkEffectUpdate(void);
 
 #endif //MTK_EFFECT_H

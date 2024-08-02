@@ -6,7 +6,7 @@
 
 SMtkShot g_mtkShots[MTK_SHOT_MAX];
 
-void MtkShotInit()
+void MtkShotInit(void)
 {
 	u8 i;
 	SMtkShot *pShot = g_mtkShots;
@@ -19,7 +19,7 @@ void MtkShotInit()
 	}
 }
 
-void MtkShotUpdate()
+void MtkShotUpdate(void)
 {
 	u8 i;
 	SMtkShot *pShot = g_mtkShots;

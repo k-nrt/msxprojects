@@ -16,7 +16,7 @@ void Test_DrawTitle(const char *pszTitle)
 	VDPPrint(0,0,pszTitle);
 }
 
-void Test_DrawTimerAndWait()
+void Test_DrawTimerAndWait(void)
 {
 	volatile u8 u8Timer = g_u8Timer;
 	VDPSetForegroundColor(0xff);

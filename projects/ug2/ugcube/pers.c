@@ -24,8 +24,8 @@ SDCC_FIXED_ADDRESS(PersTransform_RcpZ)     u16  s_u16TransformRcpZ[128];
 //. transform positions.
 SDCC_FIXED_ADDRESS(PersTransform_Positions)  u8  s_u8TransformPositions[];
 
-static void PersMakeTransformTable();
-static void PersMakeTransformRcpZTable();
+static void PersMakeTransformTable(void);
+static void PersMakeTransformRcpZTable(void);
 
 void PersInit
 (
@@ -58,7 +58,7 @@ void PersInit
     PersMakeTransformRcpZTable();
 }
 
-static void PersMakeTransformRcpZTable()
+static void PersMakeTransformRcpZTable(void)
 {
     u8 z;
     u16 u16ScreenZ = ((u16)g_persContext.m_s16ScreenZ) << 8;
@@ -77,7 +77,7 @@ static void PersMakeTransformRcpZTable()
     }
 }
 
-void PersMakeTransformTable()
+void PersMakeTransformTable(void)
 {
     const s8 s8ClipNear = g_persContext.m_s8ClipNear;
     const s16 s16ScreenX = g_persContext.m_s16ScreenX;
@@ -341,7 +341,7 @@ void PersSetViewport(s16 left, s16 top, s16 right, s16 bottom)
     Clip_SetRect(left,right,top,bottom);
 }
 
-const SPersScreenPos* PersGetPostions()
+const SPersScreenPos* PersGetPostions(void)
 {
     return s_screenPositions;
 }
