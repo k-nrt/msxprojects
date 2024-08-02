@@ -9,7 +9,7 @@ typedef struct tMtkPlayer
 } SMtkPlayer;
 extern SMtkPlayer g_mtkPlayer;
 
-extern void MtkPlayerInit();
-extern void MtkPlayerUpdate();
+extern void MtkPlayerInit(void);
+extern void MtkPlayerUpdate(void);
 
 #endif //MTK_PLAYER_H

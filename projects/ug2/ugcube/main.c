@@ -9,7 +9,7 @@
 #pragma codeseg CODE2
 
 u8 g_u8Timer = 0;
-void OnTimer()
+void OnTimer(void)
 {
 	g_u8Timer++;
 }

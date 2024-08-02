@@ -32,7 +32,7 @@ typedef struct tFlipper
     u8 m_u8DisplayPage;
     u8 m_u8ActivePage;
     u8 m_u8Tile;
-    SFlipperTile *m_pTile;
+    const SFlipperTile *m_pTile;
 
     u16 m_u16Background0GRB;    //< background palette.
     u16 m_u16Foreground0GRB;    //< foreground palette.
@@ -48,19 +48,19 @@ extern void FlipperInit
     u16 u16Foreground0GRB           //< foreground palette.
 );
 
-extern void FlipperTerm();
+extern void FlipperTerm(void);
 
 extern void FlipperSetForegroundColor(u16 u160GRB);
 
 extern void FlipperPrint(u16 x, u16 y, u8 color, const char *pszText);
 
 //! clear screen.
-extern void FlipperClear();
+extern void FlipperClear(void);
 
 //! apply current foreground color code to FORCLR
-extern void FlipperApplyForegroundColor();
+extern void FlipperApplyForegroundColor(void);
 
 //! flip page and palettes.
-extern void FlipperFlip();
+extern void FlipperFlip(void);
 
 #endif //FLIPPER_H

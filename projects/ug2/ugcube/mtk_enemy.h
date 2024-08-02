@@ -20,7 +20,7 @@ enum EMtkEnemyStatus
 #define MTK_ENEMY_MAX (3)
 extern SMtkEnemy g_mtkEnemies[MTK_ENEMY_MAX];
 
-extern void MtkEnemyInit();
-extern void MtkEnemyUpdate();
+extern void MtkEnemyInit(void);
+extern void MtkEnemyUpdate(void);
 
 #endif //MTK_ENEMY_H

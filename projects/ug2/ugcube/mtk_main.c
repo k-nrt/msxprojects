@@ -30,7 +30,7 @@ static u16 s_vertices[64];
 
 extern u8 g_u8Timer;
 
-void WaitVSync()
+void WaitVSync(void)
 {
 	volatile u8 u8Timer = g_u8Timer;
 	while(u8Timer == g_u8Timer);
@@ -87,7 +87,7 @@ const s16 kMtk_ViewportBottom = 16 + 96 + 96 - 1;
 s8x3 g_mtkStars[MTK_STAR_MAX];
 s8x3 g_mtkStarPosition;
 
-void MtkStarInit()
+void MtkStarInit(void)
 {
 	u8 i;
 	s8x3 *pStar = g_mtkStars;
@@ -104,14 +104,14 @@ void MtkStarInit()
 	s8x3Set(g_mtkStarPosition, 0, 0, 0);
 }
 
-void MtkStarUpdate()
+void MtkStarUpdate(void)
 {
 	s8x3Op(g_mtkStarPosition, g_mtkStarPosition, -, g_mtkPlayer.m_velocity);
 }
 
-extern void MtkStarRender();
+extern void MtkStarRender(void);
 
-void MtkInit()
+void MtkInit(void)
 {
 	msxRandInit(0x53, 0x94a1);
 

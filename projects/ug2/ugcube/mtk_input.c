@@ -4,7 +4,7 @@
 #pragma codeseg CODE2
 
 SMtkInput g_mtkInput;
-void MtkInputInit()
+void MtkInputInit(void)
 {
 	g_mtkInput.m_down = 0;
 	g_mtkInput.m_up = 0xff;
@@ -12,7 +12,7 @@ void MtkInputInit()
 	g_mtkInput.m_release = 0;
 }
 
-void MtkInputScan()
+void MtkInputScan(void)
 {
 	u8 down = 0;
 	u8 i;

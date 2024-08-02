@@ -17,7 +17,7 @@ extern void Test_BBoxClip(const char* pszTitle);
 
 //. test.c
 extern void Test_DrawTitle(const char *pszTitle);
-extern void Test_DrawTimerAndWait();
+extern void Test_DrawTimerAndWait(void);
 extern void Test_WaitForTrigger(const char *pszTitle);
 extern void Test(const char *pszTitle);
 

@@ -20,7 +20,7 @@ enum EMtkShotStatus
 #define MTK_SHOT_MAX (4)
 extern SMtkShot g_mtkShots[MTK_SHOT_MAX];
 
-extern void MtkShotInit();
-extern void MtkShotUpdate();
+extern void MtkShotInit(void);
+extern void MtkShotUpdate(void);
 
 #endif //MTK_SHOT_H
