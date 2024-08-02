@@ -1,21 +1,21 @@
 ;------------------------------------------------------------------------------
 ; clip
 ;------------------------------------------------------------------------------
-    .area   _DATA
+    .area   _INITIALIZED
     .globl  _g_clipRect
     .globl  _g_clipLineInOut
 
 _g_clipRect:
-    .dw     0   ; left
-    .dw     0   ; right
-    .dw     0   ; top
-    .dw     0   ; bottom
+    .ds     2   ; left
+    .ds     2   ; right
+    .ds     2   ; top
+    .ds     2   ; bottom
 
 _g_clipLineInOut:
-    .dw     0   ; sx
-    .dw     0   ; sy
-    .dw     0   ; ex
-    .dw     0   ; ey
+    .ds     2   ; sx
+    .ds     2   ; sy
+    .ds     2   ; ex
+    .ds     2   ; ey
 
 ;------------------------------------------------------------------------------
     .area	_CODE
@@ -412,17 +412,17 @@ IntersectZero_Zero_Half_Inner:   ; outer----zero----half----inner
 ;------------------------------------------------------------------------------
 ; s8 ClipLineS8x3(s8 s8Near);
 ;------------------------------------------------------------------------------
-                .area   _DATA
+                .area   _INITIALIZED
                 .globl  _g_clipLineS8x3
                 
 _g_clipLineS8x3:
-    .byte     0
-    .byte     0
-    .byte     0
+	.ds	1
+	.ds	1
+	.ds	1
 
-    .byte     0
-    .byte     0
-    .byte     0
+	.ds	1
+	.ds	1
+	.ds	1
 
                 .area   _CODE
                 .globl  _ClipLineS8x3

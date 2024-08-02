@@ -8,8 +8,6 @@
 
 #pragma codeseg CODE2
 
-extern void SetTimer(void (pCallBack(void)) ) SDCCCALL(0);
-
 u8 g_u8Timer = 0;
 void OnTimer()
 {
@@ -27,7 +25,7 @@ void Init(void)
 	msxBiosChangeColor(6, 15, 1, 7);
 
 	g_u8Timer = 0;
-	SetTimer(OnTimer);
+	msxTimerSetCallBack(OnTimer);
 
 	VDPSetForegroundColor(0x11);
 	VDPFill(0,0,256,212);

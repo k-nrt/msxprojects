@@ -6,6 +6,9 @@ set ProjectDir=%ProjectDir:\build.bat=%
 set OutName=ugcube
 set OutDir=%ProjectDir%\Release
 set BinPath=%ProjectDir%\..\..\bin
+rem set System=msx-dos
+set System=rom32k
+set DskDir=%ProjectDir%\dsk
 
 set SdccAsmSrc=divunsigned.s mul.s __sdcc_call_hl.s divsigned.s __sdcc_call_iy.s
 set MsxAsmSrc=msx-bios-wrapper.s
@@ -24,8 +27,37 @@ set ProjectCcSrc=%ProjectCcSrc% mtk_main.c mtk_mesh.c mtk_model.c mtk_input.c mt
 set DataLoc=0xe000
 set AdditionalLinkerOptions=-Wl -b_CODE2=0x8000
 
-call %ProjectDir%\..\..\build\build-32k-rom.bat
+if "%System%" equ "msx-dos" (
+	set AdditionalCcOptions=-DSYSTEM_MSXDOS
+
+	call "%ProjectDir%\..\..\build\build-com.bat"
+	if !ErrorLevel! neq 0 (goto :error_end_of_bat)
+
+	if not exist "!DskDir!" (
+		mkdir "!DskDir!"
+		if !ErrorLevel! neq 0 (
+			echo can not create !DskDir!
+			goto :error_end_of_bat
+		)
+	)
+
+	copy "%OutDir%\%OutName%.com" "!DskDir!\%Outname%.com"
+
+) else if "%System%" equ "rom32k" (
+	set AdditionalCcOptions=-DSYSTEM_ROM32K
+
+	call %ProjectDir%\..\..\build\build-32k-rom.bat
+	if !ErrorLevel! neq 0 (goto :error_end_of_bat)
+
+) else (
+	echo unknown system
+	goto :error_end_of_bat
+)
 
 :end_of_bat
 endlocal
-exit /b
+exit /b 0
+
+:error_end_of_bat
+endlocal
+exit /b 1
