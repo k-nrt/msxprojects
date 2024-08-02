@@ -74,7 +74,7 @@ for %%i in (%SdccAsmSrc%) do (
 if "%SdccAsmSrc%" neq "" (
 	set SdccAsmOutputs=%OutDir%\sdcc-asm-libs.s.rel
 	"%Sdasz80Exe%" -o "!SdccAsmOutputs!" %SdccAsmSrcs%
-	if %errorlevel% neq 0 (
+	if !errorlevel! neq 0 (
 		echo error in %SdccAsmSrcs%
 		goto :error_end_of_bat
 	)
@@ -88,7 +88,7 @@ for %%i in (%MsxAsmSrc%) do (
 	rem echo !InputPath! !OutputPath!
 	echo %%i
 	"%Sdasz80Exe%" -o "!OutputPath!" "!InputPath!"
-	if %errorlevel% neq 0 (
+	if !errorlevel! neq 0 (
 		echo error in !InputPath!
 		goto :error_end_of_bat
 	)
@@ -103,7 +103,7 @@ for %%i in (%MsxCcSrc%) do (
 	rem echo !InputPath! !OutputPath!
 	echo %%i
 	"%SdccExe%" "!InputPath!" -c -I"%BuildRoot%\..\..\include" -o "!OutputPath!" %CcOptions%
-	if %errorlevel% neq 0 (
+	if !errorlevel! neq 0 (
 		echo error in !InputPath!
 		goto :error_end_of_bat
 	)
@@ -117,7 +117,7 @@ for %%i in (%ProjectAsmSrc%) do (
 	rem echo !InputPath! !OutputPath!
 	echo %%i
 	"%Sdasz80Exe%" -o "!OutputPath!" "!InputPath!"
-	if %errorlevel% neq 0 (
+	if !errorlevel! neq 0 (
 		echo error in !InputPath!
 		goto :error_end_of_bat
 	)
@@ -136,7 +136,7 @@ for %%i in (%ProjectCcSrc%) do (
 	rem echo !InputPath! !OutputPath!
 	echo %%i
 	"%SdccExe%" "!InputPath!" -c %ProjectIncPaths% -o "!OutputPath!" %CcOptions%
-	if %errorlevel% neq 0 (
+	if !errorlevel! neq 0 (
 		echo error in !InputPath!
 		goto :error_end_of_bat
 	)
