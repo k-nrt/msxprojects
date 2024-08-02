@@ -11,10 +11,10 @@ set System=rom32k
 set DskDir=%ProjectDir%\dsk
 
 set SdccAsmSrc=divunsigned.s mul.s __sdcc_call_hl.s divsigned.s __sdcc_call_iy.s
-set MsxAsmSrc=msx-bios-wrapper.s
-set MsxCcSrc=msx-timer.c msx-sprite.c msx-rand.c
+set MsxAsmSrc=msx-bios-wrapper.s msx-timer.s
+set MsxCcSrc=msx-sprite.c msx-rand.c
 set ProjectAsmSrc=vdp_command.s vdp_palette.s vdp_write.s vdp_read.s vdp_pset.s
-set ProjectAsmSrc=%ProjectAsmSrc% sincos.s mul_core.s scaler_math.s timer.s halt.s
+set ProjectAsmSrc=%ProjectAsmSrc% sincos.s mul_core.s scaler_math.s halt.s
 set ProjectAsmSrc=%ProjectAsmSrc% mesh_zx_plane.s
 set ProjectAsmSrc=%ProjectAsmSrc% clip.s clip_line_xyz_s8.s
 set ProjectAsmSrc=%ProjectAsmSrc% pers.s pers_draw_lines.s pers_draw_lines_clip_xy.s pers_create_bbox.s
