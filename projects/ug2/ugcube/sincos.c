@@ -2,8 +2,20 @@
 #include "macros.h"
 #include "math.h"
 
+#if defined(SYSTEM_ROM32K)
+#define SINCOS_TABLE_ADDRESS (0x7e00)
+
+#elif defined(SYSTEM_MSXDOS)
+#define SINCOS_TABLE_ADDRESS (0x3e00)
+
+#endif
+
+#if !defined(SINCOS_TABLE_ADDRESS)
+#error "not defined sincos table address"
+#endif
+
 // low precision (2:6 bit) sin full
-SDCC_FIXED_ADDRESS(0x7e00) const fp2_6 g_fp2_6Sin[] =
+SDCC_FIXED_ADDRESS(SINCOS_TABLE_ADDRESS) const fp2_6 g_fp2_6Sin[] =
 {
 	(fp2_6)0x00,(fp2_6)0x02,(fp2_6)0x04,(fp2_6)0x05,(fp2_6)0x07,(fp2_6)0x08,(fp2_6)0x0A,(fp2_6)0x0B,
 	(fp2_6)0x0D,(fp2_6)0x0F,(fp2_6)0x10,(fp2_6)0x12,(fp2_6)0x13,(fp2_6)0x15,(fp2_6)0x16,(fp2_6)0x18,
@@ -40,7 +52,7 @@ SDCC_FIXED_ADDRESS(0x7e00) const fp2_6 g_fp2_6Sin[] =
 };
 
 // High precision (2:14 bit) sin quoter plus
-SDCC_FIXED_ADDRESS(0x7f00) const fp2_14 g_fp2_14SinPlus[] =
+SDCC_FIXED_ADDRESS(SINCOS_TABLE_ADDRESS + 0x0100) const fp2_14 g_fp2_14SinPlus[] =
 {
 	(fp2_14)0x0000,(fp2_14)0x0199,(fp2_14)0x0331,(fp2_14)0x04C9,(fp2_14)0x0660,(fp2_14)0x07F6,(fp2_14)0x098A,(fp2_14)0x0B1E,
 	(fp2_14)0x0CAF,(fp2_14)0x0E3E,(fp2_14)0x0FCB,(fp2_14)0x1156,(fp2_14)0x12DE,(fp2_14)0x1463,(fp2_14)0x15E4,(fp2_14)0x1762,
@@ -53,7 +65,7 @@ SDCC_FIXED_ADDRESS(0x7f00) const fp2_14 g_fp2_14SinPlus[] =
 };
 
 // High precision (2:14 bit) sin quoter minus
-SDCC_FIXED_ADDRESS(0x7f80) const fp2_14 g_fp2_14SinMinus[] =
+SDCC_FIXED_ADDRESS(SINCOS_TABLE_ADDRESS + 0x0180) const fp2_14 g_fp2_14SinMinus[] =
 {
 	(fp2_14)0x0000,(fp2_14)0xFE67,(fp2_14)0xFCCF,(fp2_14)0xFB37,(fp2_14)0xF9A0,(fp2_14)0xF80A,(fp2_14)0xF676,(fp2_14)0xF4E2,
 	(fp2_14)0xF351,(fp2_14)0xF1C2,(fp2_14)0xF035,(fp2_14)0xEEAA,(fp2_14)0xED22,(fp2_14)0xEB9D,(fp2_14)0xEA1C,(fp2_14)0xE89E,

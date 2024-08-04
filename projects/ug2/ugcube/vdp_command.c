@@ -1,4 +1,4 @@
-#include <msx-bios-wrapper.h>
+#include "bios_wrapper.h"
 
 #include "vdp_command.h"
 #include "macros.h"
@@ -41,6 +41,19 @@ SDCC_FIXED_ADDRESS(0xFCB9) u16 GRPACY;
 //! 内容	ロジカル・オペレーション・コード.
 SDCC_FIXED_ADDRESS(0xFB02) u8 LOGOPR;
 
+#if defined(SYSTEM_ROM32K)
+SDCC_FIXED_ADDRESS(0x0006) u8 VDPRead;
+SDCC_FIXED_ADDRESS(0x0007) u8 VDPWrite;
+
+#elif defined(SYSTEM_MSXDOS)
+u8 VDPRead = 0;
+u8 VDPWrite = 0;
+
+#else
+#error "Unknown system"
+#endif
+
+#if defined(SYSTEM_ROM32K)
 void VDPPrintCore(register const char *pszString)
 {
 	for (; *pszString != 0; pszString++)
@@ -56,9 +69,10 @@ void VDPPrintCore(register const char *pszString)
 
 			continue;
 		}
-		msx2BiosGraphicPrint(*pszString);
+		vdpPrintChar(*pszString);
 	}
 }
+#endif
 
 void VDPPrintF(const char *pszFormat, ...)
 {
@@ -95,7 +109,7 @@ void VDPPrintF(const char *pszFormat, ...)
 			}
 			else
 			{
-				msx2BiosGraphicPrint(c);
+				vdpPrintChar(c);
 			}
 		}
 		else if (c == '\n')
@@ -111,10 +125,9 @@ void VDPPrintF(const char *pszFormat, ...)
 		}
 		else
 		{
-			msx2BiosGraphicPrint(c);
+			vdpPrintChar(c);
 		}
 	}
 
 	va_end(vaList);
 }
-

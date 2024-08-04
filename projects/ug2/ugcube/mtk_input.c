@@ -1,4 +1,4 @@
-#include <msx-bios-wrapper.h>
+#include "bios_wrapper.h"
 #include "mtk_input.h"
 
 #pragma codeseg CODE2
@@ -19,7 +19,7 @@ void MtkInputScan(void)
 
 	for (i = 0; i < 2; i++)
 	{
-		u8 stick = msxBiosGetStick(i);
+		u8 stick = inputGetStick(i);
 
 		if (!stick)
 		{
@@ -46,8 +46,8 @@ void MtkInputScan(void)
 	}
 
 	{
-		u8 trigger = msxBiosGetTrigger(0);
-		trigger |= msxBiosGetTrigger(1);
+		u8 trigger = inputGetTrigger(0);
+		trigger |= inputGetTrigger(1);
 		if (trigger)
 		{
 			down |= kMtkInput_Fire;
@@ -55,9 +55,9 @@ void MtkInputScan(void)
 	}
 
 	{
-		u8 trigger = msxBiosGetTrigger(3);
+		u8 trigger = inputGetTrigger(3);
 		//. shift.
-		trigger |= ~msxBiosReadKeyMatrix(6) & 0x01;
+		trigger |= ~inputGetKeyMatrix(6) & 0x01;
 		if (trigger)
 		{
 			down |= kMtkInput_Thrust;

@@ -1,4 +1,4 @@
-#include <msx-bios-wrapper.h>
+#include "bios_wrapper.h"
 #include <msx-timer.h>
 #include <msx-rand.h>
 
@@ -29,14 +29,14 @@ void Test_DrawTimerAndWait(void)
 
 void Test_WaitForTrigger(const char *pszTitle)
 {
-	u8 u8Trig = msxBiosGetTrigger(0);
+	u8 u8Trig = inputGetTrigger(0);
 	u8 u8TrigPrev = u8Trig;
 
 	Test_DrawTitle(pszTitle);
 	
 	for(;;)
 	{
-		u8Trig = msxBiosGetTrigger(0);
+		u8Trig = inputGetTrigger(0);
 
 		if(u8TrigPrev == 0 && u8Trig != 0)
 		{
@@ -90,8 +90,8 @@ void Test(const char *pszTitle)
 		for(;;)
 		{
 			u8 u8Timer = g_u8Timer;
-			u8 u8Stick = msxBiosGetStick(0);
-			u8 u8Trig = msxBiosGetTrigger(0);
+			u8 u8Stick = inputGetStick(0);
+			u8 u8Trig = inputGetTrigger(0);
 
 			if (u8StickPrev == 0)
 			{

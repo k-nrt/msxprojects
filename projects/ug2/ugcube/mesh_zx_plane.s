@@ -7,7 +7,7 @@
         .globl  _g_meshZXPlane
 
         .macro  LINE    inIndex0, inIndex1
-        .word   PersScreenPositionsAddress+inIndex0*8, PersScreenPositionsAddress+inIndex1*8
+        .word   _s_screenPositions+inIndex0*8, _s_screenPositions+inIndex1*8
         .endm
 
 Vertices:

@@ -1,4 +1,4 @@
-#include <msx-bios-wrapper.h>
+#include "bios_wrapper.h"
 #include <msx-timer.h>
 #include <msx-rand.h>
 
@@ -11,6 +11,7 @@
 void Test_Line(const char* pszTitle)
 {
 	u16 i;
+	msxRandInit(45, 36722);
 
 	VDPSetForegroundColor(0x11);
 	VDPFill(0,0,256,212);

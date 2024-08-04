@@ -1,4 +1,4 @@
-#include <msx-bios-wrapper.h>
+#include "bios_wrapper.h"
 #include <msx-timer.h>
 #include <msx-rand.h>
 
@@ -40,6 +40,11 @@ static const SFlipperConfig s_testFlipperConfig =
 
 static u8 s_buffer[256];
 static u8* s_pMemory = s_buffer;
+
+static void MemoryReset(void)
+{
+	s_pMemory = s_buffer;
+}
 
 static void* MemoryAllocate(u16 size)
 {
@@ -142,8 +147,12 @@ void Test_DrawModelClipXYZ(s16x3 *pPosition, u16* pLodVertices, const SMesh *pMe
 void Test_Pers(const char* pszTitle)
 {
 	static u8 rz = 0;
-	s8x3 *vertices = (s8x3*) MemoryAllocate(sizeof(s8x3)*32);
+	s8x3 *vertices = NULL;
 	u16 vramOffset = 0;
+
+	MemoryReset();
+	vertices = (s8x3*) MemoryAllocate(sizeof(s8x3)*32);
+
 	VDPSetForegroundColor(0x11);
 	VDPFill(0,0,256,212);
 	VDPWait();
@@ -168,11 +177,14 @@ void Test_PersAnim(const char* pszTitle)
 {
 	static u8 rz = 0;
 	u8 i;
-	u16* vertices = (u16*) MemoryAllocate(sizeof(u16)*64);
+	u16* vertices = NULL;
 	u8 u8TrigPrev = 0;
 	u8 u8Frame = 0;
-	
-    FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
+
+	MemoryReset();
+	vertices = (u16*) MemoryAllocate(sizeof(u16)*64);
+
+	FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
 
 	PersSetVertexBuffer(0,0x0800);
@@ -186,18 +198,18 @@ void Test_PersAnim(const char* pszTitle)
 
 	for(;;)
 	{
-		u8 u8Trig = msxBiosGetTrigger(0);
+		u8 u8Trig = inputGetTrigger(0);
 		if(u8TrigPrev == 0 && u8Trig != 0)
 		{
 			break;
 		}
 		u8TrigPrev = u8Trig;
-        FlipperClear();
+		FlipperClear();
 
 		PersSetPosition(0,0,80);
 		PersTransformNoClipVram(vertices[u8Frame], g_meshCube.m_nbVertices);
 
-        FlipperApplyForegroundColor();
+		FlipperApplyForegroundColor();
 		PersDrawLines(g_meshCube.m_pIndices,g_meshCube.m_nbLines);
 
 		u8Frame++;
@@ -207,24 +219,27 @@ void Test_PersAnim(const char* pszTitle)
 		}
 
 		Test_DrawTimerAndWait();
-        FlipperFlip();
+		FlipperFlip();
 	}
 
-    FlipperTerm();
+	FlipperTerm();
 }
 
 void Test_PersScroll(const char* pszTitle)
 {
 	static u8 rz = 0;
-	//u8 i;
-	u16* cubeVertices = (u16*) MemoryAllocate(sizeof(u16)*4);
-	u16* planeVertices = (u16*) MemoryAllocate(sizeof(u16)*4);
+	u16* cubeVertices = NULL;
+	u16* planeVertices = NULL;
 	u8 u8TrigPrev = 0;
-    u8 u8StickPrev = 0;
+	u8 u8StickPrev = 0;
 	s16x3 v3Position0;
 	s16x3 v3Position1;
 
-    FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
+	MemoryReset();
+	cubeVertices = (u16*) MemoryAllocate(sizeof(u16)*4);
+	planeVertices = (u16*) MemoryAllocate(sizeof(u16)*4);
+
+	FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
 	Clip_SetRect
 	(
@@ -247,11 +262,10 @@ void Test_PersScroll(const char* pszTitle)
 	s8x3Set(v3Position0, 64,0,512);
 	s8x3Set(v3Position1, 0,32,512+64);
 
-	 
 	for(;;)
 	{
-		u8 u8Trig = msxBiosGetTrigger(0);
-        u8 u8Stick = msxBiosGetStick(0);
+		u8 u8Trig = inputGetTrigger(0);
+		u8 u8Stick = inputGetStick(0);
 		s16 vx = 0;
 		s16 vz = 0;
 		if(u8TrigPrev == 0 && u8Trig != 0)
@@ -260,26 +274,26 @@ void Test_PersScroll(const char* pszTitle)
 		}
 		u8TrigPrev = u8Trig;
 
-        if (u8Stick == 1)
-        {
-            vz = -8;
-        }
-        else if(u8Stick == 5)
-        {
-            vz = 8;
-        }
-        
-        if (u8Stick == 3)
-        {
-            vx = -8;
-        }
-        else if(u8Stick == 7)
-        {
-            vx = 8;
-        }
-        u8StickPrev = u8Stick;
+		if (u8Stick == 1)
+		{
+			vz = -8;
+		}
+		else if(u8Stick == 5)
+		{
+			vz = 8;
+		}
+		
+		if (u8Stick == 3)
+		{
+			vx = -8;
+		}
+		else if(u8Stick == 7)
+		{
+			vx = 8;
+		}
+		u8StickPrev = u8Stick;
 
-        FlipperClear();
+		FlipperClear();
 
 		v3Position0.z += vz - 4;
 		v3Position0.x += vx;
@@ -287,43 +301,46 @@ void Test_PersScroll(const char* pszTitle)
 		{
 			v3Position0.z += (640 -64);
 		}
-        else if (640 < v3Position0.z)
-        {
-            v3Position0.z -= (640-48);
-        }
+		else if (640 < v3Position0.z)
+		{
+			v3Position0.z -= (640-48);
+		}
 
 		v3Position1.z += vz - 4;
 		v3Position1.x += vx;
 		if (v3Position1.z < 48)
 		{
 			v3Position1.z += (640 -64);
-		} 
-        else if (640 < v3Position1.z)
-        {
-            v3Position1.z -= (640-48);
-        }
+		}
+		else if (640 < v3Position1.z)
+		{
+			v3Position1.z -= (640-48);
+		}
 
-        FlipperApplyForegroundColor();
+		FlipperApplyForegroundColor();
 		Test_DrawModelClipXYZ(&v3Position0, cubeVertices, &g_meshCube);
 		Test_DrawModelClipXYZ(&v3Position1, planeVertices, &g_meshZXPlane);
 		
 		Test_DrawTimerAndWait();
-        FlipperFlip();
+		FlipperFlip();
 	}
 
-    FlipperTerm();
+	FlipperTerm();
 }
 
 void Test_BBoxClip(const char* pszTitle)
 {
 	u8 u8TrigPrev = 0;
-    u8 u8StickPrev = 0;
-	u16* cubeVertices = (u16*) MemoryAllocate(sizeof(u16)*4);
-	u16* boxes = (u16*) MemoryAllocate(sizeof(u16)*4);
-
+	u8 u8StickPrev = 0;
+	u16* cubeVertices = NULL;
+	u16* boxes = NULL;
 	s16x3 v3Position0;
 
-    FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
+	MemoryReset();
+	cubeVertices = (u16*) MemoryAllocate(sizeof(u16)*4);
+	boxes = (u16*) MemoryAllocate(sizeof(u16)*4);
+
+	FlipperInit(&s_testFlipperConfig,0x0001,0x0537);
 	FlipperPrint(0,0,0xff,pszTitle);
 	Clip_SetRect
 	(
@@ -348,11 +365,11 @@ void Test_BBoxClip(const char* pszTitle)
 	 
 	for(;;)
 	{
-		u8 u8Trig = msxBiosGetTrigger(0);
-        u8 u8Stick = msxBiosGetStick(0);
+		u8 u8Trig = inputGetTrigger(0);
+		u8 u8Stick = inputGetStick(0);
 		s16 vx = 0;
 		s16 vz = 0;
-        FlipperClear();
+		FlipperClear();
 
 		if(u8TrigPrev == 0 && u8Trig != 0)
 		{
@@ -360,24 +377,24 @@ void Test_BBoxClip(const char* pszTitle)
 		}
 		u8TrigPrev = u8Trig;
 
-        if (u8Stick == 1)
-        {
-            vz = -8;
-        }
-        else if(u8Stick == 5)
-        {
-            vz = 8;
-        }
-        
-        if (u8Stick == 3)
-        {
-            vx = -8;
-        }
-        else if(u8Stick == 7)
-        {
-            vx = 8;
-        }
-        u8StickPrev = u8Stick;
+		if (u8Stick == 1)
+		{
+			vz = -8;
+		}
+		else if(u8Stick == 5)
+		{
+			vz = 8;
+		}
+		
+		if (u8Stick == 3)
+		{
+			vx = -8;
+		}
+		else if(u8Stick == 7)
+		{
+			vx = 8;
+		}
+		u8StickPrev = u8Stick;
 
 		v3Position0.z += vz;
 		v3Position0.x += vx;
@@ -385,24 +402,28 @@ void Test_BBoxClip(const char* pszTitle)
 		{
 			v3Position0.z += (640 -64);
 		}
-        else if (640 < v3Position0.z)
-        {
-            v3Position0.z -= (640-48);
-        }
+		else if (640 < v3Position0.z)
+		{
+			v3Position0.z -= (640-48);
+		}
 
-        FlipperApplyForegroundColor();
+		FlipperApplyForegroundColor();
 		{
 			s8x3 v3Pos;
 			s8 lod = -1;
 			lod = Test_GetLod(&v3Position0, &v3Pos);
-			VDPPrintU8X(0,16,lod);
-			VDPPrintU8X(24,16,v3Pos.x);
-			VDPPrintU8X(48,16,v3Pos.y);
-			VDPPrintU8X(72,16,v3Pos.z);
+			VDPPrint(0, 16, "LOD");
+			VDPPrintU8X(48, 16,lod);
+			VDPPrint(0, 24, "POS"); 
+			VDPPrintU8X(48, 24,v3Pos.x);
+			VDPPrintU8X(72, 24,v3Pos.y);
+			VDPPrintU8X(96, 24,v3Pos.z);
+			
 			if (0 <= lod && lod < 4)
 			{
 				enum EBBoxClip clip = PersClipBBoxVram(boxes[lod], v3Pos.x, v3Pos.y, v3Pos.z, g_persContext.m_s8ClipNear >> lod);
-				VDPPrintU8X(96,16,clip);
+				VDPPrint(0, 32, "CLP"); 
+				VDPPrintU8X(48, 32, clip);
 
 				if (clip == kBBoxClip_In)
 				{
@@ -431,8 +452,8 @@ void Test_BBoxClip(const char* pszTitle)
 		
 		VDPWait();
 		Test_DrawTimerAndWait();
-        FlipperFlip();
+		FlipperFlip();
 	}
 
-    FlipperTerm();
+	FlipperTerm();
 }

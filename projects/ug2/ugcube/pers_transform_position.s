@@ -38,7 +38,7 @@ PersTransformPosition_TestRight:
     push    de
     ld      d,b             ; d = z + m_v3PositionZ
     ld      e,a             ; e = x + m_v3PositionX
-    ld      hl,#0xC180
+    ld      hl,#_s_u8TransformRight
     push    bc
 
     ; in HL 0xC100 = left, 0xC180 = right, 0xC200 = top, 0xC280 = bottom
@@ -70,7 +70,7 @@ PersTransformPosition_TestLeft:
     ld      d,b             ; d = z + m_v3PositionZ
     neg
     ld      e,a             ; e = -(x + m_v3PositionX)
-    ld      hl,#0xC100
+    ld      hl,#_s_u8TransformLeft
     push    bc
 
     ; in HL 0xC100 = left, 0xC180 = right, 0xC200 = top, 0xC280 = bottom
@@ -118,7 +118,7 @@ PersTransformPosition_TransformY:
 PersTransformPosition_TestBottom :
     ld      d,b             ; d = z + m_v3PositionZ
     ;ld      e,a             ; e = y + m_v3PositionY
-    ld      hl,#0xC280
+    ld      hl,#_s_u8TransformBottom
     push    bc
 
     ; in HL 0xC100 = left, 0xC180 = right, 0xC200 = top, 0xC280 = bottom
@@ -148,7 +148,7 @@ PersTransformPosition_TestTop:
     ld      d,b             ; d = z + m_v3PositionZ
     neg
     ld      e,a             ; e = -(y + m_v3PositionY)
-    ld      hl,#0xC200
+    ld      hl,#_s_u8TransformTop
     push    bc
 
     ; in HL 0xC100 = left, 0xC180 = right, 0xC200 = top, 0xC280 = bottom

@@ -1,4 +1,4 @@
-#include <msx-bios-wrapper.h>
+#include "bios_wrapper.h"
 #include "vdp_command.h"
 #include "flipper.h"
 
@@ -24,7 +24,7 @@ void FlipperInit
     g_flipper.m_u8Tile = s_pConfig->m_startColor;
     g_flipper.m_pTile = &s_pConfig->m_tiles[s_pConfig->m_startColor];
 
-    msxBiosChangeColor(6,15,1,1);
+    vdpSetScreenColor(5, 15, 1, 1);
 
     VDPSetActivePage(0);
     VDPSetForegroundColor(s_pConfig->m_clearValue);
@@ -47,10 +47,10 @@ void FlipperInit
 
 void FlipperTerm(void)
 {
-    msx2BiosChangeModePalette(5);
+    vdpSetScreenModePalette(5);
     VDPSetActivePage(0);
     VDPSetDisplayPage(0);
-    msxBiosChangeColor(6,15,1,7);
+    vdpSetScreenColor(5,15,1,7);
 }
 
 void FlipperPrint(u16 x, u16 y, u8 color, const char *pszText)

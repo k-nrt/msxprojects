@@ -16,7 +16,7 @@
 PersTransformNoClip:
     ld      a,b
     ex      af,af'                      ; A' = vertex count
-    ld      ix,#PersScreenPositionsAddress
+    ld      ix,#_s_screenPositions
     ld      a,(#_g_persContext+#m_vramHigh)
     ld      b,a 
     call    VDPReadBegin116DI           ; B = vram high 1, DE = vram low 16
@@ -83,7 +83,7 @@ PersTransformNoClip_TransformX:
 
 PersTransformNoClip_TestRight:
     ld      e,a     ; e = x + m_v3PositionX
-    ld      hl,#0xC180
+    ld      hl,#_s_u8TransformRight
     call    PersTransformUnsignedFast
     jr      c,PersTransformNoClip_ClipRight
     ld      a,(#_g_persContext+#m_s16ScreenX)
@@ -100,7 +100,7 @@ PersTransformNoClip_ClipRight:
 PersTransformNoClip_TestLeft:
     neg
     ld      e,a     ; e = -x
-    ld      hl,#0xC100
+    ld      hl,#_s_u8TransformLeft
     call    PersTransformUnsignedFast
     jr      c,PersTransformNoClip_ClipLeft
     ld      a,(#_g_persContext+#m_s16ScreenX)
@@ -148,7 +148,7 @@ PersTransformNoClip_TransformY:
 
 PersTransformNoClip_TestBottom :
     ld      e,a     ; e = y + m_v3PositionY
-    ld      hl,#0xC280
+    ld      hl,#_s_u8TransformBottom
     call    PersTransformUnsignedFast
     jr      c,PersTransformNoClip_ClipBottom
     ld      a,(#_g_persContext+#m_s16ScreenY)
@@ -165,7 +165,7 @@ PersTransformNoClip_ClipBottom:
 PersTransformNoClip_TestTop:
     neg
     ld      e,a     ; e = -y
-    ld      hl,#0xC200
+    ld      hl,#_s_u8TransformTop
     call    PersTransformUnsignedFast
     jr      c,PersTransformNoClip_ClipTop
     ld      a,(#_g_persContext+#m_s16ScreenY)
