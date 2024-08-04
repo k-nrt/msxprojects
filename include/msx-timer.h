@@ -6,6 +6,6 @@
 
 #include <msx-types.h>
 
-extern void msxTimerSetCallBack( void (pCallBack(void)) ); 
+extern void msxTimerSetCallBack( void* pCallback ); 
 
 #endif //__MSX_TIMER_H__

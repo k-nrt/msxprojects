@@ -263,21 +263,28 @@ _vdpSetScreenMode:
 	ret
 
 ;------------------------------------------------------------------------------
-; void vdpSetScreenColor(u8 foregroundColor, u8 backgroundColor, u8 borderColor)
+; void vdpSetScreenColor(u8 screenMode, u8 foregroundColor, u8 backgroundColor, u8 borderColor)
 ;------------------------------------------------------------------------------
 	.area	_CODE
 	.globl	_vdpSetScreenColor
 
 _vdpSetScreenColor:
-	pop	de	; de' = return address
-	pop	bc	; c = borderColor
-	dec	sp
-	push	de	; store return address
+	ld	b,a		; b = screenMode
+	ld	a,l		; a = foregroundColor
 	ld	(#FORCLR),a
-	ld	a,l
+
+	pop	de		; de = return address
+	pop	hl		; l = backgroundColor
+				; h = borderColor
+	push	de		; restore return address
+
+	ld	a,l		; a = backgroundColor
 	ld	(#BAKCLR),a
-	ld	a,c
+
+	ld	a,h		; a = borderColor
 	ld	(#BDRCLR),a
+
+	ld	a,b		; a = screenMode
 	call_main_rom	CHGCLR
 	ret
 
@@ -307,7 +314,7 @@ _vdpSetSpriteMode:
 
 	ld	b, a
 	ld	c, #0x01
-	call_main_rom	WRTVDP 	
+	call_main_rom	WRTVDP
 	ret
 
 ;------------------------------------------------------------------------------
@@ -335,6 +342,7 @@ _vdpSetForegroundColor:
 ;------------------------------------------------------------------------------
 	.area	_CODE
 	.globl	_vdpSetBackgroundColor
+
 _vdpSetBackgroundColor:
 	ld	(#BAKCLR), a
 	ret
@@ -344,6 +352,7 @@ _vdpSetBackgroundColor:
 ;------------------------------------------------------------------------------
 	.area	_CODE
 	.globl	_vdpSetGraphicAccumlator
+
 _vdpSetGraphicAccumlator:
 	ld	(#GRPACX), hl
 	ex	de, hl
@@ -488,4 +497,16 @@ _vdpSetPalette:
 	pop	hl		; hl = colors
 	otir
 
+	ret
+
+;------------------------------------------------------------------------------
+; void vdpSetScreenModePalette(u8 u8Screen)
+;------------------------------------------------------------------------------
+; SUB-ROM CHGMDP.
+; a = screen mode (0 - 8)
+	.area	_CODE
+	.globl	_vdpSetScreenModePalette
+
+_vdpSetScreenModePalette:
+	call_sub_rom	CHGMDP
 	ret

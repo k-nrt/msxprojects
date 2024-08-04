@@ -1,4 +1,19 @@
 ;------------------------------------------------------------------------------
+; BIOS.
+;------------------------------------------------------------------------------
+	.include	"msx-bios-entry.s"
+
+;------------------------------------------------------------------------------
+; System work area
+;------------------------------------------------------------------------------
+	.include	"msx-system-work.s"
+
+;------------------------------------------------------------------------------
+; Macro.
+;------------------------------------------------------------------------------
+	.include	"msx-dos-call-macro.s"
+
+;------------------------------------------------------------------------------
 ; void msxTimerSetCallBack( void (pCallBack(void)) )
 ;------------------------------------------------------------------------------
 		.area	_INITIALIZED
@@ -12,9 +27,9 @@ _g_pTimerCallback:
 		.globl	_msxTimerSetCallBack
 
 H_TIMI = 0xFD9F			; timer hook
-RSLREG = 0x0138			; read primary slot register 
-EXPTBL = 0xFCC1			; slot is expanded or not x4 
-SLTTBL = 0xFCC5			; expansion slot x4 (EXPTBL+4)
+;RSLREG = 0x0138			; read primary slot register 
+;EXPTBL = 0xFCC1			; slot is expanded or not x4 
+;SLTTBL = 0xFCC5			; expansion slot x4 (EXPTBL+4)
 
 GetExpansionSlotRegister:
 				; input
@@ -56,15 +71,26 @@ GetExpansionSlotRegister_End:
 
 _msxTimerSetCallBack:
 	ld	(#_g_pTimerCallback),hl
+	ld	a,h
+	or	l
+	jp	nz,_msxTimerSetCallBack_SaveHook
 
+_msxTimerSetCallBack_RestoreHook:
+	di
+	ld	de,#H_TIMI	; restore previous H_TIMI
+	ld	hl,#H_TIMI_Save
+	ld	bc,#0x0005
+	ldir
+	ei
+	ret
+
+_msxTimerSetCallBack_SaveHook:
 	ld	hl,#H_TIMI	; save previous H_TIMI
 	ld	de,#H_TIMI_Save
 	ld	bc,#0x0005
 	ldir
 
-	ld	c,a		; c = save callback address high
-
-	call	RSLREG          ; read primary slot register
+	in	a,(#0xA8)	; read primary slot register
 				;     ++---------- page3
 				;     ||++-------- page2
 				;     ||||++------ page1

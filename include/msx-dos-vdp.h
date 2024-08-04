@@ -5,7 +5,7 @@
 extern void vdpEnableScreen(u8 enable); //! DISSCR/ENASCR.
 extern void vdpWriteRegister(u8 register, u8 data); //! WRTVDP.
 extern u8 vdpReadRegister(u8 register);
-extern u8 vdpReadStatusRegister0(); //! RDVDP.
+extern u8 vdpReadStatusRegister0(void); //! RDVDP.
 
 extern void vdpSetActivePage(u8 page); //! 0xFAF6
 extern void vdpSetDisplayPage(u8 page); //! 0xFAF5
@@ -18,9 +18,9 @@ extern void vdpCopyToVram(const void* ram, u16 vram, u16 size); //! LDIRVM.
 extern void vdpCopyFromVram(u16 vram, void* ram, u16 size); //! LDIRMV.
 
 extern void vdpSetScreenMode(u8 screenMode); //! CHGMOD.
-extern void vdpSetScreenColor(u8 foregroundColor, u8 backgroundColor, u8 borderColor); //! CHGCLR.
+extern void vdpSetScreenColor(u8 screenMode, u8 foregroundColor, u8 backgroundColor, u8 borderColor); //! CHGCLR.
 
-extern void vdpClearSprite(); //! CLRSPR.
+extern void vdpClearSprite(void); //! CLRSPR.
 
 enum vdpSpriteMode
 {
@@ -59,3 +59,5 @@ extern void vdpPrintHexU16(u16 hex);
 extern void vdpPrintHexU32(u32 hex);
 
 extern void vdpSetPalette(u8 offset, u8 size, u8* colors);
+
+extern void vdpSetScreenModePalette(u8 u8Screen); //! SUBROM CHGMDP.

@@ -25,7 +25,7 @@ extern msxDosFCB msxDosDefaultFCB0;
 extern msxDosFCB msxDosDefaultFCB1;
 
 //. Function call.
-extern void msxDosReset();
+extern void msxDosReset(void);
 
 extern void msxDosPrintChar(char c);
 extern void msxDosPrint(const char *str);
@@ -45,4 +45,4 @@ extern void msxDosRun(void* run);
 extern void msxMemCopy(void* to, const void* from, u16 size);
 
 //. clear key buffer.
-extern void msxClearKeyBuffer();
+extern void msxClearKeyBuffer(void);
