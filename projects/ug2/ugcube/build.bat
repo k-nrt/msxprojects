@@ -4,7 +4,6 @@ set ProjectDir=%~fp0
 set ProjectDir=%ProjectDir:\build.bat=%
 
 set OutName=ugcube
-set OutDir=%ProjectDir%\Release
 set BinPath=%ProjectDir%\..\..\bin
 
 if "%~1" equ "--system" (
@@ -37,6 +36,7 @@ if "%System%" equ "msx-dos" (
 	set AdditionalCcOptions=-DSYSTEM_MSXDOS
 	set DataLoc=0xa000
 	set AdditionalLinkerOptions=-Wl -b_CODE2=0x4000
+	set OutDir=%ProjectDir%\ReleaseCom
 
 	call "%ProjectDir%\..\..\build\build-com.bat"
 	if !ErrorLevel! neq 0 (goto :error_end_of_bat)
@@ -49,13 +49,14 @@ if "%System%" equ "msx-dos" (
 		)
 	)
 
-	copy "%OutDir%\%OutName%.com" "!DskDir!\%Outname%.com"
+	copy "!OutDir!\%OutName%.com" "!DskDir!\%OutName%.com" >nul
 
 ) else if "%System%" equ "rom32k" (
 	set MsxAsmSrc=%MsxAsmSrc% msx-bios-wrapper.s
 	set AdditionalCcOptions=-DSYSTEM_ROM32K
 	set DataLoc=0xe000
 	set AdditionalLinkerOptions=-Wl -b_CODE2=0x8000
+	set OutDir=%ProjectDir%\ReleaseRom
 
 	call %ProjectDir%\..\..\build\build-32k-rom.bat
 	if !ErrorLevel! neq 0 (goto :error_end_of_bat)
