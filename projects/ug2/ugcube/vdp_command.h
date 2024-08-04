@@ -46,6 +46,8 @@ extern void VDPSetDisplayPage(u8 nPage);
 #define VDPSetBorderColor(_color) BDRCLR=_color
 #define VDPSetColor(_fg,_bg,_bd) FORCLR=_fg;BAKCLR=_bg;BDRCLR=_bd
 
+void VDPInit(void);
+
 void VDPWait(void) SDCCCALL(0);
 void VDPWaitLine(u8 sx, u8 sy, u8 ex, u8 ey) SDCCCALL(0);
 void VDPWaitLine2(u8 sx, u8 sy, u8 ex, u8 ey) SDCCCALL(0);
@@ -54,6 +56,7 @@ void VDPFill(u8 x, u8 y, u16 w, u16 h) SDCCCALL(0);
 
 extern void VDPPSet(u8 x, u8 y) SDCCCALL(0);
 
+#if defined(SYSTEM_ROM32K)
 #define VDPSetPrintPosition(_x,_y) GRPACX=_x;GRPACY=_y
 #define VDPPrint(_x,_y,_string) GRPACX=_x;GRPACY=_y;VDPPrintCore(_string)
 extern void VDPPrintCore(const char *pszString);
@@ -68,6 +71,22 @@ extern void VDPPrintU16DCore(u16 value) SDCCCALL(0);
 extern void VDPPrintU8XCore(u8 value) SDCCCALL(0);
 extern void VDPPrintU16XCore(u16 value) SDCCCALL(0); 
 
+#elif defined(SYSTEM_MSXDOS)
+#define VDPSetPrintPosition(_x,_y) GRPACX=_x;GRPACY=_y
+#define VDPPrint(_x,_y,_string) GRPACX=_x;GRPACY=_y; VDPPrintCore(_string)
+#define VDPPrintCore(pszString) vdpPrint(pszString)
+
+#define VDPPrintU8D(_x,_y,_v)  GRPACX=_x;GRPACY=_y; VDPPrintU8DCore(_v)
+#define VDPPrintU16D(_x,_y,_v) GRPACX=_x;GRPACY=_y; VDPPrintU16DCore(_v)
+#define VDPPrintU8DCore(value)  vdpPrintHexU8(value)
+#define VDPPrintU16DCore(value) vdpPrintHexU16(value)
+
+#define VDPPrintU8X(_x,_y,_v)  GRPACX=_x;GRPACY=_y; VDPPrintU8XCore(_v)
+#define VDPPrintU16X(_x,_y,_v) GRPACX=_x;GRPACY=_y; VDPPrintU16XCore(_v)
+#define VDPPrintU8XCore(value)  vdpPrintHexU8(value)
+#define VDPPrintU16XCore(value) vdpPrintHexU16(value)
+
+#endif
 extern void VDPPrintF(const char *pszFormat, ...);
 
 extern void VDPWriteByte(u8 addressHigh, u16 addressLow, u8 value) SDCCCALL(0);

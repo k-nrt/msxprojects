@@ -16,7 +16,7 @@
 PersTransformClipXY:
     ld      a,b
     ex      af,af'                      ; A' = vertex count
-    ld      ix,#PersScreenPositionsAddress
+    ld      ix,#_s_screenPositions
     ld      a,(#_g_persContext+#m_vramHigh)
     ld      b,a 
     call    VDPReadBegin116DI           ; B = vram high 1, DE = vram low 16
@@ -79,7 +79,7 @@ PersTransformClipXY_TransformX:
 
 PersTransformClipXY_TestRight:
     ld      e,a             ; e = x + m_v3PositionX
-    ld      hl,#PersTransform_Right
+    ld      hl,#_s_u8TransformRight
     push    de
     push    bc
     call    PersTransformUnsigned
@@ -126,7 +126,7 @@ PersTransformClipXY_LoopEnd:
 PersTransformClipXY_TestLeft:
     neg
     ld      e,a             ; e = -x
-    ld      hl,#PersTransform_Left
+    ld      hl,#_s_u8TransformLeft
     push    de
     push    bc
     call    PersTransformUnsigned
@@ -182,7 +182,7 @@ PersTransformClipXY_TransformY:
 
 PersTransformClipXY_TestBottom:
     ld      e,a             ; e = y + m_v3PositionY
-    ld      hl,#PersTransform_Bottom
+    ld      hl,#_s_u8TransformBottom
     push    bc
     call    PersTransformUnsigned
     pop     bc
@@ -217,7 +217,7 @@ PersTransformClipXY_TestBottom_StoreWord:
 PersTransformClipXY_TestTop:
     neg
     ld      e,a             ; e = -y
-    ld      hl,#PersTransform_Top
+    ld      hl,#_s_u8TransformTop
     push    bc
     call    PersTransformUnsigned
     pop     bc

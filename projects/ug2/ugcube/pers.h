@@ -98,17 +98,28 @@ extern u8 PersClipBBoxVram(u16 vramOffset, s8 x, s8 y, s8 z, s8 near) SDCCCALL(0
 
 extern const SPersScreenPos* PersGetPostions(void);
 
-#define PersTransform_Pointers     (0xC000) //. 2*128 entries.
-#define PersTransform_Left         (0xC100) //. 1*128 entries.
-#define PersTransform_Right        (0xC180) //. 1*128 entries.
-#define PersTransform_Top          (0xC200) //. 1*128 entries.
-#define PersTransform_Bottom       (0xC280) //. 1*128 entries.
+#if defined(SYSTEM_ROM32K)
+#define PersTransformAddress_Base (0xC000)
 
-#define PersTransform_Positions         (0xC300) //. 0xC300 - 0xDDFF
-#define PersTransform_Positions_End     (0xDD00)
-#define PersTransform_RcpZ              (0xDD00) // 2*128 entries
-#define PersScreenPositionsAddress      (0xDE00) //. internal vertex buffer 8*64 entries.
+#elif defined(SYSTEM_MSXDOS)
+#define PersTransformAddress_Base (0x8000)
 
+#endif
+
+#if !defined(PersTransformAddress_Base)
+#error "Transform table address not defined"
+#endif
+
+#define PersTransform_Pointers     (PersTransformAddress_Base + 0x0000) //. 2*128 entries.
+#define PersTransform_Left         (PersTransformAddress_Base + 0x0100) //. 1*128 entries.
+#define PersTransform_Right        (PersTransformAddress_Base + 0x0180) //. 1*128 entries.
+#define PersTransform_Top          (PersTransformAddress_Base + 0x0200) //. 1*128 entries.
+#define PersTransform_Bottom       (PersTransformAddress_Base + 0x0280) //. 1*128 entries.
+
+#define PersTransform_Positions         (PersTransformAddress_Base + 0x0300) //. 0xC300 - 0xDDFF
+#define PersTransform_Positions_End     (PersTransformAddress_Base + 0x1D00)
+#define PersTransform_RcpZ              (PersTransformAddress_Base + 0x1D00) // 2*128 entries
+#define PersScreenPositionsAddress      (PersTransformAddress_Base + 0x1E00) //. internal vertex buffer 8*64 entries.
 
 #define PersSetPosition(inX,inY,inZ) s8x3Set(g_persContext.m_v3Position,inX,inY,inZ)
 #define PersSetVertexBuffer(inHigh1,inLow16) g_persContext.m_vramHigh1=inHigh1;g_persContext.m_vramLow16=inLow16 

@@ -1,4 +1,4 @@
-#include <msx-bios-wrapper.h>
+#include "bios_wrapper.h"
 #include <msx-timer.h>
 #include <msx-rand.h>
 

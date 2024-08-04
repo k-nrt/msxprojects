@@ -1,7 +1,7 @@
 ;------------------------------------------------------------------------------
 ; pers_transform_unsigned_fast
 ;------------------------------------------------------------------------------
-                .include    "pers_defs.s"
+	.include	"pers_defs.s"
 
 ;------------------------------------------------------------------------------
 ; PersTransformUnsignedFast
@@ -14,31 +14,31 @@
 ; out CY 1 = clip, 0 = no clip
 ; use A
 ;------------------------------------------------------------------------------
-                .area   _CODE
-                .globl  PersTransformUnsignedFast
+	.area	_CODE
+	.globl	PersTransformUnsignedFast
 
 PersTransformUnsignedFast:
-    ld      a,l     ; hl |= z
-    or      d
-    ld      l,a      
-    ld      a,(hl)  ; a = max
-    cp      e       ; max - x
-    jp      c,PersTransformUnsignedFast_Clip
-    ld      h,#PersTransform_Pointers >> 8
-    ld      l,d
-    sla     l       ; HL = ptr + z*2
-    ld      a,(hl)
-    inc     hl
-    ld      h,(hl)
-    ld      l,a     ; HL = 2d position top address
-    ld      a,d     ; A = z
-    ld      d,#0x00
-    add     hl,de   ; HL = 2d x address
-    ld      e,(hl)
-    ld      d,a     ; D = z
-    or      a       ; CY = 0
-    ret
+	ld	a,l		; hl |= z
+	or	d
+	ld	l,a
+	ld	a,(hl)		; a = max
+	cp	e		; max - x
+	jp	c,PersTransformUnsignedFast_Clip
+	ld	h,#>_s_u16TransformPointers
+	ld	l,d
+	sla	l		; HL = ptr + z*2
+	ld	a,(hl)
+	inc	hl
+	ld	h,(hl)
+	ld	l,a		; HL = 2d position top address
+	ld	a,d		; A = z
+	ld	d,#0x00
+	add	hl,de		; HL = 2d x address
+	ld	e,(hl)
+	ld	d,a		; D = z
+	or	a		; CY = 0
+	ret
 
 PersTransformUnsignedFast_Clip:
-    scf             ; CY = 1
-    ret
+	scf			; CY = 1
+	ret

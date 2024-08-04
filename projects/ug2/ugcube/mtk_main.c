@@ -1,5 +1,5 @@
 #include <msx-types.h>
-#include <msx-bios-wrapper.h>
+#include "bios_wrapper.h"
 #include <msx-rand.h>
 
 #include "pers.h"

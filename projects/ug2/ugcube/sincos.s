@@ -12,8 +12,11 @@
 	.globl	_SinCos_GetCosHp
 	.globl	_SinCos_RotateXYS8Lp
 
-    .globl  MulCore_AxE_HL
+	.globl	MulCore_AxE_HL
 
+	.globl	_g_fp2_6Sin
+	.globl	_g_fp2_14SinPlus
+	.globl	_g_fp2_14SinMinus
 ;------------------------------------------------------------------------------
 ; LoadSinCosLp_A_DE
 ; load low precision(2:6) sin and cos to DE
@@ -23,7 +26,7 @@
 ; use	HL
 ;------------------------------------------------------------------------------
 LoadSinCosLp_A_DE:
-	ld	h,#0x7e
+	ld	h,#>_g_fp2_6Sin
 	ld	l,a
 	ld	d,(hl)
 	add	a,#64
@@ -39,7 +42,7 @@ LoadSinCosLp_A_DE:
 ; use	HL
 ;------------------------------------------------------------------------------
 LoadSinLp_A_L:
-	ld	h,#0x7e
+	ld	h,#>_g_fp2_6Sin
 	ld	l,a
 	ld	l,(hl)
 	ret
@@ -52,7 +55,7 @@ LoadSinLp_A_L:
 ; use	HL
 ;------------------------------------------------------------------------------
 LoadSinHp_A_DE:
-	ld	h,#0x7f
+	ld	h,#>_g_fp2_14SinPlus
 	cp	#128
 	jr	nc,LoadSinHp_128_255
 LoadSinHp_0_127:
@@ -101,20 +104,20 @@ LoadSinHp_192_255:
 ; extern SinCosLp SinCos_GetSinCosLp(u8 rot);
 ;------------------------------------------------------------------------------
 _SinCos_GetSinCosLp:
-	ld		hl,#2		;skip return addr.
-	add		hl,sp
-	ld		a,(hl)		;a = rot
+	ld	hl,#2		;skip return addr.
+	add	hl,sp
+	ld	a,(hl)		;a = rot
 	call	LoadSinCosLp_A_DE
-	ex		de,hl
+	ex	de,hl
 	ret
 
 ;------------------------------------------------------------------------------
 ; extern fp2_6 SinCos_GetSinLp(u8 rot);
 ;------------------------------------------------------------------------------
 _SinCos_GetSinLp:
-	ld		hl,#2		;skip return addr.
-	add		hl,sp
-	ld		a,(hl)		;a = rot
+	ld	hl,#2		;skip return addr.
+	add	hl,sp
+	ld	a,(hl)		;a = rot
 	call	LoadSinLp_A_L
 	ret
 
@@ -122,10 +125,10 @@ _SinCos_GetSinLp:
 ; extern fp2_6 SinCos_GetCosLp(u8 rot);
 ;------------------------------------------------------------------------------
 _SinCos_GetCosLp:
-	ld		hl,#2		;skip return addr.
-	add		hl,sp
-	ld		a,(hl)		;a = rot
-	add		a,#64
+	ld	hl,#2		;skip return addr.
+	add	hl,sp
+	ld	a,(hl)		;a = rot
+	add	a,#64
 	call	LoadSinLp_A_L
 	ret
 
@@ -133,21 +136,21 @@ _SinCos_GetCosLp:
 ; extern fp2_14 SinCos_GetSinHp(u8 rot);
 ;------------------------------------------------------------------------------
 _SinCos_GetSinHp:
-	ld		hl,#2		;skip return addr.
-	add		hl,sp
-	ld		a,(hl)		;a = rot
+	ld	hl,#2		;skip return addr.
+	add	hl,sp
+	ld	a,(hl)		;a = rot
 	call	LoadSinHp_A_DE
-	ex		de,hl
+	ex	de,hl
 	ret
 
 ;------------------------------------------------------------------------------
 ; extern fp2_14 SinCos_GetCosHp(u8 rot);
 ;------------------------------------------------------------------------------
 _SinCos_GetCosHp:
-	ld		hl,#2		;skip return addr.
-	add		hl,sp
-	ld		a,(hl)		;a = rot
-	add		a,#64
+	ld	hl,#2		;skip return addr.
+	add	hl,sp
+	ld	a,(hl)		;a = rot
+	add	a,#64
 	call	LoadSinHp_A_DE
 	ex		de,hl
 	ret
@@ -170,43 +173,43 @@ SinCos_RotateXYLp_A_BC_HL:
 
 SinCos_RotateXYLp_A_BC_HL_Y:
 								; Y=X*sin+Y*cos
-	ld		a,c					; a=Y
-	ld		c,d					; c=sin
+	ld	a,c					; a=Y
+	ld	c,d					; c=sin
 	call	MulCore_AxE_HL		; hl=Y*cos
 	push	hl
-	ld		a,b					; a=X
-	ld		e,c					; e=c=sin
+	ld	a,b					; a=X
+	ld	e,c					; e=c=sin
 	call	MulCore_AxE_HL		; hl=X*sin
-	pop		de					; de=Y*cos
-	add		hl,de				; hl[10:6]=X*sin+Y*cos
-	sla		l					; hl <<= 2
-	rl		h
-	sla		l
-	rl		h					; h=Y
+	pop	de					; de=Y*cos
+	add	hl,de				; hl[10:6]=X*sin+Y*cos
+	sla	l					; hl <<= 2
+	rl	h
+	sla	l
+	rl	h					; h=Y
 
-	pop		de					; de=sincos
-	pop		bc					; bc=XY
+	pop	de					; de=sincos
+	pop	bc					; bc=XY
 	push	hl
 
 SinCos_RotateXYLp_A_BC_HL_X:
 								; X=X*cos-Y*sin
-	ld		a,b					; a=X
-	ld		b,d					; b=sin
+	ld	a,b					; a=X
+	ld	b,d					; b=sin
 	call	MulCore_AxE_HL		; hl=X*cos
 	push	hl
-	ld		a,c					; a=Y
-	ld		e,b					; e=b=sin
+	ld	a,c					; a=Y
+	ld	e,b					; e=b=sin
 	call	MulCore_AxE_HL		; hl=Y*sin
-	pop		de					; de=X*cos
-	ex		de,hl				; hl=X*cos de=Y*sin
-	or		a					; cy=0
-	sbc		hl,de				; hl[10:6]=X*cos-Y*sin
-	sla		l					; hl <<= 2
-	rl		h
-	sla		l
-	rl		h					; h=X
-	pop		de					; d=Y
-	ld		l,d					; hl=XY
+	pop	de					; de=X*cos
+	ex	de,hl				; hl=X*cos de=Y*sin
+	or	a					; cy=0
+	sbc	hl,de				; hl[10:6]=X*cos-Y*sin
+	sla	l					; hl <<= 2
+	rl	h
+	sla	l
+	rl	h					; h=X
+	pop	de					; d=Y
+	ld	l,d					; hl=XY
 
 	ret
 
@@ -214,12 +217,12 @@ SinCos_RotateXYLp_A_BC_HL_X:
 ; extern s8XY SinCos_RotateXYS8Lp(s8 x, s8 y, u8 rot);
 ;------------------------------------------------------------------------------
 _SinCos_RotateXYS8Lp:
-	ld		hl,#2		;skip return addr.
-	add		hl,sp
-	ld		b,(hl)
-	inc		hl
-	ld		c,(hl)
-	inc		hl
-	ld		a,(hl)
+	ld	hl,#2		;skip return addr.
+	add	hl,sp
+	ld	b,(hl)
+	inc	hl
+	ld	c,(hl)
+	inc	hl
+	ld	a,(hl)
 	call	SinCos_RotateXYLp_A_BC_HL
 	ret

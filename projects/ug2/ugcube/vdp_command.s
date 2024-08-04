@@ -1,8 +1,46 @@
 ;------------------------------------------------------------------------------
 ; VDP Command.
 ;------------------------------------------------------------------------------
-        VDPRead  = 0x0006
-        VDPWrite = 0x0007
+	EXPTBL	= 0xFCC1	; Main ROM slot / ext slot [4].
+	RDSLT	= 0x000C	; Read a byte from specified slot.
+;------------------------------------------------------------------------------
+; void VDPInit(void)
+;------------------------------------------------------------------------------
+	.globl	_VDPRead
+	.globl	_VDPWrite
+	.globl	_VDPInit
+
+	.area	_CODE
+
+_VDPInit:
+	ld	a,#>_VDPRead		; VDPRead == 0x0006 ?
+	or	a
+	jp	nz,_VDPInit_LoadAddress
+	ld	a,#<_VDPRead
+	cp	#0x06
+	jp	nz,_VDPInit_LoadAddress
+
+	ld	a,#>_VDPWrite		; VDPWrite == 0x0007 ?
+	or	a
+	jp	nz,_VDPInit_LoadAddress
+	ld	a,#<_VDPWrite
+	cp	#0x07
+	jp	nz,_VDPInit_LoadAddress
+	ret
+
+_VDPInit_LoadAddress:
+					; VDPRead != 0x0006 && VDPWrite != 0x0007
+					; store VDP port from MAIN-ROM
+	ld	a,(#EXPTBL)		; a = EXPTBL[0] <---- MAIN-ROM slot
+	ld	hl,#0x0006
+	call	RDSLT
+	ld	(#_VDPRead),a
+
+	ld	a,(#EXPTBL)
+	ld	hl,#0x0007
+	call	RDSLT
+	ld	(#_VDPWrite),a
+	ret
 
 ;------------------------------------------------------------------------------
 ; void VDPSetPage(u8 nPage);
@@ -20,26 +58,24 @@
 	.globl	_VDPSetDisplayPage
 
 _VDPSetDisplayPage:
-	ld		a,(#VDPWrite)
-	inc		a
-	ld      c,a             ; c = write control register
-
-	ld		hl,#0x0002
-	add		hl,sp
-	ld		a,(hl)		; nPage
-	ld		(_DFPAGE),a
-	and		#0x03
+	ld	(_DFPAGE),a	; a = nPage
+	and	#0x03
 	rrca
 	rrca
 	rrca
-	or		#0x1f
+	or	#0x1f
+	ld	e,a		; e = R#2 register value
 	
+	ld	a,(#_VDPWrite)
+	inc	a
+	ld	c,a		; c = write control register
+
 	di
-	out		(c),a
-	ld		a,#0x80+#0x02	; R#2 = pattern name table address
-	out		(c),a
+	out	(c),e		; send data
+	ld	a,#0x80+#0x02	; R#2 = pattern name table address
+	out	(c),a		; select register
 	ei
-		
+
 	ret
 ;------------------------------------------------------------------------------
 ; void VDPWait()
@@ -51,31 +87,31 @@ _VDPSetDisplayPage:
 _VDPWait:
 	di
 VDPWait_Loop:
-	ld		a,(#VDPWrite)
-	inc		a
-	ld		c,a				; c = write control register
-	ld		a,#0x02			; S#2 = vdp command status
-	out		(c),a
-	ld		a,#0x80+#0x0f	; R#15 = read status register
-	out		(c),a
-	ld		a,(#VDPRead)
-	inc		a
-	ld		c,a				; c = read status register 
-	in		a,(c)
-	and		#0x01
-	jp		nz,VDPWait_Loop
+	ld	a,(#_VDPWrite)
+	inc	a
+	ld	c,a		; c = write control register
+	ld	a,#0x02		; S#2 = vdp command status
+	out	(c),a
+	ld	a,#0x80+#0x0f	; R#15 = read status register
+	out	(c),a
+	ld	a,(#_VDPRead)
+	inc	a
+	ld	c,a		; c = read status register 
+	in	a,(c)
+	and	#0x01
+	jp	nz,VDPWait_Loop
 
-	ld		a,(#VDPWrite)
-	inc		a
-	ld		c,a				; c = write control register
-	xor		a				; S#0 = interrupt status
-	out		(c),a
-	ld		a,#0x80+#0x0f	; R#15 = read status register
-	out		(c),a
-	ld		a,(#VDPRead)
-	inc		a
-	ld		c,a				; c = read status register 
- 	in		a,(c)
+	ld	a,(#_VDPWrite)
+	inc	a
+	ld	c,a		; c = write control register
+	xor	a		; S#0 = interrupt status
+	out	(c),a
+	ld	a,#0x80+#0x0f	; R#15 = read status register
+	out	(c),a
+	ld	a,(#_VDPRead)
+	inc	a
+	ld	c,a		; c = read status register 
+ 	in	a,(c)
 	ei
 	
 	ret
@@ -153,7 +189,7 @@ WAIT_VDP:
 	call	_VDPWait	; wait last vdp command
 
 ISSUE_VDP_COMMAND:
-	ld		a,(#VDPWrite)
+	ld		a,(#_VDPWrite)
 	inc		a
 	ld		c,a			; issue vdp command
 	ld		a,#36			; reg #36
