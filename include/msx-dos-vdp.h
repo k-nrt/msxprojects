@@ -53,7 +53,7 @@ extern void vdpSetBackgroundColor(u8 color); //! 0xF3EA.
 extern void vdpSetGraphicAccumlator(u16 x, u16 y); //! 0xFCB7 / 0xFCB9.
 
 extern void vdpPrintChar(char c); //! GRPPRT.
-extern void vdpPrint(char *str);
+extern void vdpPrint(const char *str);
 extern void vdpPrintHexU8(u8 hex);
 extern void vdpPrintHexU16(u16 hex);
 extern void vdpPrintHexU32(u32 hex);
