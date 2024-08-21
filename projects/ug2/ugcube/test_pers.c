@@ -421,28 +421,28 @@ void Test_BBoxClip(const char* pszTitle)
 			
 			if (0 <= lod && lod < 4)
 			{
-				enum EBBoxClip clip = PersClipBBoxVram(boxes[lod], v3Pos.x, v3Pos.y, v3Pos.z, g_persContext.m_s8ClipNear >> lod);
+				enum EBBoxClip clip;
+				PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
+				clip = PersClipBBoxVram(boxes[lod], g_persContext.m_s8ClipNear >> lod);
+				//clip = PersClipBBoxXYZVram(boxes[lod], v3Pos.x, v3Pos.y, v3Pos.z, g_persContext.m_s8ClipNear >> lod);
 				VDPPrint(0, 32, "CLP"); 
-				VDPPrintU8X(48, 32, clip);
+				VDPPrintU8X(48, 32, clip); 
 
 				if (clip == kBBoxClip_In)
 				{
 					VDPWait();
-					PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
 					PersTransformNoClipVram(cubeVertices[lod], g_meshCube.m_nbVertices);
 					PersDrawLines(g_meshCube.m_pIndices, g_meshCube.m_nbLines);
 				}
 				else if(clip == kBBoxClip_ScissorXY)
 				{
 					VDPWait();
-					PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
 					PersTransformClipXYVram(cubeVertices[lod], g_meshCube.m_nbVertices);
 					PersDrawLinesClipXY(g_meshCube.m_pIndices, g_meshCube.m_nbLines);
 				}
 				else if (clip == kBBoxClip_ScissorXYZ)
 				{
 					VDPWait();
-					PersSetPosition(v3Pos.x, v3Pos.y, v3Pos.z);
  					PersTransformClipXYZVram(cubeVertices[lod], g_meshCube.m_nbVertices);
 					PersDrawLinesClipXYZ(g_meshCube.m_pIndices, g_meshCube.m_nbLines);
 				}

@@ -6,6 +6,7 @@
 typedef struct tMtkPlayer
 {
 	s16x3 m_velocity;
+	s8x3 m_angularVelocity;
 } SMtkPlayer;
 extern SMtkPlayer g_mtkPlayer;
 

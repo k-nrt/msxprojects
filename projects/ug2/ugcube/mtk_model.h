@@ -14,5 +14,6 @@ typedef struct tMtkModel
 
 extern void MtkModelCreate(SMtkModel *pModel, const SMesh *pSrcMesh, u8 rx, u8 ry, u8 rz); 
 extern void MtkModelDrawNoClip(const SMtkModel *pModel, const s16x3 *pPosition);
+extern void MtkModelDrawBBoxClip(const SMtkModel *pModel, const s16x3 *pPosition);
 
 #endif //MTK_MODEL_H

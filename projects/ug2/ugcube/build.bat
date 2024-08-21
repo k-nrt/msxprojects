@@ -4,7 +4,6 @@ set ProjectDir=%~fp0
 set ProjectDir=%ProjectDir:\build.bat=%
 
 set OutName=ugcube
-set OutDir=%ProjectDir%\Release
 set BinPath=%ProjectDir%\..\..\bin
 
 if "%~1" equ "--system" (
@@ -30,13 +29,14 @@ set ProjectAsmSrc=%ProjectAsmSrc% pers_transform_unsigned.s pers_transform_unsig
 set ProjectAsmSrc=%ProjectAsmSrc% mtk_star.s
 set ProjectCcSrc=main.c vdp_command.c sincos.c mesh_cube.c pers.c bbox.c flipper.c
 set ProjectCcSrc=%ProjectCcSrc% test.c test_sincos.c test_line.c test_pers.c
-set ProjectCcSrc=%ProjectCcSrc% mtk_main.c mtk_mesh.c mtk_model.c mtk_input.c mtk_effect.c mtk_player.c mtk_enemy.c mtk_shot.c
+set ProjectCcSrc=%ProjectCcSrc% mtk_main.c mtk_mesh.c mtk_model.c mtk_input.c mtk_effect.c mtk_player.c mtk_enemy.c mtk_shot.c mtk_star.c
 
 if "%System%" equ "msx-dos" (
 	set MsxAsmSrc=%MsxAsmSrc% msx-dos-vdp.s msx-dos-input.s msx-dos.s
 	set AdditionalCcOptions=-DSYSTEM_MSXDOS
 	set DataLoc=0xa000
 	set AdditionalLinkerOptions=-Wl -b_CODE2=0x4000
+	set OutDir=%ProjectDir%\ReleaseCom
 
 	call "%ProjectDir%\..\..\build\build-com.bat"
 	if !ErrorLevel! neq 0 (goto :error_end_of_bat)
@@ -49,13 +49,14 @@ if "%System%" equ "msx-dos" (
 		)
 	)
 
-	copy "%OutDir%\%OutName%.com" "!DskDir!\%Outname%.com"
+	copy "!OutDir!\%OutName%.com" "!DskDir!\%OutName%.com" >nul
 
 ) else if "%System%" equ "rom32k" (
 	set MsxAsmSrc=%MsxAsmSrc% msx-bios-wrapper.s
 	set AdditionalCcOptions=-DSYSTEM_ROM32K
 	set DataLoc=0xe000
 	set AdditionalLinkerOptions=-Wl -b_CODE2=0x8000
+	set OutDir=%ProjectDir%\ReleaseRom
 
 	call %ProjectDir%\..\..\build\build-32k-rom.bat
 	if !ErrorLevel! neq 0 (goto :error_end_of_bat)

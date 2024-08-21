@@ -15,6 +15,7 @@
 #include "mtk_player.h"
 #include "mtk_enemy.h"
 #include "mtk_shot.h"
+#include "mtk_star.h"
 
 #include "mesh.h"
 #include "mtk_mesh_beam.inc"
@@ -83,33 +84,6 @@ const s16 kMtk_ViewportRight = 256 - 1;
 const s16 kMtk_ViewportTop = 16;
 const s16 kMtk_ViewportBottom = 16 + 96 + 96 - 1;
 
-#define MTK_STAR_MAX (32)
-s8x3 g_mtkStars[MTK_STAR_MAX];
-s8x3 g_mtkStarPosition;
-
-void MtkStarInit(void)
-{
-	u8 i;
-	s8x3 *pStar = g_mtkStars;
-	for(i = 0; i < MTK_STAR_MAX; i++, pStar++)
-	{
-		s16 x = (msxRandGet16() >> 3);
-		s16 y = (msxRandGet8());
-		s16 z = (msxRandGet16() >> 7) & 0x07f;
-		pStar->x = (s8) x;
-		pStar->y = (s8) y;
-		pStar->z = (s8) z;
-	}
-
-	s8x3Set(g_mtkStarPosition, 0, 0, 0);
-}
-
-void MtkStarUpdate(void)
-{
-	s8x3Op(g_mtkStarPosition, g_mtkStarPosition, -, g_mtkPlayer.m_velocity);
-}
-
-extern void MtkStarRender(void);
 
 void MtkInit(void)
 {
@@ -139,7 +113,7 @@ void MtkInit(void)
 	MtkShotInit();
 	MtkEnemyInit();
 	MtkEffectInit();
-	MtkStarInit();
+	MtkStarInit(8, 128 - 16);
 
 	//. Models.
 	VDPPrint(0, 16, "create models ... ");
@@ -176,13 +150,22 @@ void Mtk_Main(const char* pszTitle)
 
 	for(;;)
 	{
-        FlipperClear();
+		FlipperClear();
 
 		MtkInputScan();
 		MtkPlayerUpdate();
 		MtkShotUpdate();
 		MtkEnemyUpdate();
-		MtkStarUpdate();
+
+		{
+			s8x3 velocity;
+			s8x3Set(velocity, 0, 0, g_mtkPlayer.m_velocity.z);
+			MtkStarSetVelocity(velocity);
+
+			s8x3Set(velocity, g_mtkPlayer.m_angularVelocity.x, g_mtkPlayer.m_angularVelocity.y, 0);
+			MtkStarSetAnglerVelocity(velocity);
+			MtkStarUpdate();
+		}
 
 		{
 			SMtkShot *pShot = g_mtkShots;
@@ -231,7 +214,7 @@ void Mtk_Main(const char* pszTitle)
 			{
 				if (pEnemy->m_status != kMtkEnemyStatus_Idle)
 				{
-					MtkModelDrawNoClip(&g_modelEnemy, &pEnemy->m_position);
+					MtkModelDrawBBoxClip(&g_modelEnemy, &pEnemy->m_position);
 				}
 			}
 		}

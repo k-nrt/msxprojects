@@ -100,3 +100,29 @@ void Test_SinHp(const char *pszTitle)
 	Test_WaitForTrigger(pszTitle); 
 }
 
+void Test_RotateHp(const char *pszTitle)
+{
+	u8 i;
+	s16 x,y;
+
+	VDPSetForegroundColor(0x11);
+	VDPFill(0,0,256,212);
+
+	VDPSetForegroundColor(7);
+
+	SinCos_SetS16XY(64, 0);
+	SinCos_RotateXYS16Hp(64);
+	x = SinCos_GetS16X();
+	y = SinCos_GetS16Y();
+	VDPPrintU16X(0, 32, x);
+	VDPPrintU16X(0, 40, y);
+
+	for (i = 0; i < 255; i++)
+	{
+		SinCos_SetS16XY(64, 0);
+		SinCos_RotateXYS16Hp(i);
+		VDPWaitLine(128, 106, 128 + SinCos_GetS16X(), 106 + SinCos_GetS16Y());
+	}
+
+	Test_WaitForTrigger(pszTitle); 
+}

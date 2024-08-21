@@ -55,6 +55,7 @@ SDCC_FIXED_ADDRESS(0x0006) u16 g_tpa;
 SDCC_FIXED_ADDRESS(0xFC4A) u16 g_himem;
 void main(const char* args)
 {
+	UNUSED(args);
 	msxDosPrint("TPA:");
 	msxDosPrintHexU16(g_tpa);
 	msxDosPrint("\r\n");

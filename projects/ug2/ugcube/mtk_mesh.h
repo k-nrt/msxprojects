@@ -10,6 +10,7 @@ typedef struct tMtkMesh
 	u8 m_nbVertices;
 	u16 *m_pIndices;
 	u8 m_nbLines;
+	u16 m_bboxVram;
 } SMtkMesh;
 
 extern void MtkMeshCreate(SMtkMesh *pMesh, const SMesh *pSrcMesh, u8 rx, u8 ry, u8 rz, u8 shift);

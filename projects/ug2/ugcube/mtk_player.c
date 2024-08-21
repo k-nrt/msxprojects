@@ -6,59 +6,60 @@
 SMtkPlayer g_mtkPlayer;
 void MtkPlayerInit(void)
 {
-	s16x3Set(g_mtkPlayer.m_velocity,0,0,0);
+	s16x3Set(g_mtkPlayer.m_velocity, 0, 0, 0);
+	s8x3Set(g_mtkPlayer.m_angularVelocity, 0, 0, 0);
 }
 
 void MtkPlayerUpdate(void)
 {
-	s16 vx = g_mtkPlayer.m_velocity.x;
-	s16 vy = g_mtkPlayer.m_velocity.y;
+	s8 avx = g_mtkPlayer.m_angularVelocity.x;
+	s8 avy = g_mtkPlayer.m_angularVelocity.y;
 	s16 vz = g_mtkPlayer.m_velocity.z;
 	
 	if (MtkInputIsDown(kMtkInput_Right))
 	{
-		if (vx < 8)
+		if (avy < 8)
 		{
-			vx += 1;
+			avy += 1;
 		}
 	}
 	else if (MtkInputIsDown(kMtkInput_Left))
 	{
-		if (-8 < vx)
+		if (-8 < avy)
 		{
-			vx -= 1;
+			avy -= 1;
 		}
 	}
-	else if (vx < 0)
+	else if (avy < 0)
 	{
-		vx += 1;
+		avy += 1;
 	}
-	else if (0 < vx)
+	else if (0 < avy)
 	{
-		vx -= 1;
+		avy -= 1;
 	}
 
 	if (MtkInputIsDown(kMtkInput_Down))
 	{
-		if (vy < 8)
+		if (-8 < avx)
 		{
-			vy += 1;
+			avx -= 1;
 		}
 	}
 	else if (MtkInputIsDown(kMtkInput_Up))
 	{
-		if (-8 < vy)
+		if (avx < 8)
 		{
-			vy -= 1;
+			avx += 1;
 		}
 	}
-	else if (vy < 0)
+	else if (avx < 0)
 	{
-		vy += 1;
+		avx += 1;
 	}
-	else if (0 < vy)
+	else if (0 < avx)
 	{
-		vy -= 1;
+		avx -= 1;
 	}
 
 	if (MtkInputIsDown(kMtkInput_Thrust))
@@ -75,16 +76,16 @@ void MtkPlayerUpdate(void)
 			vz -= 1;
 		}
 	}
-	else if (vz < 0)
+	else if (vz < 1)
 	{
 		vz += 1;
 	}
-	else if (0 < vz)
+	else if (1 < vz)
 	{
 		vz -= 1;
 	}
 
-	g_mtkPlayer.m_velocity.x = vx;
-	g_mtkPlayer.m_velocity.y = vy;
+	g_mtkPlayer.m_angularVelocity.x = avx;
+	g_mtkPlayer.m_angularVelocity.y = avy;
 	g_mtkPlayer.m_velocity.z = vz;
 }

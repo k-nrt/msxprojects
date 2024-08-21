@@ -207,9 +207,8 @@ PersTransformClipTest_TestBottom:
 ; in H = minZ
 ; in L = maxZ
 ; out A
-	.area   _CODE
-	.globl  PersTransformClipTestBBox
-
+	.area	_CODE
+	.globl	PersTransformClipTestBBox
 
 PersTransformClipTestBBox:
 	dec	a		; a = near - 1

@@ -152,7 +152,7 @@ _SinCos_GetCosHp:
 	ld	a,(hl)		;a = rot
 	add	a,#64
 	call	LoadSinHp_A_DE
-	ex		de,hl
+	ex	de,hl
 	ret
 
 ;------------------------------------------------------------------------------
@@ -226,3 +226,97 @@ _SinCos_RotateXYS8Lp:
 	ld	a,(hl)
 	call	SinCos_RotateXYLp_A_BC_HL
 	ret
+
+;------------------------------------------------------------------------------
+; extern void SinCos_RotateXYS16Hp(u8 rot);
+;------------------------------------------------------------------------------
+	.globl	_SinCos_RotateXYS16Hp
+	.globl	_SinCos_s16XYInOut
+	.globl	MulCoreSigned_BCxDE_HLHL
+
+	.area	_INITIALIZED
+Work_SinHp:
+	.ds	2
+Work_CosHp:
+	.ds	2
+
+	.area	_CODE
+
+_SinCos_RotateXYS16Hp:
+	ld	b,a				; b = a save rotation 
+	call	LoadSinHp_A_DE			; de = sin
+	ld	(#Work_SinHp),de
+
+	ld	a,b				; a = restore rotation
+	add	a,#64
+	call	LoadSinHp_A_DE			; de = cos
+	ld	(#Work_CosHp),de
+
+	ld	bc,(#_SinCos_s16XYInOut)	; hl'hl = cos*x
+	call	MulCoreSigned_BCxDE_HLHL
+
+	push	hl				; save cos*x low
+	exx
+	push	hl				; save cos*x high
+
+	ld	bc,(#Work_SinHp)		; hl'hl = sin*y
+	ld	de,(#_SinCos_s16XYInOut + #0x0002)
+	call	MulCoreSigned_BCxDE_HLHL
+
+	exx
+	pop	de		; de' = cos*x high
+	exx
+	pop	de		; de = cos*x low
+
+	xor	a		; cy = 0
+	ex	de,hl		; hl = cos * x low - sin *y low
+	sbc	hl,de
+	ld	a,h
+
+	exx
+	ex	de,hl		; hl' = cos * x high - sin * y high
+	sbc	hl,de
+
+	rla			; hl'a <<= 2
+	rl	l
+	rl	h
+
+	rla
+	rl	l
+	rl	h
+
+	ld	bc,(#Work_SinHp)		; bc = sin
+	ld	de,(#_SinCos_s16XYInOut)	; de = x
+	ld	(#_SinCos_s16XYInOut),hl	; store rotated x
+	call	MulCoreSigned_BCxDE_HLHL
+
+	push	hl				; save hl'hl
+	exx
+	push	hl
+
+	ld	bc,(#Work_CosHp)			; bc = cos
+	ld	de,(#_SinCos_s16XYInOut + #0x0002)	; de = y
+	call	MulCoreSigned_BCxDE_HLHL
+
+	exx
+	pop	de		; de' = sin*x high
+	exx
+	pop	de		; de = sin*x low
+
+	add	hl,de		; hla = sin*x + cos*y
+	ld	a,h
+	exx
+	adc	hl,de
+
+	rla			; hl'a <<= 2
+	rl	l
+	rl	h
+
+	rla
+	rl	l
+	rl	h
+
+	ld	(#_SinCos_s16XYInOut + # 0x0002),hl	; store rotated y
+
+	ret
+;------------------------------------------------------------------------------

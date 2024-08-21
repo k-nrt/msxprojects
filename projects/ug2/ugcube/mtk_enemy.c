@@ -45,10 +45,26 @@ void MtkEnemyUpdate(void)
 			static s16 px, py, pz;
 			static s16 vx, vy, vz;
 			static s16 tx, ty, tz;
-			
+
 			px = pEnemy->m_position.x;
 			py = pEnemy->m_position.y;
 			pz = pEnemy->m_position.z;
+
+			if (g_mtkPlayer.m_angularVelocity.x)
+			{
+				SinCos_SetS16XY(py, pz);
+				SinCos_RotateXYS16Hp(-g_mtkPlayer.m_angularVelocity.x);
+				py = SinCos_GetS16X();
+				pz = SinCos_GetS16Y();
+			}
+
+			if (g_mtkPlayer.m_angularVelocity.y)
+			{
+				SinCos_SetS16XY(pz, px);
+				SinCos_RotateXYS16Hp(-g_mtkPlayer.m_angularVelocity.y);
+				pz = SinCos_GetS16X();
+				px = SinCos_GetS16Y();
+			}
 
 			vx = pEnemy->m_velocity.x;
 			vy = pEnemy->m_velocity.y;
@@ -78,7 +94,7 @@ void MtkEnemyUpdate(void)
 			pEnemy->m_position.z = pz + vz - g_mtkPlayer.m_velocity.z;
 
 			s16x3Set(pEnemy->m_velocity, vx, vy, vz);
-			s16x3Op(pEnemy->m_target, pEnemy->m_target, -, g_mtkPlayer.m_velocity);
+			//s16x3Op(pEnemy->m_target, pEnemy->m_target, -, g_mtkPlayer.m_velocity);
 		}
 	}
 }

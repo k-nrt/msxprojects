@@ -5,11 +5,15 @@ set CurrentDir=%cd%
 set ProjectRoot=%~fp0
 set ProjectRoot=%ProjectRoot:\clean.bat=%
 
-cd /D %ProjectRoot%
-if exist Release (
-    rmdir /S /Q Release
+cd /D "%ProjectRoot%"
+if exist ReleaseRom (
+	rmdir /S /Q ReleaseRom
 )
 
-cd /D %CurrentDir%
+if exist ReleaseCom (
+	rmdir /S /Q ReleaseCom
+)
+
+cd /D "%CurrentDir%"
 endlocal
 exit /b
