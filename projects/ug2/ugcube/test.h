@@ -5,6 +5,7 @@
 extern void Test_SinCosLp(const char *pszTitle);
 extern void Test_SinLp_CosLp(const char *pszTitle);
 extern void Test_SinHp(const char *pszTitle);
+extern void Test_RotateHp(const char *pszTitle);
 
 //. test_line.c
 extern void Test_Line(const char* pszTitle);

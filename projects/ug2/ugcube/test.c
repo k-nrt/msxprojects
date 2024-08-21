@@ -69,17 +69,20 @@ void Test(const char *pszTitle)
 		{"ROTATE CUBE",       Test_PersAnim},
 		{"SCROLL CUBE",       Test_PersScroll},
 		{"CLIP BBOX",         Test_BBoxClip},
+		{"ROTATE HP",         Test_RotateHp},
 		{"MTK",               Mtk_Main},
 		{NULL, NULL}
 	};
 
 	u8 nbItems = (sizeof(items)/sizeof(struct Item)) - 1;
 
+#if 0
 	s8 autoRun = -1;
 	if (0 <= autoRun)
 	{
 		(*(items[autoRun].m_pFunc))(items[autoRun].m_pszName);
 	}
+#endif
 
 	{
 		u8 redraw = 1;

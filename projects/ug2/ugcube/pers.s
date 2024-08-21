@@ -557,12 +557,12 @@ _PersCreateBBox:
 	ret
 
 ;------------------------------------------------------------------------------
-; extern u8 PersClipBBoxVram(u16 vramOffset, s8 x, s8 y, s8 z, s8 near);
+; extern u8 PersClipBBoxXYZVram(u16 vramOffset, s8 x, s8 y, s8 z, s8 near);
 ;------------------------------------------------------------------------------
 	.area	_CODE
-	.globl	_PersClipBBoxVram
+	.globl	_PersClipBBoxXYZVram
 
-_PersClipBBoxVram:
+_PersClipBBoxXYZVram:
 	ld	hl,#0x0002
 	add	hl,sp
 
@@ -628,5 +628,114 @@ _PersClipBBoxVram:
 	ld	l,a
 	ret
 
+;------------------------------------------------------------------------------
+; extern u8 PersClipBBoxXYZVram(u16 vramOffset, s8 near);
+;------------------------------------------------------------------------------
+	.area	_CODE
+	.globl	_PersClipBBoxVram
 
+_PersClipBBoxVram:
+				; hl = vramOffset
+				; a = near
+	ex	de,hl		; de = vramOffset
+	ld	hl,#0x0002	; skip return address
+	add	hl,sp
+	ld	a,(hl)
+	ex	af,af'		; a' = near
 
+	pop	hl		; store return address
+	inc	sp
+	push	hl
+
+	ld	a,(#_g_persContext+#m_vramHigh)
+	ld	b,a		; b = vram high
+
+	call	VDPReadBegin116DI
+				; in B  vram high 1
+				; in DE vram low 16
+				; out C i/o address vram read
+
+	ld	hl,#_g_persContext+#m_v3PositionX
+	ld	b,(hl)		; b = x
+	inc	hl
+	ld	d,(hl)		; d = y
+	inc	hl
+	ld	e,(hl)		; e = z
+
+MakeMinX:
+	in	a,(c)		; b' = minX + x
+	add	a,b
+	jp	po,StoreMinX	; if a = overflow then clamp a
+	ld	a,#127
+	jp	m,StoreMinX	; a = a < 0 ? 127 : -127
+	neg
+StoreMinX:
+	exx
+	ld	b,a
+	exx
+
+MakeMaxX:
+	in	a,(c)		; c' = maxX + x
+	add	a,b
+	jp	po,StoreMaxX	; if a = overflow then clamp a
+	ld	a,#127
+	jp	m,StoreMaxX	; a = a < 0 ? 127 : -127
+	neg
+StoreMaxX:
+	exx
+	ld	c,a
+	exx
+
+MakeMinY:
+	in	a,(c)		; d' = minY + y
+	add	a,d
+	jp	po,StoreMinY	; if a = overflow then clamp a
+	ld	a,#127
+	jp	m,StoreMinY	; a = a < 0 ? 127 : -127
+	neg
+StoreMinY:
+	exx
+	ld	d,a
+	exx
+
+MakeMaxY:
+	in	a,(c)		; e' = maxY + y  
+	add	a,d
+	jp	po,StoreMaxY	; if a = overflow then clamp a
+	ld	a,#127
+	jp	m,StoreMaxY	; a = a < 0 ? 127 : -127
+	neg
+StoreMaxY:
+	exx
+	ld	e,a
+	exx
+
+MakeMinZ:
+	in	a,(c)		; h' = minZ + z
+	add	a,e
+	jp	po,StoreMinZ	; if a = overflow then clamp a
+	ld	a,#127
+	jp	m,StoreMinZ	; a = a < 0 ? 127 : -127
+	neg
+StoreMinZ:
+	exx
+	ld	h,a
+	exx
+
+MakeMaxZ:
+	in	a,(c)		; l' = maxZ + z
+	ei
+	add	a,e
+	jp	po,StoreMaxZ	; if a = overflow then clamp a
+	ld	a,#127
+	jp	m,StoreMaxZ	; a = a < 0 ? 127 : -127
+	neg
+StoreMaxZ:
+	exx
+	ld	l,a
+	
+	ex	af,af'		; a = near
+		
+	call	PersTransformClipTestBBox
+
+	ret
