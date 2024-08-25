@@ -16,6 +16,7 @@
 #include "mtk_enemy.h"
 #include "mtk_shot.h"
 #include "mtk_star.h"
+#include "mtk_far_bg.h"
 
 #include "mesh.h"
 #include "mtk_mesh_beam.inc"
@@ -24,6 +25,7 @@
 #include "mtk_mesh_exp1.inc"
 #include "mtk_mesh_exp2.inc"
 #include "mtk_mesh_exp3.inc"
+#include "mtk_mesh_planet.inc"
 
 #pragma codeseg CODE2
 
@@ -70,6 +72,8 @@ SMtkModel g_modelExp2;
 SMtkModel g_modelExp3;
 SMtkModel g_modelShot;
 
+SMtkMesh g_mtkMeshPlanet;
+
 void MtkOnProgress(u16 address)
 {
 	VDPPrintU16X(256 - 32, 8, address);
@@ -114,6 +118,7 @@ void MtkInit(void)
 	MtkEnemyInit();
 	MtkEffectInit();
 	MtkStarInit(8, 128 - 16);
+	MtkFarBgInit();
 
 	//. Models.
 	VDPPrint(0, 16, "create models ... ");
@@ -127,6 +132,11 @@ void MtkInit(void)
 	MtkModelCreate(&g_modelExp1, &g_meshExp1, 0, 0, 0);
 	MtkModelCreate(&g_modelExp2, &g_meshExp2, 0, 0, 0);
 	MtkModelCreate(&g_modelExp3, &g_meshExp3, 0, 0, 0);
+
+	MtkMeshCreate(&g_mtkMeshPlanet, &g_meshPlanet, 0, 0, 0, 0);
+
+	MtkFarBgSetModel(0, &g_mtkMeshPlanet);
+	MtkFarBgSetPosition(0, 0, 0, 96, 96);
 
 	//. Clear screen.
 	VDPSetForegroundColor(0x00);
@@ -167,6 +177,8 @@ void Mtk_Main(const char* pszTitle)
 			MtkStarUpdate();
 		}
 
+		MtkFarBgUpdate();
+
 		{
 			SMtkShot *pShot = g_mtkShots;
 			for (i = 0; i < MTK_SHOT_MAX; i++, pShot++)
@@ -205,8 +217,10 @@ void Mtk_Main(const char* pszTitle)
 
 		MtkEffectUpdate();
 
-        FlipperApplyForegroundColor();
+		FlipperApplyForegroundColor();
 		VDPWait();
+
+		MtkFarBgRender();
 
 		{
 			SMtkEnemy *pEnemy = g_mtkEnemies;
