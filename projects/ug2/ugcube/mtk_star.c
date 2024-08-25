@@ -20,8 +20,8 @@ void MtkStarInit(s8 zNear, s8 zFar)
 		pStar->z = (s8) z;
 	}
 
-	s8x3Set(g_mtkStar.m_v3Velocity, 0, 0, 0);
-	s8x3Set(g_mtkStar.m_v3AnglerVelocity, 0, 0, 0);
+	s8x3Set(g_mtkStar.m_velocity, 0, 0, 0);
+	s8x3Set(g_mtkStar.m_angularVelocity, 0, 0, 0);
 	g_mtkStar.m_zNear = zNear;
 	g_mtkStar.m_zFar = zFar;
 	g_mtkStar.m_zRange = zFar - zNear;
@@ -39,30 +39,30 @@ void MtkStarUpdate(void)
 		y = pStar->y;
 		z = pStar->z;
 
-		if (g_mtkStar.m_v3AnglerVelocity.x)
+		if (g_mtkStar.m_angularVelocity.x)
 		{
-			s8XY xy = SinCos_RotateXYS8Lp(y, z, -g_mtkStar.m_v3AnglerVelocity.x);
+			s8XY xy = SinCos_RotateXYS8Lp(y, z, -g_mtkStar.m_angularVelocity.x);
 			y = s8XY_GetX(xy);
 			z = s8XY_GetY(xy);
 		}
 
-		if (g_mtkStar.m_v3AnglerVelocity.y)
+		if (g_mtkStar.m_angularVelocity.y)
 		{
-			s8XY xy = SinCos_RotateXYS8Lp(z, x, -g_mtkStar.m_v3AnglerVelocity.y);
+			s8XY xy = SinCos_RotateXYS8Lp(z, x, -g_mtkStar.m_angularVelocity.y);
 			z = s8XY_GetX(xy);
 			x = s8XY_GetY(xy);
 		}
 
-		if (g_mtkStar.m_v3AnglerVelocity.z)
+		if (g_mtkStar.m_angularVelocity.z)
 		{
-			s8XY xy = SinCos_RotateXYS8Lp(x, y, -g_mtkStar.m_v3AnglerVelocity.z);
+			s8XY xy = SinCos_RotateXYS8Lp(x, y, -g_mtkStar.m_angularVelocity.z);
 			x = s8XY_GetX(xy);
 			y = s8XY_GetY(xy);
 		}
 
-		x -= g_mtkStar.m_v3Velocity.x;
-		y -= g_mtkStar.m_v3Velocity.y;
-		z -= g_mtkStar.m_v3Velocity.z;
+		x -= g_mtkStar.m_velocity.x;
+		y -= g_mtkStar.m_velocity.y;
+		z -= g_mtkStar.m_velocity.z;
 
 		if (z < g_mtkStar.m_zNear)
 		{
