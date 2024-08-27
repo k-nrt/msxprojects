@@ -190,7 +190,7 @@ void Mtk_Main(const char* pszTitle)
 
 					for (j = 0; j < MTK_ENEMY_MAX; j++, pEnemy++)
 					{
-						if (pEnemy->m_status != kMtkEnemyStatus_Move)
+						if (!pEnemy->m_shield)
 						{
 							continue;
 						}
@@ -205,9 +205,11 @@ void Mtk_Main(const char* pszTitle)
 							pShot->m_position.z < pEnemy->m_position.z + 32
 						)
 						{
-							pEnemy->m_status = kMtkEnemyStatus_Idle;
 							pShot->m_status = kMtkShotStatus_Hit;
-							MtkEffectSpawn(kMtkEffectType_Explosion, &pEnemy->m_position, &pEnemy->m_velocity);
+							if (MtkEnemyAddDamage(1, pEnemy) <= 0)
+							{
+								MtkEffectSpawn(kMtkEffectType_Explosion, &pEnemy->m_position, &pEnemy->m_velocity);
+							}
 							break;
 						}
 					}
@@ -226,7 +228,7 @@ void Mtk_Main(const char* pszTitle)
 			SMtkEnemy *pEnemy = g_mtkEnemies;
 			for (i = 0; i < MTK_ENEMY_MAX; i++, pEnemy++)
 			{
-				if (pEnemy->m_status != kMtkEnemyStatus_Idle)
+				if (pEnemy->m_visibility)
 				{
 					MtkModelDrawBBoxClip(&g_modelEnemy, &pEnemy->m_position);
 				}
