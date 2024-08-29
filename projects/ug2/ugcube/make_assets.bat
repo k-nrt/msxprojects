@@ -18,6 +18,18 @@ if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
 "%MAKE_MODEL%" -i %ASSET_DIR%\e1.mqo -prefix beam   -o mtk_mesh_beam.inc   -name Beam    -type ugxmesh
 if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
 
+set OBJ=-obj e2-body -obj e2-shield-down -obj e2-cannon-down
+"%MAKE_MODEL%" -i %ASSET_DIR%\e2.mqo %OBJ% -o mtk_mesh_enemy2_move.inc -name Enemy2Move -type ugxmesh
+if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
+
+set OBJ=-obj e2-body -obj e2-shield -obj e2-cannon-down
+"%MAKE_MODEL%" -i %ASSET_DIR%\e2.mqo %OBJ% -o mtk_mesh_enemy2_defence.inc -name Enemy2Defence -type ugxmesh
+if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
+
+set OBJ=-obj e2-body -obj e2-shield-down -obj e2-cannon
+"%MAKE_MODEL%" -i %ASSET_DIR%\e2.mqo %OBJ% -o mtk_mesh_enemy2_attack.inc -name Enemy2Attack -type ugxmesh
+if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
+
 "%MAKE_MODEL%" -i %ASSET_DIR%\explosion.mqo -prefix exp0 -o mtk_mesh_exp0.inc -name Exp0 -type ugxmesh
 if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
 "%MAKE_MODEL%" -i %ASSET_DIR%\explosion.mqo -prefix exp1 -o mtk_mesh_exp1.inc -name Exp1 -type ugxmesh

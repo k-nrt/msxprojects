@@ -20,7 +20,6 @@
 
 #include "mesh.h"
 #include "mtk_mesh_beam.inc"
-#include "mtk_mesh_enemy1.inc"
 #include "mtk_mesh_exp0.inc"
 #include "mtk_mesh_exp1.inc"
 #include "mtk_mesh_exp2.inc"
@@ -65,7 +64,6 @@ static const SFlipperConfig s_mtkFlipperConfig =
 };
 
 
-SMtkModel g_modelEnemy;
 SMtkModel g_modelExp0;
 SMtkModel g_modelExp1;
 SMtkModel g_modelExp2;
@@ -125,7 +123,8 @@ void MtkInit(void)
 
 	PersSetVertexBuffer(1,0x0000);
 
-	MtkModelCreate(&g_modelEnemy, &g_meshEnemy1, 0, 128, 0);
+	MtkEnemyCreateModels();
+
 	MtkModelCreate(&g_modelShot, &g_meshBeam, 0, 0, 0);
 
 	MtkModelCreate(&g_modelExp0, &g_meshExp0, 0, 0, 0);
@@ -224,16 +223,7 @@ void Mtk_Main(const char* pszTitle)
 
 		MtkFarBgRender();
 
-		{
-			SMtkEnemy *pEnemy = g_mtkEnemies;
-			for (i = 0; i < MTK_ENEMY_MAX; i++, pEnemy++)
-			{
-				if (pEnemy->m_visibility)
-				{
-					MtkModelDrawBBoxClip(&g_modelEnemy, &pEnemy->m_position);
-				}
-			}
-		}
+		MtkEnemyRender();
 
 		{
 			SMtkShot *pShot = g_mtkShots;
@@ -272,28 +262,11 @@ void Mtk_Main(const char* pszTitle)
 		}
 
 		{
-			static s8x3 *pStar;
 			LOGOPR = 0;
 			VDPWait();
 			VDPPSet(128, 16+96);
 
 			MtkStarRender();
-#if 0
-			pStar = g_mtkStars;
-			for(i = 0; i < MTK_STAR_MAX; i++, pStar++)
-			{
-				static u8 py, pz;
-				py = pStar->y;
-				pz = pStar->z;
-				if (16 <= py && py < 16 + 192 && 32 < pz)
-				{
-					VDPWait();
-					VDPPSet(pStar->x, py);
-				}
-
-			}
-#endif
-
 		}
 		WaitVSync();
         FlipperFlip();

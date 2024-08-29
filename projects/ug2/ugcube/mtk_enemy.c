@@ -2,9 +2,20 @@
 #include "mtk_enemy.h"
 #include "msx-rand.h"
 
+#include "mtk_mesh_enemy1.inc"
+#include "mtk_mesh_enemy2_move.inc"
+#include "mtk_mesh_enemy2_defence.inc"
+#include "mtk_mesh_enemy2_attack.inc"
+
 #pragma codeseg CODE2
 
 SMtkEnemy g_mtkEnemies[MTK_ENEMY_MAX];
+
+SMtkModel g_modelEnemy1;
+SMtkModel g_modelEnemy2Move;
+SMtkModel g_modelEnemy2Defence;
+SMtkModel g_modelEnemy2Attack;
+
 void MtkEnemyInit(void)
 {
 	u8 i;
@@ -14,10 +25,22 @@ void MtkEnemyInit(void)
 		s16x3Set(pEnemy->m_position, 0, 0, 0);
 		s16x3Set(pEnemy->m_velocity, 0, 0, 0);
 		s16x3Set(pEnemy->m_target, 0, 0, 0);
-		pEnemy->m_visibility = FALSE;
 		pEnemy->m_shield = 0;
 		pEnemy->m_state = MtkEnemyStateIdle;
+		pEnemy->m_visibility = FALSE;
+		pEnemy->m_model = &g_modelEnemy1;
 	}
+
+	g_mtkEnemies[0].m_model = &g_modelEnemy2Move;
+	g_mtkEnemies[1].m_model = &g_modelEnemy2Attack;
+}
+
+void MtkEnemyCreateModels(void)
+{
+	MtkModelCreate(&g_modelEnemy1, &g_meshEnemy1, 0, 128, 0);
+	MtkModelCreate(&g_modelEnemy2Move, &g_meshEnemy2Move, 0, 128, 0);
+	MtkModelCreate(&g_modelEnemy2Defence, &g_meshEnemy2Defence, 0, 128, 0);
+	MtkModelCreate(&g_modelEnemy2Attack, &g_meshEnemy2Attack, 0, 128, 0);
 }
 
 void MtkEnemyUpdate(void)
@@ -27,6 +50,19 @@ void MtkEnemyUpdate(void)
 	for (i = 0, pEnemy = g_mtkEnemies; i < MTK_ENEMY_MAX; i++, pEnemy++)
 	{
 		pEnemy->m_state(pEnemy);
+	}
+}
+
+void MtkEnemyRender(void)
+{
+	u8 i;
+	SMtkEnemy *pEnemy = g_mtkEnemies;
+	for (i = 0; i < MTK_ENEMY_MAX; i++, pEnemy++)
+	{
+		if (pEnemy->m_visibility)
+		{
+			MtkModelDrawBBoxClip(pEnemy->m_model, &pEnemy->m_position);
+		}
 	}
 }
 
@@ -68,6 +104,26 @@ void MtkEnemyStateEntry(SMtkEnemy *enemy)
 	enemy->m_visibility = TRUE;
 	enemy->m_state = MtkEnemyStateMove;
 	enemy->m_shield = 3;
+
+	switch (msxRandGet8() & 0x7)
+	{
+	case 0:
+	default:
+		enemy->m_model = &g_modelEnemy1;
+		break;
+
+	case 1:
+		enemy->m_model = &g_modelEnemy2Move;
+		break;
+
+	case 2:
+		enemy->m_model = &g_modelEnemy2Defence;
+		break;
+
+	case 3:
+		enemy->m_model = &g_modelEnemy2Attack;
+		break;
+	}
 }
 
 void MtkEnemyStateMove(SMtkEnemy *enemy)
