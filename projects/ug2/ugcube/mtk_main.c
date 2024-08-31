@@ -10,6 +10,7 @@
 #include "mtk_mesh.h"
 #include "mtk_model.h"
 #include "mtk_input.h"
+#include "mtk_world.h"
 
 #include "mtk_effect.h"
 #include "mtk_player.h"
@@ -117,6 +118,7 @@ void MtkInit(void)
 	MtkEffectInit();
 	MtkStarInit(8, 128 - 16);
 	MtkFarBgInit();
+	MtkWorldInit();
 
 	//. Models.
 	VDPPrint(0, 16, "create models ... ");
@@ -144,7 +146,7 @@ void MtkInit(void)
 	VDPWait();
 
 	//. Restore back buffer.
-    VDPSetActivePage(g_flipper.m_u8ActivePage);
+	VDPSetActivePage(g_flipper.m_u8ActivePage);
 	VDPFill(0, 0, 256, 212);
 	VDPWait();
 }
@@ -165,17 +167,7 @@ void Mtk_Main(const char* pszTitle)
 		MtkPlayerUpdate();
 		MtkShotUpdate();
 		MtkEnemyUpdate();
-
-		{
-			s8x3 velocity;
-			s8x3Set(velocity, 0, 0, g_mtkPlayer.m_velocity.z);
-			MtkStarSetVelocity(velocity);
-
-			s8x3Set(velocity, g_mtkPlayer.m_angularVelocity.x, g_mtkPlayer.m_angularVelocity.y, 0);
-			MtkStarSetAnglerVelocity(velocity);
-			MtkStarUpdate();
-		}
-
+		MtkStarUpdate();
 		MtkFarBgUpdate();
 
 		{
@@ -222,7 +214,6 @@ void Mtk_Main(const char* pszTitle)
 		VDPWait();
 
 		MtkFarBgRender();
-
 		MtkEnemyRender();
 
 		{
@@ -265,12 +256,11 @@ void Mtk_Main(const char* pszTitle)
 			LOGOPR = 0;
 			VDPWait();
 			VDPPSet(128, 16+96);
-
 			MtkStarRender();
 		}
 		WaitVSync();
-        FlipperFlip();
+		FlipperFlip();
 	}
 
-    //FlipperTerm();
+	//FlipperTerm();
 }

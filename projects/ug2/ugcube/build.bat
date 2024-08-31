@@ -30,7 +30,7 @@ set ProjectAsmSrc=%ProjectAsmSrc% mtk_star.s
 set ProjectCcSrc=main.c vdp_command.c sincos.c mesh_cube.c pers.c bbox.c flipper.c
 set ProjectCcSrc=%ProjectCcSrc% test.c test_sincos.c test_line.c test_pers.c
 set ProjectCcSrc=%ProjectCcSrc% mtk_main.c mtk_mesh.c mtk_model.c mtk_input.c mtk_effect.c mtk_player.c mtk_enemy.c mtk_shot.c mtk_star.c
-set ProjectCcSrc=%ProjectCcSrc% mtk_far_bg.c
+set ProjectCcSrc=%ProjectCcSrc% mtk_far_bg.c mtk_world.c
 
 if "%System%" equ "msx-dos" (
 	set MsxAsmSrc=%MsxAsmSrc% msx-dos-vdp.s msx-dos-input.s msx-dos.s

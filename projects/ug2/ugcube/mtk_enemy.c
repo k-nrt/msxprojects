@@ -1,5 +1,6 @@
 #include "mtk_player.h"
 #include "mtk_enemy.h"
+#include "mtk_world.h"
 #include "msx-rand.h"
 
 #include "mtk_mesh_enemy1.inc"
@@ -136,22 +137,6 @@ void MtkEnemyStateMove(SMtkEnemy *enemy)
 	py = enemy->m_position.y;
 	pz = enemy->m_position.z;
 
-	if (g_mtkPlayer.m_angularVelocity.x)
-	{
-		SinCos_SetS16XY(py, pz);
-		SinCos_RotateXYS16Hp(-g_mtkPlayer.m_angularVelocity.x);
-		py = SinCos_GetS16X();
-		pz = SinCos_GetS16Y();
-	}
-
-	if (g_mtkPlayer.m_angularVelocity.y)
-	{
-		SinCos_SetS16XY(pz, px);
-		SinCos_RotateXYS16Hp(-g_mtkPlayer.m_angularVelocity.y);
-		pz = SinCos_GetS16X();
-		px = SinCos_GetS16Y();
-	}
-
 	vx = enemy->m_velocity.x;
 	vy = enemy->m_velocity.y;
 	vz = enemy->m_velocity.z;
@@ -175,10 +160,12 @@ void MtkEnemyStateMove(SMtkEnemy *enemy)
 	else if (tz < pz && -8 < vz)
 		vz -= 1;
 
-	enemy->m_position.x = px + vx - g_mtkPlayer.m_velocity.x;
-	enemy->m_position.y = py + vy - g_mtkPlayer.m_velocity.y;
-	enemy->m_position.z = pz + vz - g_mtkPlayer.m_velocity.z;
-
 	s16x3Set(enemy->m_velocity, vx, vy, vz);
+
+	enemy->m_position.x = px + vx;
+	enemy->m_position.y = py + vy;
+	enemy->m_position.z = pz + vz;
+
+	MtkWorldMovePosition(&enemy->m_position);
 	//s16x3Op(pEnemy->m_target, pEnemy->m_target, -, g_mtkPlayer.m_velocity);
 }
