@@ -15,6 +15,7 @@
 #include "mtk_effect.h"
 #include "mtk_player.h"
 #include "mtk_enemy.h"
+#include "mtk_enemy_shot.h"
 #include "mtk_shot.h"
 #include "mtk_star.h"
 #include "mtk_far_bg.h"
@@ -115,6 +116,7 @@ void MtkInit(void)
 	MtkPlayerInit();
 	MtkShotInit();
 	MtkEnemyInit();
+	MtkEnemyShotInit();
 	MtkEffectInit();
 	MtkStarInit(8, 128 - 16);
 	MtkFarBgInit();
@@ -126,6 +128,7 @@ void MtkInit(void)
 	PersSetVertexBuffer(1,0x0000);
 
 	MtkEnemyCreateModels();
+	MtkEnemyShotCreateModels();
 
 	MtkModelCreate(&g_modelShot, &g_meshBeam, 0, 0, 0);
 
@@ -167,6 +170,7 @@ void Mtk_Main(const char* pszTitle)
 		MtkPlayerUpdate();
 		MtkShotUpdate();
 		MtkEnemyUpdate();
+		MtkEnemyShotUpdate();
 		MtkStarUpdate();
 		MtkFarBgUpdate();
 
@@ -190,10 +194,10 @@ void Mtk_Main(const char* pszTitle)
 						(
 							pEnemy->m_position.x - 32 < pShot->m_position.x &&
 							pEnemy->m_position.y - 32 < pShot->m_position.y &&
-							pEnemy->m_position.z - 32 < pShot->m_position.z &&
+							pEnemy->m_position.z - 48 < pShot->m_position.z &&
 							pShot->m_position.x < pEnemy->m_position.x + 32 &&
 							pShot->m_position.y < pEnemy->m_position.y + 32 &&
-							pShot->m_position.z < pEnemy->m_position.z + 32
+							pShot->m_position.z < pEnemy->m_position.z + 48
 						)
 						{
 							pShot->m_status = kMtkShotStatus_Hit;
@@ -215,6 +219,7 @@ void Mtk_Main(const char* pszTitle)
 
 		MtkFarBgRender();
 		MtkEnemyRender();
+		MtkEnemyShotRender();
 
 		{
 			SMtkShot *pShot = g_mtkShots;

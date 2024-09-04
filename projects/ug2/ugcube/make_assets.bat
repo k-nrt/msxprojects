@@ -13,9 +13,11 @@ if not exist "%MAKE_MODEL%" (
 	)
 )
 
-"%MAKE_MODEL%" -i %ASSET_DIR%\e1.mqo -prefix enemy1 -o mtk_mesh_enemy1.inc -name Enemy1  -type ugxmesh
+"%MAKE_MODEL%" -i %ASSET_DIR%\e1.mqo -obj enemy1     -o mtk_mesh_enemy1.inc  -name Enemy1    -type ugxmesh
 if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
-"%MAKE_MODEL%" -i %ASSET_DIR%\e1.mqo -prefix beam   -o mtk_mesh_beam.inc   -name Beam    -type ugxmesh
+"%MAKE_MODEL%" -i %ASSET_DIR%\e1.mqo -obj beam       -o mtk_mesh_beam.inc    -name Beam      -type ugxmesh
+if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
+"%MAKE_MODEL%" -i %ASSET_DIR%\e1.mqo -obj enemy_shot -o mtk_enemy_shot.inc   -name EnemyShot -type ugxmesh
 if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
 
 set OBJ=-obj e2-body -obj e2-shield-down -obj e2-cannon-down

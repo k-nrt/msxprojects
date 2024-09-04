@@ -2,6 +2,7 @@
 #include "mtk_enemy.h"
 #include "mtk_world.h"
 #include "msx-rand.h"
+#include "mtk_enemy_shot.h"
 
 #include "mtk_mesh_enemy1.inc"
 #include "mtk_mesh_enemy2_move.inc"
@@ -27,6 +28,7 @@ void MtkEnemyInit(void)
 		s16x3Set(pEnemy->m_velocity, 0, 0, 0);
 		s16x3Set(pEnemy->m_target, 0, 0, 0);
 		pEnemy->m_shield = 0;
+		pEnemy->m_timer = 0;
 		pEnemy->m_state = MtkEnemyStateIdle;
 		pEnemy->m_visibility = FALSE;
 		pEnemy->m_model = &g_modelEnemy1;
@@ -67,32 +69,7 @@ void MtkEnemyRender(void)
 	}
 }
 
-s8 MtkEnemyAddDamage(s8 damage, SMtkEnemy *enemy)
-{
-	if (0 < enemy->m_shield)
-	{
-		enemy->m_shield -= damage;
-		if (enemy->m_shield <= 0)
-		{
-			enemy->m_shield = 0; 
-			enemy->m_visibility = FALSE;
-			enemy->m_state = MtkEnemyStateIdle;
-		}
-		else
-		{
-			enemy->m_velocity.z += 8;
-		}
-	}
-
-	return enemy->m_shield;
-}
-
-void MtkEnemyStateIdle(SMtkEnemy *enemy)
-{
-	enemy->m_state = MtkEnemyStateEntry;
-}
-
-void MtkEnemyStateEntry(SMtkEnemy *enemy)
+void MtkEnemySetEntryPosition(SMtkEnemy *enemy)
 {
 	s16 px = (s16)(msxRandGet16() >> 8) - 128;
 	s16 py = (s16)(msxRandGet16() >> 8) - 128;
@@ -101,33 +78,9 @@ void MtkEnemyStateEntry(SMtkEnemy *enemy)
 
 	s16x3Set(enemy->m_position, px, py, 720);
 	s16x3Set(enemy->m_target, tx, ty, 200);
-
-	enemy->m_visibility = TRUE;
-	enemy->m_state = MtkEnemyStateMove;
-	enemy->m_shield = 3;
-
-	switch (msxRandGet8() & 0x7)
-	{
-	case 0:
-	default:
-		enemy->m_model = &g_modelEnemy1;
-		break;
-
-	case 1:
-		enemy->m_model = &g_modelEnemy2Move;
-		break;
-
-	case 2:
-		enemy->m_model = &g_modelEnemy2Defence;
-		break;
-
-	case 3:
-		enemy->m_model = &g_modelEnemy2Attack;
-		break;
-	}
 }
 
-void MtkEnemyStateMove(SMtkEnemy *enemy)
+void MtkEnemyMoveToTarget(SMtkEnemy *enemy)
 {
 	static s16 px, py, pz;
 	static s16 vx, vy, vz;
@@ -168,4 +121,165 @@ void MtkEnemyStateMove(SMtkEnemy *enemy)
 
 	MtkWorldMovePosition(&enemy->m_position);
 	//s16x3Op(pEnemy->m_target, pEnemy->m_target, -, g_mtkPlayer.m_velocity);
+}
+
+s8 MtkEnemyAddDamage(s8 damage, SMtkEnemy *enemy)
+{
+	if (0 < enemy->m_shield)
+	{
+		enemy->m_shield -= damage;
+		if (enemy->m_shield <= 0)
+		{
+			enemy->m_shield = 0; 
+			enemy->m_visibility = FALSE;
+			enemy->m_state = MtkEnemyStateIdle;
+		}
+		else
+		{
+			enemy->m_velocity.z += 8;
+		}
+	}
+
+	return enemy->m_shield;
+}
+
+void MtkEnemyStateIdle(SMtkEnemy *enemy)
+{
+	switch (msxRandGet8() & 0x7)
+	{
+	case 0:
+	default:
+		enemy->m_state = MtkEnemy1StateEntry;
+		break;
+
+	case 1:
+		enemy->m_state = MtkEnemy2StateEntry;
+		break;
+	}
+}
+
+void MtkEnemy1StateEntry(SMtkEnemy *enemy)
+{
+	MtkEnemySetEntryPosition(enemy);
+
+	enemy->m_visibility = TRUE;
+	enemy->m_state = MtkEnemy1StateMove;
+	enemy->m_shield = 1;
+	enemy->m_model = &g_modelEnemy1;
+}
+
+void MtkEnemy1StateMove(SMtkEnemy *enemy)
+{
+	MtkEnemyMoveToTarget(enemy);
+}
+
+void MtkEnemy2StateEntry(SMtkEnemy *enemy)
+{
+	MtkEnemySetEntryPosition(enemy);
+
+	enemy->m_visibility = TRUE;
+	enemy->m_state = MtkEnemy2StateMove;
+	enemy->m_shield = 3;
+	enemy->m_timer = 20;
+	enemy->m_model = &g_modelEnemy2Move;
+}
+
+void MtkEnemy2StateMove(SMtkEnemy *enemy)
+{
+	MtkEnemyMoveToTarget(enemy);
+
+	if (!enemy->m_timer)
+	{
+		switch (msxRandGet8() & 0x3)
+		{
+		default:
+		case 0: //. continue.
+			{
+				s16 tx = (s16)(msxRandGet16() >> 9) - 64;
+				s16 ty = (s16)(msxRandGet16() >> 9) - 64;
+				s16 tz = (s16)(msxRandGet16() >> 9) - 64;
+				enemy->m_target.x += tx;
+				enemy->m_target.y += ty;
+				enemy->m_target.z += tz;
+				enemy->m_timer = 20;
+
+				if (enemy->m_model == &g_modelEnemy2Move)
+				{
+					enemy->m_model = &g_modelEnemy2Defence;
+				}
+				else
+				{
+					enemy->m_model = &g_modelEnemy2Move;
+				}
+			}
+			break;
+
+		case 1: //. move far.
+			{
+				s16 tx = (s16)(msxRandGet16() >> 9) - 64;
+				s16 ty = (s16)(msxRandGet16() >> 9) - 64;
+				s16 tz = (s16)(msxRandGet16() >> 9) - 64;
+				enemy->m_target.x += tx*4;
+				enemy->m_target.y += ty*4;
+				enemy->m_target.z = 700 + tz;
+				enemy->m_timer = 60;
+			}
+			break;
+
+		case 2: //. move near.
+			{
+				s16 tx = (s16)(msxRandGet16() >> 9) - 64;
+				s16 ty = (s16)(msxRandGet16() >> 9) - 64;
+				s16 tz = (s16)(msxRandGet16() >> 9) - 64;
+				enemy->m_target.x += tx;
+				enemy->m_target.y += ty;
+				enemy->m_target.z = 300 + tz;
+				enemy->m_timer = 60;
+			}
+			break;
+
+		case 3: //. attack.
+			enemy->m_timer = 60;
+			enemy->m_target.x = 0;
+			enemy->m_target.y = 0;
+			enemy->m_state = MtkEnemy2StateAttack;
+			enemy->m_model = &g_modelEnemy2Attack;
+			break;
+		}
+	}
+	else
+	{
+		enemy->m_timer--;
+	}
+}
+
+void MtkEnemy2StateAttack(SMtkEnemy *enemy)
+{
+	MtkEnemyMoveToTarget(enemy);
+
+	if (!enemy->m_timer)
+	{
+		s16 tx = (s16)(msxRandGet16() >> 9) - 64;
+		s16 ty = (s16)(msxRandGet16() >> 9) - 64;
+		s16 tz = (s16)(msxRandGet16() >> 9) - 64;
+		s16x3 velocity;
+		
+		enemy->m_target.x += tx;
+		enemy->m_target.y += ty;
+		enemy->m_target.z += tz;
+		enemy->m_timer = 20;
+		enemy->m_model = &g_modelEnemy2Move;
+
+		s16x3Set(velocity, 0, 0, -32);
+		MtkEnemyShotLaunch(&enemy->m_position, &velocity);
+
+		if (!(msxRandGet8() & 3))
+		{
+			enemy->m_state = MtkEnemy2StateMove;
+		}
+	}
+	else
+	{
+		enemy->m_timer--;
+	}
 }
