@@ -1,6 +1,6 @@
 #include "macros.h"
 #include "mtk_far_bg.h"
-#include "mtk_player.h"
+#include "mtk_world.h"
 #include "pers.h"
 
 SMtkFarBg g_mtkFarBg[MTK_FAR_BG_COUNT];
@@ -57,16 +57,16 @@ void MtkFarBgUpdate(void)
 		y = pFarBg->m_position.y;
 		z = pFarBg->m_position.z;
 
-		if (g_mtkPlayer.m_angularVelocity.x)
+		if (g_mtkWorld.m_angularVelocity.x)
 		{
-			s8XY xy = SinCos_RotateXYS8Lp(y, z, -g_mtkPlayer.m_angularVelocity.x);
+			s8XY xy = SinCos_RotateXYS8Lp(y, z, -g_mtkWorld.m_angularVelocity.x);
 			y = s8XY_GetX(xy);
 			z = s8XY_GetY(xy);
 		}
 
-		if (g_mtkPlayer.m_angularVelocity.y)
+		if (g_mtkWorld.m_angularVelocity.y)
 		{
-			s8XY xy = SinCos_RotateXYS8Lp(z, x, -g_mtkPlayer.m_angularVelocity.y);
+			s8XY xy = SinCos_RotateXYS8Lp(z, x, -g_mtkWorld.m_angularVelocity.y);
 			z = s8XY_GetX(xy);
 			x = s8XY_GetY(xy);
 		}
