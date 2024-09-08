@@ -11,6 +11,7 @@ typedef struct tMtkEnemy
 	s16x3 m_target;
 	s8 m_shield;
 	u8 m_timer;
+	u8 m_shotInterval;
 	void (*m_state)(struct tMtkEnemy*);
 	u8 m_visibility;
 	SMtkModel* m_model;

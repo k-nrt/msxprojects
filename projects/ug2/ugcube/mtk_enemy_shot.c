@@ -4,7 +4,9 @@
 #include "mtk_enemy_shot.inc"
 
 SMtkEnemyShot g_mtkEnemyShots[MTK_ENEMY_SHOT_COUNT];
-SMtkModel g_modelEnemyShot;
+
+#define MTK_ENEMY_SHOT_ROTATION_COUNT (8)
+SMtkModel g_modelEnemyShots[MTK_ENEMY_SHOT_ROTATION_COUNT];
 
 void MtkEnemyShotInit(void)
 {
@@ -15,13 +17,18 @@ void MtkEnemyShotInit(void)
 		s16x3Set(shot->m_position, 0, 0, 0);
 		s16x3Set(shot->m_velocity, 0, 0, 0);
 		shot->m_state = kMtkEnemyShotState_Idle;
-		shot->m_model = &g_modelEnemyShot;
+		shot->m_rotation = 0;
+		shot->m_model = &g_modelEnemyShots[0];
 	}
 }
 
 void MtkEnemyShotCreateModels(void)
 {
-	MtkModelCreate(&g_modelEnemyShot, &g_meshEnemyShot, 0, 0, 0);
+	u8 i;
+	for(i = 0; i < MTK_ENEMY_SHOT_ROTATION_COUNT; i++)
+	{
+		MtkModelCreate(&g_modelEnemyShots[i], &g_meshEnemyShot, 0, 0, i << 4);
+	}
 }
 
 void MtkEnemyShotUpdate(void)
@@ -43,6 +50,8 @@ void MtkEnemyShotUpdate(void)
 		{
 			MtkWorldMovePosition(&shot->m_position);
 			shot->m_position.z += shot->m_velocity.z;
+			shot->m_model = &g_modelEnemyShots[shot->m_rotation & 0x7];
+			shot->m_rotation++;
 		}
 	}
 }

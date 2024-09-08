@@ -15,6 +15,7 @@ typedef struct tMtkEnemyShot
 	s16x3 m_position;
 	s16x3 m_velocity;
 	u8 m_state;
+	s8 m_rotation;
 	SMtkModel* m_model;
 } SMtkEnemyShot;
 
