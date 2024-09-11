@@ -1,5 +1,6 @@
 #include "mtk_input.h"
 #include "mtk_player.h"
+#include "mtk_world.h"
 
 #pragma codeseg CODE2
 
@@ -88,4 +89,7 @@ void MtkPlayerUpdate(void)
 	g_mtkPlayer.m_angularVelocity.x = avx;
 	g_mtkPlayer.m_angularVelocity.y = avy;
 	g_mtkPlayer.m_velocity.z = vz;
+
+	MtkWorldSetVelocity(&g_mtkPlayer.m_velocity);
+	MtkWorldSetAngularVelocity(&g_mtkPlayer.m_angularVelocity);
 }

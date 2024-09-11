@@ -10,20 +10,19 @@
 #include "mtk_mesh.h"
 #include "mtk_model.h"
 #include "mtk_input.h"
+#include "mtk_world.h"
 
 #include "mtk_effect.h"
 #include "mtk_player.h"
 #include "mtk_enemy.h"
+#include "mtk_enemy_shot.h"
 #include "mtk_shot.h"
 #include "mtk_star.h"
+#include "mtk_far_bg.h"
 
 #include "mesh.h"
 #include "mtk_mesh_beam.inc"
-#include "mtk_mesh_enemy1.inc"
-#include "mtk_mesh_exp0.inc"
-#include "mtk_mesh_exp1.inc"
-#include "mtk_mesh_exp2.inc"
-#include "mtk_mesh_exp3.inc"
+#include "mtk_mesh_planet.inc"
 
 #pragma codeseg CODE2
 
@@ -63,12 +62,9 @@ static const SFlipperConfig s_mtkFlipperConfig =
 };
 
 
-SMtkModel g_modelEnemy;
-SMtkModel g_modelExp0;
-SMtkModel g_modelExp1;
-SMtkModel g_modelExp2;
-SMtkModel g_modelExp3;
 SMtkModel g_modelShot;
+
+SMtkMesh g_mtkMeshPlanet;
 
 void MtkOnProgress(u16 address)
 {
@@ -112,21 +108,27 @@ void MtkInit(void)
 	MtkPlayerInit();
 	MtkShotInit();
 	MtkEnemyInit();
+	MtkEnemyShotInit();
 	MtkEffectInit();
 	MtkStarInit(8, 128 - 16);
+	MtkFarBgInit();
+	MtkWorldInit();
 
 	//. Models.
 	VDPPrint(0, 16, "create models ... ");
 
 	PersSetVertexBuffer(1,0x0000);
 
-	MtkModelCreate(&g_modelEnemy, &g_meshEnemy1, 0, 128, 0);
+	MtkEnemyCreateModels();
+	MtkEnemyShotCreateModels();
+	MtkEffectCreateModels();
+
 	MtkModelCreate(&g_modelShot, &g_meshBeam, 0, 0, 0);
 
-	MtkModelCreate(&g_modelExp0, &g_meshExp0, 0, 0, 0);
-	MtkModelCreate(&g_modelExp1, &g_meshExp1, 0, 0, 0);
-	MtkModelCreate(&g_modelExp2, &g_meshExp2, 0, 0, 0);
-	MtkModelCreate(&g_modelExp3, &g_meshExp3, 0, 0, 0);
+	MtkMeshCreate(&g_mtkMeshPlanet, &g_meshPlanet, 0, 0, 0, 0);
+
+	MtkFarBgSetModel(0, &g_mtkMeshPlanet);
+	MtkFarBgSetPosition(0, 0, 0, 96, 96);
 
 	//. Clear screen.
 	VDPSetForegroundColor(0x00);
@@ -135,7 +137,7 @@ void MtkInit(void)
 	VDPWait();
 
 	//. Restore back buffer.
-    VDPSetActivePage(g_flipper.m_u8ActivePage);
+	VDPSetActivePage(g_flipper.m_u8ActivePage);
 	VDPFill(0, 0, 256, 212);
 	VDPWait();
 }
@@ -156,16 +158,9 @@ void Mtk_Main(const char* pszTitle)
 		MtkPlayerUpdate();
 		MtkShotUpdate();
 		MtkEnemyUpdate();
-
-		{
-			s8x3 velocity;
-			s8x3Set(velocity, 0, 0, g_mtkPlayer.m_velocity.z);
-			MtkStarSetVelocity(velocity);
-
-			s8x3Set(velocity, g_mtkPlayer.m_angularVelocity.x, g_mtkPlayer.m_angularVelocity.y, 0);
-			MtkStarSetAnglerVelocity(velocity);
-			MtkStarUpdate();
-		}
+		MtkEnemyShotUpdate();
+		MtkStarUpdate();
+		MtkFarBgUpdate();
 
 		{
 			SMtkShot *pShot = g_mtkShots;
@@ -178,7 +173,7 @@ void Mtk_Main(const char* pszTitle)
 
 					for (j = 0; j < MTK_ENEMY_MAX; j++, pEnemy++)
 					{
-						if (pEnemy->m_status != kMtkEnemyStatus_Move)
+						if (!pEnemy->m_shield)
 						{
 							continue;
 						}
@@ -187,15 +182,17 @@ void Mtk_Main(const char* pszTitle)
 						(
 							pEnemy->m_position.x - 32 < pShot->m_position.x &&
 							pEnemy->m_position.y - 32 < pShot->m_position.y &&
-							pEnemy->m_position.z - 32 < pShot->m_position.z &&
+							pEnemy->m_position.z - 48 < pShot->m_position.z &&
 							pShot->m_position.x < pEnemy->m_position.x + 32 &&
 							pShot->m_position.y < pEnemy->m_position.y + 32 &&
-							pShot->m_position.z < pEnemy->m_position.z + 32
+							pShot->m_position.z < pEnemy->m_position.z + 48
 						)
 						{
-							pEnemy->m_status = kMtkEnemyStatus_Idle;
 							pShot->m_status = kMtkShotStatus_Hit;
-							MtkEffectSpawn(kMtkEffectType_Explosion, &pEnemy->m_position, &pEnemy->m_velocity);
+							if (MtkEnemyAddDamage(1, pEnemy) <= 0)
+							{
+								MtkEffectSpawn(kMtkEffectType_Explosion, &pEnemy->m_position, &pEnemy->m_velocity);
+							}
 							break;
 						}
 					}
@@ -205,19 +202,12 @@ void Mtk_Main(const char* pszTitle)
 
 		MtkEffectUpdate();
 
-        FlipperApplyForegroundColor();
+		FlipperApplyForegroundColor();
 		VDPWait();
 
-		{
-			SMtkEnemy *pEnemy = g_mtkEnemies;
-			for (i = 0; i < MTK_ENEMY_MAX; i++, pEnemy++)
-			{
-				if (pEnemy->m_status != kMtkEnemyStatus_Idle)
-				{
-					MtkModelDrawBBoxClip(&g_modelEnemy, &pEnemy->m_position);
-				}
-			}
-		}
+		MtkFarBgRender();
+		MtkEnemyRender();
+		MtkEnemyShotRender();
 
 		{
 			SMtkShot *pShot = g_mtkShots;
@@ -230,58 +220,17 @@ void Mtk_Main(const char* pszTitle)
 			}
 		}
 
-		{
-			const SMtkModel *pModels[] = 
-			{
-				&g_modelExp0,
-				&g_modelExp1,
-				&g_modelExp2,
-				&g_modelExp3,
-				NULL, NULL, NULL, NULL
-			};
-			const SMtkEffect *pEffect = g_mtkEfects;
-
-			for (i = 0; i < MTK_EFFECT_MAX; i++, pEffect++)
-			{
-				if (pEffect->m_type == kMtkEffectType_None)
-				{
-					continue;
-				}
-				else
-				{
-					u8 index = pEffect->m_timer - 1;
-					MtkModelDrawNoClip(pModels[index], &pEffect->m_position);
-				}
-			}
-		}
+		MtkEffectRender();
 
 		{
-			static s8x3 *pStar;
 			LOGOPR = 0;
 			VDPWait();
 			VDPPSet(128, 16+96);
-
 			MtkStarRender();
-#if 0
-			pStar = g_mtkStars;
-			for(i = 0; i < MTK_STAR_MAX; i++, pStar++)
-			{
-				static u8 py, pz;
-				py = pStar->y;
-				pz = pStar->z;
-				if (16 <= py && py < 16 + 192 && 32 < pz)
-				{
-					VDPWait();
-					VDPPSet(pStar->x, py);
-				}
-
-			}
-#endif
-
 		}
 		WaitVSync();
-        FlipperFlip();
+		FlipperFlip();
 	}
 
-    //FlipperTerm();
+	//FlipperTerm();
 }

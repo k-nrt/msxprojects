@@ -1,8 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace makemodel
 {
@@ -18,6 +15,8 @@ namespace makemodel
 
 			string strType = "ugxmodel";
 			
+			List<string> objectNames = new List<string>(); 
+
 			for (int i = 0; i < args.Length;i++ )
 			{
 				string arg = args[i];
@@ -42,7 +41,7 @@ namespace makemodel
 						i++;
 						strPrefix = args[i];
 						break;
-
+					
 					case "-name":
 						i++;
 						strName = args[i];
@@ -51,6 +50,11 @@ namespace makemodel
 					case "-type":
 						i++;
 						strType = args[i];
+						break;
+
+					case "-obj":
+						i++;
+						objectNames.Add(args[i]);
 						break;
 				}
 			}
@@ -99,7 +103,7 @@ namespace makemodel
 
 			Mqo.Document document = Mqo.Parser.ParseDocument( it.GetChildren() );
 
-			Ugx.Model model = Ugx.ModelFactory.Create(document, strPrefix, fScale);
+			Ugx.Model model = Ugx.ModelFactory.Create(document, strPrefix, objectNames, fScale);
 
 			if (strType=="ugxmodel")
 			{ 

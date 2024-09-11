@@ -50,7 +50,7 @@ void MtkShotUpdate(void)
 		if (pShot->m_status == kMtkShotStatus_Move)
 		{
 			MtkShotMove(pShot);
-			if (720 < pShot->m_position.z)
+			if (800 < pShot->m_position.z)
 			{
 				pShot->m_status = kMtkShotStatus_Idle;
 			}
@@ -67,7 +67,7 @@ void MtkShotUpdate(void)
 			s16x3Set(pShot->m_position,  16, 8, 65);
 			pShot->m_velocity.x = g_mtkPlayer.m_velocity.x;
 			pShot->m_velocity.y = g_mtkPlayer.m_velocity.y;
-			pShot->m_velocity.z = 64;
+			pShot->m_velocity.z = 80;
 		}
 	}
 }

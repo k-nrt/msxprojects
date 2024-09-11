@@ -1,9 +1,9 @@
 const static s8x3 s_vertexBeam[] =
 {
-	{ -2,0,32 },
 	{ 2,0,32 },
-	{ 2,0,-32 },
+	{ -2,0,32 },
 	{ -2,0,-32 },
+	{ 2,0,-32 },
 };
 const static u16 s_indexBeam[] =
 {

@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ugx
 {
 	public class ModelFactory
 	{
-		public static Model Create( Mqo.Document mqoDocument, string strPrefix, float fScale )
+		public static Model Create( Mqo.Document mqoDocument, string strPrefix, List<string> objectNames, float fScale )
 		{
 			Model model = new Model();
 			List<Vertex> listVertices = new List<Vertex>();
@@ -17,34 +14,44 @@ namespace Ugx
 			int nVertexOffset = 0;
 			foreach(Mqo.Object mqoObject in mqoDocument.Object )
 			{
-				if(mqoObject.visible == 0 && strPrefix == "")
+				if(strPrefix == "" && objectNames.Count <= 0)
 				{
-					continue;
-				}
-
-				if(strPrefix != "")
-				{
-					if(mqoObject.Name.Length < strPrefix.Length)
-					{
-						continue;
-					}
-
-					if (mqoObject.Name.Substring(0, strPrefix.Length) != strPrefix)
+					//. prefix と obj 指定がないときは visible が有効.
+					if (mqoObject.visible == 0)
 					{
 						continue;
 					}
 				}
 				else
 				{
-					if (mqoObject.visible == 0 )
+					if (0 < objectNames.Count && objectNames.Contains(mqoObject.Name))
+					{
+						//. obj 指定があって、その中にある.
+					}
+					else if (strPrefix != "")
+					{
+						//. prefix 指定があって、一致する.
+						if(mqoObject.Name.Length < strPrefix.Length)
+						{
+							continue;
+						}
+
+						if (mqoObject.Name.Substring(0, strPrefix.Length) != strPrefix)
+						{
+							continue;
+						}
+					}
+					else
 					{
 						continue;
 					}
 				}
 
+				Console.WriteLine("obj:{0}", mqoObject.Name);
+
 				foreach(Mqo.Float3 f3Vertex in mqoObject.vertex )
 				{
-					listVertices.Add(new Vertex(f3Vertex.X * fScale, -f3Vertex.Y * fScale, f3Vertex.Z * fScale));
+					listVertices.Add(new Vertex(-f3Vertex.X * fScale, -f3Vertex.Y * fScale, f3Vertex.Z * fScale));
 				}
 
 				foreach(Mqo.Face face in mqoObject.face)
