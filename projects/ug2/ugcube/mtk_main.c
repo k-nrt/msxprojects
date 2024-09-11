@@ -22,10 +22,6 @@
 
 #include "mesh.h"
 #include "mtk_mesh_beam.inc"
-#include "mtk_mesh_exp0.inc"
-#include "mtk_mesh_exp1.inc"
-#include "mtk_mesh_exp2.inc"
-#include "mtk_mesh_exp3.inc"
 #include "mtk_mesh_planet.inc"
 
 #pragma codeseg CODE2
@@ -66,10 +62,6 @@ static const SFlipperConfig s_mtkFlipperConfig =
 };
 
 
-SMtkModel g_modelExp0;
-SMtkModel g_modelExp1;
-SMtkModel g_modelExp2;
-SMtkModel g_modelExp3;
 SMtkModel g_modelShot;
 
 SMtkMesh g_mtkMeshPlanet;
@@ -129,13 +121,9 @@ void MtkInit(void)
 
 	MtkEnemyCreateModels();
 	MtkEnemyShotCreateModels();
+	MtkEffectCreateModels();
 
 	MtkModelCreate(&g_modelShot, &g_meshBeam, 0, 0, 0);
-
-	MtkModelCreate(&g_modelExp0, &g_meshExp0, 0, 0, 0);
-	MtkModelCreate(&g_modelExp1, &g_meshExp1, 0, 0, 0);
-	MtkModelCreate(&g_modelExp2, &g_meshExp2, 0, 0, 0);
-	MtkModelCreate(&g_modelExp3, &g_meshExp3, 0, 0, 0);
 
 	MtkMeshCreate(&g_mtkMeshPlanet, &g_meshPlanet, 0, 0, 0, 0);
 
@@ -232,30 +220,7 @@ void Mtk_Main(const char* pszTitle)
 			}
 		}
 
-		{
-			const SMtkModel *pModels[] = 
-			{
-				&g_modelExp0,
-				&g_modelExp1,
-				&g_modelExp2,
-				&g_modelExp3,
-				NULL, NULL, NULL, NULL
-			};
-			const SMtkEffect *pEffect = g_mtkEfects;
-
-			for (i = 0; i < MTK_EFFECT_MAX; i++, pEffect++)
-			{
-				if (pEffect->m_type == kMtkEffectType_None)
-				{
-					continue;
-				}
-				else
-				{
-					u8 index = pEffect->m_timer - 1;
-					MtkModelDrawNoClip(pModels[index], &pEffect->m_position);
-				}
-			}
-		}
+		MtkEffectRender();
 
 		{
 			LOGOPR = 0;

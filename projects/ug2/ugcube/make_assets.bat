@@ -20,15 +20,15 @@ if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
 "%MAKE_MODEL%" -i %ASSET_DIR%\e1.mqo -obj enemy_shot -o mtk_enemy_shot.inc   -name EnemyShot -type ugxmesh
 if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
 
-set OBJ=-obj e2-body -obj e2-shield-down -obj e2-cannon-down
+set OBJ=-obj e2-body1 -obj e2-leg-l1 -obj e2-leg-r1 -obj e2-head1 -obj e2-shield1 -obj e2-cannon1
 "%MAKE_MODEL%" -i %ASSET_DIR%\e2.mqo %OBJ% -o mtk_mesh_enemy2_move.inc -name Enemy2Move -type ugxmesh
 if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
 
-set OBJ=-obj e2-body -obj e2-shield -obj e2-cannon-down
+set OBJ=-obj e2-body2 -obj e2-leg-l2 -obj e2-leg-r2 -obj e2-head2 -obj e2-shield2 -obj e2-cannon2
 "%MAKE_MODEL%" -i %ASSET_DIR%\e2.mqo %OBJ% -o mtk_mesh_enemy2_defence.inc -name Enemy2Defence -type ugxmesh
 if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
 
-set OBJ=-obj e2-body -obj e2-shield-down -obj e2-cannon
+set OBJ=-obj e2-body3 -obj e2-leg-l3 -obj e2-leg-r3 -obj e2-head3 -obj e2-shield3 -obj e2-cannon3
 "%MAKE_MODEL%" -i %ASSET_DIR%\e2.mqo %OBJ% -o mtk_mesh_enemy2_attack.inc -name Enemy2Attack -type ugxmesh
 if %ERRORLEVEL% neq 0 (goto :error_end_of_bat)
 

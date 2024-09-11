@@ -72,12 +72,12 @@ void MtkEnemyRender(void)
 
 void MtkEnemySetEntryPosition(SMtkEnemy *enemy)
 {
-	s16 px = (s16)(msxRandGet16() >> 8) - 128;
-	s16 py = (s16)(msxRandGet16() >> 8) - 128;
+	s16 px = (s16)(msxRandGet16() >> 4) - 2048;
+	s16 py = (s16)(msxRandGet16() >> 4) - 2048;
 	s16 tx = (s16)(msxRandGet16() >> 9) - 64;
 	s16 ty = (s16)(msxRandGet16() >> 9) - 64;
 
-	s16x3Set(enemy->m_position, px, py, 720);
+	s16x3Set(enemy->m_position, px, py, 1440);
 	s16x3Set(enemy->m_target, tx, ty, 200);
 }
 
